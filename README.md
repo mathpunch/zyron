@@ -1,6 +1,6 @@
-# Shadow Proxy
+# Zyron Proxy
 
-Shadow Proxy is a lightweight, self-hosted web proxy built on the Scramjet ecosystem. It is designed to provide a fast, modular, and minimal proxy setup with all required components included.
+Zyron Proxy is a lightweight, self-hosted web proxy built on the Scramjet ecosystem. It provides a fast, modular, and minimal proxy setup with all necessary components included.
 
 ## Features
 
@@ -20,8 +20,8 @@ Shadow Proxy is a lightweight, self-hosted web proxy built on the Scramjet ecosy
 
 ## Hosting
 
-Shadow Proxy can be hosted on Netlify and similar static hosting providers.  
-Only Netlify has been tested so far; other hosting platforms may work but have not been fully tested.
+Zyron Proxy can be hosted on Netlify and similar static hosting providers.  
+Only Netlify has been fully tested; other hosting platforms may work but have not been verified.
 
 ### Example Deployment
 
