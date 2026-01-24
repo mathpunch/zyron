@@ -163,7 +163,7 @@
     <iframe src="" frameborder="0" id="frame"></iframe>
     <script>
         const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js")
-        connection.setTransport("/sail/libcurl/index.mjs", [{ websocket: "wss://ixlmathenglish.wikidelia.net/" }])
+        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://ixlmathenglish.wikidelia.net/" }])
         const frame = document.getElementById("frame")
         const bar = document.getElementById("bar")
         const { ScramjetController } = $scramjetLoadController()
