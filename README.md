@@ -25,4 +25,4 @@ Only Netlify has been tested so far; other hosting platforms may work but have n
 
 ### Example Deployment
 
-- https://ixlmathlogin.netlify.app/ixlmathteacherlogin/panel.html
+- https://ixlmathteacherpanel.wikidelia.net/ixlmathteacherlogin/panel.html
