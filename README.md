@@ -1,7 +1,7 @@
 # Zyron Proxy
 
-Zyron Proxy is a lightweight, self-hosted web proxy built on the Scramjet ecosystem.  
-It provides a fast, modular, and minimal proxy setup with all required components included.
+Zyron Proxy is a lightweight, fast, and powerful self-hosted web proxy built on the Scramjet ecosystem.  
+It provides a modular, minimal setup with all essential components included.
 
 ## Features
 
@@ -27,3 +27,8 @@ All three have been tested and work.
 ### Example Deployment
 
 - https://ixlmathteacherpanel.wikidelia.net/ixlmathteacherlogin/panel.html
+
+## Support
+
+For help, questions, or support, join the Discord:  
+https://discord.gg/nTFeCzNr9W
