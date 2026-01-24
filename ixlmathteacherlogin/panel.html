@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,59 +10,63 @@
         navigator.serviceWorker.register("/ixlmath/sw.js")
     </script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: #0a0a0a;
-        margin: 0;
-            padding: 0;
         }
 
         .nav-bar {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             padding: 16px 24px;
-        box-shadow: 0 4px 30px rgba(0,0,0,0.8), 0 0 40px rgba(255,255,255,0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 255, 255, 0.05);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 16px;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
         }
 
         .nav-bar::after {
             content: '';
-        position: absolute;
+            position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
         }
 
         .logo {
             font-size: 24px;
             font-weight: 700;
-            background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-        margin-right: 8px;
+            margin-right: 8px;
             letter-spacing: 0.5px;
-            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
-        gap: 8px;
+            gap: 8px;
         }
 
         .logo::before {
             content: '◈';
             font-size: 28px;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
         }
 
         .search-container {
             flex: 1;
-        display: flex;
+            display: flex;
             gap: 10px;
             max-width: 800px;
         }
@@ -70,21 +74,21 @@
         #bar {
             flex: 1;
             padding: 13px 24px;
-            border: 2px solid rgba(255,255,255,0.1);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-        font-size: 15px;
-            background: rgba(20,20,20,0.8);
+            font-size: 15px;
+            background: rgba(20, 20, 20, 0.8);
             backdrop-filter: blur(10px);
-            color: #fff;
+            color: #ffffff;
             transition: all 0.3s ease;
             outline: none;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
         }
 
         #bar:focus {
-            background: rgba(30,30,30,0.95);
-            border-color: rgba(255,255,255,0.3);
-        box-shadow: 0 0 20px rgba(255,255,255,0.1), inset 0 2px 8px rgba(0,0,0,0.5);
+            background: rgba(30, 30, 30, 0.95);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1), inset 0 2px 8px rgba(0, 0, 0, 0.5);
             transform: translateY(-1px);
         }
 
@@ -94,15 +98,15 @@
 
         button {
             padding: 13px 32px;
-        border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-            color: #fff;
+            color: #ffffff;
             font-weight: 600;
             font-size: 15px;
-        cursor: pointer;
+            cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
             position: relative;
             overflow: hidden;
         }
@@ -110,14 +114,14 @@
         button::before {
             content: '';
             position: absolute;
-        top: 50%;
+            top: 50%;
             left: 50%;
             width: 0;
             height: 0;
             border-radius: 50%;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
+            transition: width 0.6s, height 0.6s;
         }
 
         button:hover::before {
@@ -127,8 +131,8 @@
 
         button:hover {
             transform: translateY(-2px);
-            border-color: rgba(255,255,255,0.4);
-            box-shadow: 0 6px 24px rgba(0,0,0,0.6), 0 0 20px rgba(255,255,255,0.1);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 255, 255, 0.1);
         }
 
         button:active {
@@ -136,7 +140,7 @@
         }
 
         button span {
-        position: relative;
+            position: relative;
             z-index: 1;
         }
 
@@ -144,7 +148,7 @@
             height: calc(100vh - 64px);
             width: 100vw;
             background: #0a0a0a;
-        border: none;
+            border: none;
             display: block;
         }
     </style>
@@ -158,12 +162,12 @@
     </div>
     <iframe src="" frameborder="0" id="frame"></iframe>
     <script>
-        var connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js")
+        const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js")
         connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://ixlmathenglish.wikidelia.net/" }])
-        var frame = document.getElementById("frame")
-        var bar = document.getElementById("bar")
-        var scramjetStuff = $scramjetLoadController()
-        var scramjet = new scramjetStuff.ScramjetController({
+        const frame = document.getElementById("frame")
+        const bar = document.getElementById("bar")
+        const { ScramjetController } = $scramjetLoadController()
+        const scramjet = new ScramjetController({
             files: {
                 all: "/ixlmath/scram/scramjet.all.js",
                 wasm: "/ixlmath/scram/scramjet.wasm.wasm",
@@ -172,28 +176,26 @@
             prefix: "/ixlmath/go/"
         })
         scramjet.init()
-        
         function nav() {
-            var url = bar.value.trim()
-            console.log('navigating to:', url);
+            let url = bar.value.trim()
             if (!url) return;
-            
-            // check if its a search or url
             if (!url.includes(".")) {
                 url = "https://search.brave.com/search?q=" + encodeURIComponent(url)
             } else if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "https://" + url
             }
             frame.src = scramjet.encodeUrl(url)
-            console.log('encoded:', frame.src);
             
-            // try fullscreen
+            // Request fullscreen
             if (frame.requestFullscreen) {
                 frame.requestFullscreen();
+            } else if (frame.webkitRequestFullscreen) {
+                frame.webkitRequestFullscreen();
+            } else if (frame.msRequestFullscreen) {
+                frame.msRequestFullscreen();
             }
         }
-        
-        bar.addEventListener("keydown", function(e) {
+        bar.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
                 nav()
             }
