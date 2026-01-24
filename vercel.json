@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/ixlmath/sw.js",
+      "dest": "/ixlmath/sw.js",
+      "headers": {
+        "Service-Worker-Allowed": "/",
+        "Content-Type": "application/javascript"
+      }
+    },
+    {
+      "src": "/ixlmath/baremux/(.*)",
+      "dest": "/ixlmath/baremux/$1"
+    },
+    {
+      "src": "/ixlmath/scram/(.*)",
+      "dest": "/ixlmath/scram/$1"
+    },
+    {
+      "src": "/ixlmath/libcurl/(.*)",
+      "dest": "/ixlmath/libcurl/$1"
+    },
+    {
+      "src": "/ixlmath/go/(.*)",
+      "dest": "/ixlmath/go/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/ixlmath/sw.js",
+      "headers": [
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cross-Origin-Embedder-Policy",
+          "value": "require-corp"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin"
+        }
+      ]
+    }
+  ]
+}
