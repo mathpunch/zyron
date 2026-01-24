@@ -27,6 +27,13 @@
     </style>
 </head>
 <body>
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <h2>Join The Discord For More Links</h2>
+            <a href="https://discord.gg/nTFeCzNr9W" target="_blank">https://discord.gg/nTFeCzNr9W</a>
+            <button onclick="closePopup()">Close</button>
+        </div>
+    </div>
     <iframe src="" frameborder="0" id="frame"></iframe>
     <script>
         var connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js")
@@ -43,6 +50,10 @@
         })
         scramjet.init()
         console.log('scramjet ready');
+        
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
         
         // auto load google
         frame.src = scramjet.encodeUrl("https://google.com")
