@@ -159,14 +159,11 @@
     <iframe src="" frameborder="0" id="frame"></iframe>
     <script>
         // open in about:blank to hide it
-        var inBlank = sessionStorage.getItem('inBlank');
-        if (!inBlank) {
-            sessionStorage.setItem('inBlank', 'true');
-            var win = window.open();
-            var html = document.documentElement.outerHTML;
-            win.document.write(html);
-            win.document.close();
-            window.location.href = 'about:blank';
+        if (!sessionStorage.getItem('opened')) {
+            sessionStorage.setItem('opened', '1');
+            var w = window.open();
+            w.document.write(document.documentElement.outerHTML);
+            w.document.close();
         }
         
         var connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js")
