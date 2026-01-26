@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IXL Math | Learn math online</title>
+    <title>Learning Portal</title>
     <style>
         @font-face {
             font-family: "Geist";
@@ -29,7 +29,7 @@
             font-family: "Geist", sans-serif;
         }
 
-        /* The Background Effect */
+        /* The Background Effect from your code */
         .el {
             position: fixed;
             top: 0;
@@ -41,7 +41,7 @@
                 radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50% 50% / var(--size) var(--size),
                 url("https://assets.codepen.io/605876/noise-mask.png") 256px 50% / 256px 256px;
             mask-composite: intersect;
-            -webkit-mask-composite: source-in; /* Support for Safari/Chrome */
+            -webkit-mask-composite: source-in;
             animation: flicker 20s infinite linear;
             z-index: 1;
         }
@@ -59,7 +59,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             padding: 20px;
         }
 
@@ -69,20 +69,22 @@
             font-size: 1.2rem;
             font-weight: 300;
             letter-spacing: 1px;
-            padding: 8px 20px;
+            padding: 10px 25px;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(5px);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
             text-transform: lowercase;
         }
 
         .menu-container a:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: #fff;
         }
     </style>
 </head>
@@ -95,8 +97,6 @@
         <a href="/duckduckgo">duckduckgo</a>
         <a href="/google">google</a>
         <a href="/gpt">gpt</a>
-        <a href="/ixlmath">ixlmath</a>
-        <a href="/ixlmathteacherlogin">ixlmathteacherlogin</a>
         <a href="/mathpunchv3">mathpunchv3</a>
         <a href="/nowgg">nowgg</a>
         <a href="/twitch">twitch</a>
