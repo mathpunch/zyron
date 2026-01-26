@@ -1,68 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>IXL Math | Learn math online</title>
-<meta name="description" content="IXL offers hundreds of grade-level math skills to explore and learn! Students can practice math at their own pace with interactive questions and immediate feedback.">
-<meta name="keywords" content="IXL, math, learning, practice, skills, online math, education">
-<meta property="og:image" content="https://freeappsforme.com/wp-content/uploads/2020/06/ixl-math-logo-1536x1536.jpg">
-<meta property="og:image:width" content="1536">
-<meta property="og:image:height" content="1536">
-<meta property="og:title" content="IXL Math | Learn math online">
-<meta property="og:description" content="IXL offers hundreds of grade-level math skills to explore and learn! Students can practice math at their own pace with interactive questions and immediate feedback.">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://freeappsforme.com/wp-content/uploads/2020/06/ixl-math-logo-1536x1536.jpg">
-<meta name="twitter:title" content="IXL Math | Learn math online">
-<link rel="icon" href="https://freeappsforme.com/wp-content/uploads/2020/06/ixl-math-logo-1536x1536.jpg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IXL Math | Learn math online</title>
+    
+    <meta name="description" content="IXL offers hundreds of grade-level math skills to explore and learn! Students can practice math at their own pace with interactive questions and immediate feedback.">
+    <meta name="keywords" content="IXL, math, learning, practice, skills, online math, education">
+    <meta property="og:image" content="https://freeappsforme.com/wp-content/uploads/2020/06/ixl-math-logo-1536x1536.jpg">
+    <meta property="og:image:width" content="1536">
+    <meta property="og:image:height" content="1536">
+    <meta property="og:title" content="IXL Math | Learn math online">
+    <meta property="og:description" content="IXL offers hundreds of grade-level math skills to explore and learn! Students can practice math at their own pace with interactive questions and immediate feedback.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://freeappsforme.com/wp-content/uploads/2020/06/ixl-math-logo-1536x1536.jpg">
+    <meta name="twitter:title" content="IXL Math | Learn math online">
+    <link rel="icon" href="https://freeappsforme.com/wp-content/uploads/2020/06/ixl-math-logo-1536x1536.jpg">
 
-<style>
-    body, html {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        height: 100%;
-        width: 100%;
-        background: #000;
-        font-family: sans-serif;
-    }
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+            background: #000;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-    #bg-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1; /* Background layer */
-    }
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
 
-    .menu-container {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        text-align: center;
-        z-index: 2; /* Ensures links are on top of the canvas */
-    }
+        .menu-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            z-index: 2;
+        }
 
-    .menu-container a {
-        display: block;
-        text-decoration: none;
-        color: white;
-        margin: 10px 0;
-        font-size: 1.4rem;
-        font-weight: bold;
-        transition: transform 0.2s, color 0.2s;
-        text-shadow: 0px 0px 8px rgba(0,0,0,0.8);
-    }
+        .menu-container a {
+            display: block;
+            text-decoration: none;
+            color: white;
+            margin: 10px 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            opacity: 0.8;
+        }
 
-    .menu-container a:hover {
-        color: #00d4ff;
-        transform: scale(1.1);
-    }
-</style>
+        .menu-container a:hover {
+            color: #ffffff;
+            opacity: 1;
+            transform: scale(1.15);
+            text-shadow: 0 0 20px rgba(255,255,255,0.4);
+        }
+    </style>
 </head>
 <body>
 
@@ -147,21 +152,22 @@
         `;
 
         const canvas = document.getElementById('bg-canvas');
-        const renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio, 2), canvas, alpha: true });
+        const renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio, 2), canvas });
         const gl = renderer.gl;
         const geometry = new Triangle(gl);
 
+        // CONFIGURATION: These values make the background visible
         const program = new Program(gl, {
             vertex,
             fragment,
             uniforms: {
                 uTime: { value: 0 },
                 uResolution: { value: new Vec2() },
-                uHueShift: { value: 200.0 }, // Value adjusted to see color
-                uNoise: { value: 0.05 },
-                uScan: { value: 0.2 },
-                uScanFreq: { value: 5.0 },
-                uWarp: { value: 0.3 }
+                uHueShift: { value: 200 },        // Color shift (0-360)
+                uNoise: { value: 0.04 },          // Grain intensity
+                uScan: { value: 0.15 },           // Scanline intensity
+                uScanFreq: { value: 2.0 },        // Scanline amount
+                uWarp: { value: 0.4 }             // Distortion amount
             }
         });
 
@@ -176,9 +182,10 @@
         window.addEventListener('resize', resize);
         resize();
 
+        const speed = 0.5; // Change this to make it faster or slower
         const start = performance.now();
         function loop() {
-            program.uniforms.uTime.value = (performance.now() - start) / 1000;
+            program.uniforms.uTime.value = ((performance.now() - start) / 1000) * speed;
             renderer.render({ scene: mesh });
             requestAnimationFrame(loop);
         }
