@@ -2,63 +2,93 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IXL Math | Learn math online</title>
-    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body, html { 
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden; 
-            background-color: #000; 
-            font-family: 'Inter', sans-serif;
+        @font-face {
+            font-family: "Geist";
+            src: url("https://assets.codepen.io/605876/GeistVF.ttf") format("truetype");
         }
 
-        /* This is your background */
-        #canvas {
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --size: 20px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            background: hsl(0 0% 6%);
+            overflow: hidden;
+            font-family: "Geist", sans-serif;
+        }
+
+        /* The Background Effect */
+        .el {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            background: conic-gradient(from 180deg at 50% 70%, hsla(0,0%,98%,1) 0deg, #eec32d 72deg, #ec4b4b 144deg, #709ab9 216deg, #4dffbf 288deg, hsla(0,0%,98%,1) 1turn);
+            width: 100vw;
+            height: 100vh;
+            mask:
+                radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50% 50% / var(--size) var(--size),
+                url("https://assets.codepen.io/605876/noise-mask.png") 256px 50% / 256px 256px;
+            mask-composite: intersect;
+            -webkit-mask-composite: source-in; /* Support for Safari/Chrome */
+            animation: flicker 20s infinite linear;
             z-index: 1;
         }
 
-        /* This is your menu */
+        @keyframes flicker {
+            to {
+                mask-position: 50% 50%, 0 50%;
+            }
+        }
+
+        /* The Navigation Menu */
         .menu-container {
             position: relative;
-            z-index: 2;
+            z-index: 10;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            background: transparent;
+            gap: 10px;
+            padding: 20px;
         }
 
         .menu-container a {
             text-decoration: none;
-            color: rgba(255, 255, 255, 0.6);
-            margin: 10px 0;
+            color: white;
             font-size: 1.2rem;
-            font-weight: 500;
+            font-weight: 300;
             letter-spacing: 1px;
+            padding: 8px 20px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
             text-transform: lowercase;
         }
 
         .menu-container a:hover {
-            color: #fff;
-            text-shadow: 0 0 20px rgba(255,255,255,0.8);
-            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
         }
     </style>
 </head>
 <body>
 
-    <canvas id="canvas"></canvas>
+    <div class="el"></div>
 
     <div class="menu-container">
         <a href="/crazygxmes">crazygxmes</a>
@@ -72,60 +102,5 @@
         <a href="/twitch">twitch</a>
     </div>
 
-    <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-
-        let time = 0;
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-
-        window.addEventListener('resize', resize);
-        resize();
-
-        // This creates the "Veil" effect without needing a shader file
-        function draw() {
-            const w = canvas.width;
-            const h = canvas.height;
-            
-            // Create a slight trail effect
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-            ctx.fillRect(0, 0, w, h);
-
-            const imageData = ctx.createImageData(w, h);
-            const data = imageData.data;
-
-            // Simple movement math to simulate the "Dark Veil"
-            for (let x = 0; x < w; x += 4) { // Increment by 4 for performance
-                for (let y = 0; y < h; y += 4) {
-                    
-                    // The "Veil" Math
-                    let val = Math.sin(x / 50 + time) + 
-                              Math.sin(y / 50 + time) + 
-                              Math.sin((x + y) / 50 + time) + 
-                              Math.sin(Math.sqrt(x*x + y*y) / 50 + time);
-                    
-                    val = (val + 4) / 8; // Normalize to 0-1
-
-                    // Apply colors (Dark Purples/Blues)
-                    let r = val * 30;  
-                    let g = val * 10;
-                    let b = val * 80;
-
-                    // Fill a 4x4 block for performance
-                    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-                    ctx.fillRect(x, y, 4, 4);
-                }
-            }
-
-            time += 0.05;
-            requestAnimationFrame(draw);
-        }
-
-        draw();
-    </script>
 </body>
 </html>
