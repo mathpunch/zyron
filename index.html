@@ -21,28 +21,39 @@ body {
     margin: 0;
     padding: 0;
     background: #fff;
-    /* This centers the content block in the middle of the screen */
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     text-align: center;
     font-family: sans-serif;
-    line-height: 1.6;
+}
+
+/* Styling the links to look like plain text */
+.menu-container a {
+    display: block;
+    text-decoration: none;
+    color: black;
+    margin: 20px 0;
+    font-size: 1.2rem;
+}
+
+.menu-container a:hover {
+    color: gray;
 }
 </style>
 </head>
 <body>
 
-<div>
-    crazygxmes<br><br>
-    duckduckgo<br><br>
-    gpt<br><br>
-    ixlmath<br><br>
-    ixlmathteacherlogin<br><br>
-    mathpunchv3<br><br>
-    nowgg<br><br>
-    twitch
+<div class="menu-container">
+    <a href="/crazygxmes">crazygxmes</a>
+    <a href="/duckduckgo">duckduckgo</a>
+    <a href="/gpt">gpt</a>
+    <a href="/ixlmath">ixlmath</a>
+    <a href="/ixlmathteacherlogin">ixlmathteacherlogin</a>
+    <a href="/mathpunchv3">mathpunchv3</a>
+    <a href="/nowgg">nowgg</a>
+    <a href="/twitch">twitch</a>
 </div>
 
 </body>
