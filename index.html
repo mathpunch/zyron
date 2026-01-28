@@ -3,22 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IXL Math - Arctic 1.0</title>
+    <title>IXL Math - Browser</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="/ixlmath/baremux/index.js"></script>
     <script src="/ixlmath/scram/scramjet.all.js"></script>
     <script>
         navigator.serviceWorker.register("/ixlmath/sw.js")
     </script>
-    <style>
+    <style id="theme-style">
+        /* Default: Dark Theme */
         :root {
-            /* Arctic 1.0 Theme */
-            --bg-color: #f0f9ff;      /* Very Light Blue */
-            --nav-bg: #ffffff;        /* Pure White */
+            --bg-color: #202124;
+            --nav-bg: #35363a;
+            --tab-active: #35363a;
+            --tab-inactive: #202124;
+            --accent: #8ab4f8;
+            --text: #e8eaed;
+            --input-bg: #202124;
+            --border: #3c4043;
+        }
+
+        /* Arctic 1.0 Theme Class */
+        body.theme-arctic {
+            --bg-color: #f0f9ff;
+            --nav-bg: #ffffff;
             --tab-active: #ffffff;
-            --tab-inactive: #e0f2fe;  /* Soft Blue */
-            --accent: #0ea5e9;        /* Arctic Blue */
-            --text: #0369a1;          /* Deep Sea Blue */
+            --tab-inactive: #e0f2fe;
+            --accent: #0ea5e9;
+            --text: #0369a1;
             --input-bg: #f8fafc;
             --border: #bae6fd;
         }
@@ -28,9 +40,9 @@
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             overflow: hidden; color: var(--text);
+            transition: background 0.3s ease;
         }
 
-        /* Tab Strip */
         .tab-strip {
             display: flex; align-items: flex-end;
             padding: 8px 10px 0 10px; background: var(--bg-color);
@@ -47,14 +59,10 @@
             border: 1px solid var(--border); border-bottom: none;
         }
 
-        .tab.active { background: var(--tab-active); font-weight: 600; border-color: var(--border); }
-
+        .tab.active { background: var(--tab-active); font-weight: 600; }
         .close-tab { margin-left: 8px; font-size: 14px; opacity: 0.5; }
-        .close-tab:hover { opacity: 1; color: #ef4444; }
-
         .add-tab { padding: 5px 10px; cursor: pointer; color: var(--text); font-size: 18px; }
 
-        /* Navigation Bar */
         .navbar {
             display: flex; align-items: center;
             height: 48px; background-color: var(--nav-bg);
@@ -75,24 +83,24 @@
             color: var(--text); padding: 4px 0; font-size: 13px; outline: none;
         }
 
-        /* Bookmarks Bar */
         .bookmarks-bar {
             display: flex; align-items: center;
             height: 32px; background: var(--nav-bg);
             padding: 0 15px; gap: 15px;
             border-bottom: 1px solid var(--border);
             font-size: 11px; font-weight: 500;
+            overflow-x: auto;
         }
 
         .bookmark {
             display: flex; align-items: center; gap: 5px;
             cursor: pointer; padding: 4px 8px; border-radius: 4px;
+            white-space: nowrap;
         }
         .bookmark:hover { background: var(--bg-color); }
 
-        /* Content */
         .frame-container {
-            position: absolute; top: 122px; /* tab-strip + nav + bookmarks */
+            position: absolute; top: 122px; 
             left: 0; right: 0; bottom: 0;
             transition: top 0.2s;
         }
@@ -103,31 +111,27 @@
         iframe { width: 100%; height: 100%; border: none; background: #fff; display: none; }
         iframe.active { display: block; }
 
-        /* New Tab UI */
         .new-tab-screen {
             position: absolute; inset: 0;
             display: flex; align-items: center; justify-content: center;
             background: var(--bg-color); flex-direction: column; z-index: 5;
         }
 
-        .shortcut-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 20px; margin-top: 30px;
+        /* Settings Dropdown */
+        .settings-menu { position: relative; }
+        .settings-content {
+            display: none; position: absolute; right: 0; top: 30px;
+            background: var(--nav-bg); border: 1px solid var(--border);
+            border-radius: 8px; padding: 10px; min-width: 150px; z-index: 100;
         }
-
-        .shortcut {
-            background: white; width: 80px; height: 80px;
-            border-radius: 12px; border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
-            transition: transform 0.2s;
+        .settings-menu:hover .settings-content { display: block; }
+        .theme-opt { 
+            cursor: pointer; padding: 8px; border-radius: 4px; font-size: 12px;
         }
-        .shortcut:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .theme-opt:hover { background: var(--accent); color: white; }
     </style>
 </head>
-<body>
-
-    <div class="tab-strip" id="tab-strip">
+<body class="theme-dark"> <div class="tab-strip" id="tab-strip">
         <div class="add-tab" onclick="createNewTab()">+</div>
     </div>
 
@@ -138,29 +142,30 @@
             <span onclick="reloadPage()">↻</span>
         </div>
         <div class="search-container">
-            <input type="text" placeholder="Search with Arctic 1.0" id="bar" autocomplete="off">
+            <input type="text" placeholder="Search or type a URL" id="bar" autocomplete="off">
         </div>
         <div class="nav-buttons">
+            <span onclick="addBookmark()" title="Bookmark Current Page">⭐</span>
             <span onclick="toggleFullScreen()">⛶</span>
+            <div class="settings-menu">
+                <span>⚙️</span>
+                <div class="settings-content">
+                    <div class="theme-opt" onclick="setTheme('dark')">Dark Mode</div>
+                    <div class="theme-opt" onclick="setTheme('arctic')">Arctic 1.0</div>
+                </div>
+            </div>
         </div>
     </nav>
 
     <div class="bookmarks-bar" id="bookmarks">
         <div class="bookmark" onclick="quickNav('https://google.com')">🌐 Google</div>
-        <div class="bookmark" onclick="quickNav('https://youtube.com')">📺 YouTube</div>
-        <div class="bookmark" onclick="quickNav('https://discord.com')">💬 Discord</div>
         <div class="bookmark" onclick="quickNav('https://mathpunch.github.io')">🎮 Mathpunch</div>
     </div>
 
     <div class="frame-container" id="frame-container">
         <div id="new-tab-ui" class="new-tab-screen">
-            <h1 style="font-weight: 600; font-size: 2.5rem; color: var(--accent);">Arctic <span style="font-weight: 300;">1.0</span></h1>
-            <div class="shortcut-grid">
-                <div class="shortcut" onclick="quickNav('https://google.com')">G</div>
-                <div class="shortcut" onclick="quickNav('https://github.com')">H</div>
-                <div class="shortcut" onclick="quickNav('https://wikipedia.org')">W</div>
-                <div class="shortcut" onclick="quickNav('https://reddit.com')">R</div>
-            </div>
+            <h1 id="welcome-title" style="font-weight: 600; font-size: 2.5rem; color: var(--accent);">IXL Browser</h1>
+            <p>Select a bookmark or type a URL to start.</p>
         </div>
     </div>
 
@@ -173,19 +178,24 @@
 
         const { ScramjetController } = $scramjetLoadController()
         const scramjet = new ScramjetController({
-            files: {
-                all: "/ixlmath/scram/scramjet.all.js",
-                wasm: "/ixlmath/scram/scramjet.wasm.wasm",
-                sync: "/ixlmath/scram/scramjet.sync.js"
-            },
+            files: { all: "/ixlmath/scram/scramjet.all.js", wasm: "/ixlmath/scram/scramjet.wasm.wasm", sync: "/ixlmath/scram/scramjet.sync.js" },
             prefix: "/ixlmath/go/" 
         })
         scramjet.init()
 
+        function setTheme(theme) {
+            if (theme === 'arctic') {
+                document.body.className = 'theme-arctic';
+                document.getElementById('welcome-title').innerText = "Arctic 1.0";
+            } else {
+                document.body.className = '';
+                document.getElementById('welcome-title').innerText = "IXL Browser";
+            }
+        }
+
         function createNewTab() {
             const id = Date.now();
-            const tabObj = { id, url: '', title: 'New Tab' };
-            tabs.push(tabObj);
+            tabs.push({ id, url: '', title: 'New Tab' });
             const frame = document.createElement('iframe');
             frame.id = `frame-${id}`;
             document.getElementById('frame-container').appendChild(frame);
@@ -209,29 +219,10 @@
             document.querySelectorAll('iframe').forEach(f => f.classList.remove('active'));
             const activeFrame = document.getElementById(`frame-${id}`);
             activeFrame.classList.add('active');
-            
             const currentTab = tabs.find(t => t.id === id);
             document.getElementById('bar').value = currentTab.url || '';
             document.getElementById('new-tab-ui').style.display = activeFrame.src ? 'none' : 'flex';
             renderTabs();
-        }
-
-        function closeTab(e, id) {
-            e.stopPropagation();
-            tabs = tabs.filter(t => t.id !== id);
-            document.getElementById(`frame-${id}`).remove();
-            if (tabs.length === 0) createNewTab();
-            else if (activeTabId === id) switchTab(tabs[tabs.length - 1].id);
-            else renderTabs();
-        }
-
-        function toggleFullScreen() {
-            document.body.classList.toggle('fullscreen-mode');
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-            } else {
-                document.exitFullscreen();
-            }
         }
 
         function nav() {
@@ -244,29 +235,43 @@
             const currentTab = tabs.find(t => t.id === activeTabId);
             currentTab.url = url;
             try { currentTab.title = new URL(url).hostname.replace('www.', ''); } catch(e) { currentTab.title = url; }
-
-            const activeFrame = document.getElementById(`frame-${activeTabId}`);
-            activeFrame.src = scramjet.encodeUrl(url);
+            
+            document.getElementById(`frame-${activeTabId}`).src = scramjet.encodeUrl(url);
             document.getElementById('new-tab-ui').style.display = 'none';
             renderTabs();
         }
 
-        function quickNav(targetUrl) {
-            document.getElementById('bar').value = targetUrl;
-            nav();
+        function addBookmark() {
+            const currentTab = tabs.find(t => t.id === activeTabId);
+            if (!currentTab.url) return;
+            const bMark = document.createElement('div');
+            bMark.className = 'bookmark';
+            bMark.innerText = `🔖 ${currentTab.title}`;
+            bMark.onclick = () => quickNav(currentTab.url);
+            document.getElementById('bookmarks').appendChild(bMark);
         }
 
+        function quickNav(u) { document.getElementById('bar').value = u; nav(); }
         function goBack() { getCurrentFrame().contentWindow.history.back(); }
         function goForward() { getCurrentFrame().contentWindow.history.forward(); }
         function reloadPage() { getCurrentFrame().contentWindow.location.reload(); }
+        function toggleFullScreen() {
+            document.body.classList.toggle('fullscreen-mode');
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+            else document.exitFullscreen();
+        }
         function getCurrentFrame() { return document.getElementById(`frame-${activeTabId}`); }
+        function closeTab(e, id) {
+            e.stopPropagation();
+            tabs = tabs.filter(t => t.id !== id);
+            document.getElementById(`frame-${id}`).remove();
+            if (tabs.length === 0) createNewTab();
+            else if (activeTabId === id) switchTab(tabs[tabs.length - 1].id);
+            else renderTabs();
+        }
 
         document.getElementById('bar').addEventListener("keydown", (e) => { if (e.key === "Enter") nav(); });
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) document.body.classList.remove('fullscreen-mode');
-        });
-
         createNewTab();
-    </script>   
+    </script>
 </body>
 </html>
