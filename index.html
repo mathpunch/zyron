@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IXL Math - Scramjet</title>
+    <title>IXL Math - Browser</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="/ixlmath/baremux/index.js"></script>
     <script src="/ixlmath/scram/scramjet.all.js"></script>
@@ -12,11 +12,13 @@
     </script>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --nav-bg: #1e293b;
-            --accent: #38bdf8;
-            --text: #f8fafc;
-            --input-bg: #334155;
+            --bg-color: #202124; /* Chrome Dark Grey */
+            --nav-bg: #35363a;
+            --tab-active: #35363a;
+            --tab-inactive: #202124;
+            --accent: #8ab4f8;
+            --text: #e8eaed;
+            --input-bg: #202124;
         }
 
         body, html {
@@ -29,41 +31,93 @@
             color: var(--text);
         }
 
+        /* Tab Strip */
+        .tab-strip {
+            display: flex;
+            align-items: flex-end;
+            padding: 8px 10px 0 10px;
+            background: var(--bg-color);
+            gap: 5px;
+            height: 34px;
+        }
+
+        .tab {
+            background: var(--tab-inactive);
+            padding: 6px 15px;
+            border-radius: 8px 8px 0 0;
+            font-size: 12px;
+            min-width: 120px;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid transparent;
+            color: #9aa0a6;
+        }
+
+        .tab.active {
+            background: var(--tab-active);
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .tab:hover:not(.active) {
+            background: #2d2e30;
+        }
+
+        .close-tab {
+            margin-left: 8px;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .close-tab:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .add-tab {
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #9aa0a6;
+            font-size: 18px;
+        }
+
+        /* Navigation Bar */
         .navbar {
             display: flex;
             align-items: center;
-            height: 60px;
+            height: 48px;
             background-color: var(--nav-bg);
-            padding: 0 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            z-index: 10;
-            position: relative;
+            padding: 0 15px;
+            gap: 12px;
         }
 
-        .logo {
-            font-weight: 800;
-            font-size: 1.1rem;
-            margin-right: 25px;
-            letter-spacing: 1px;
-            color: var(--accent);
-            text-transform: uppercase;
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            font-size: 18px;
+            color: #9aa0a6;
         }
+
+        .nav-buttons span { cursor: pointer; }
+        .nav-buttons span:hover { color: white; }
 
         .search-container {
             flex-grow: 1;
             display: flex;
-            max-width: 900px;
-            margin: 0 auto;
             background: var(--input-bg);
-            border-radius: 12px;
-            padding: 5px;
-            border: 1px solid transparent;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .search-container:focus-within {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+            border-radius: 20px;
+            padding: 4px 15px;
+            border: 1px solid #3c4043;
         }
 
         input#bar {
@@ -71,64 +125,60 @@
             background: transparent;
             border: none;
             color: white;
-            padding: 8px 15px;
-            font-size: 14px;
+            padding: 4px 0;
+            font-size: 13px;
             outline: none;
         }
 
-        button#go-btn {
-            background: var(--accent);
-            color: #0f172a;
-            border: none;
-            padding: 0 22px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-
-        button#go-btn:active {
-            transform: scale(0.95);
-        }
-
-        .frame-wrapper {
+        /* Content */
+        .frame-container {
             position: absolute;
-            top: 60px;
+            top: 90px; /* tab-strip + navbar height */
             left: 0;
             right: 0;
             bottom: 0;
-            background: #000;
         }
 
         iframe {
             width: 100%;
             height: 100%;
             border: none;
-            background: #ffffff;
+            background: #fff;
+            display: none; /* Hidden by default, shown when tab is active */
+        }
+
+        iframe.active {
+            display: block;
         }
     </style>
 </head>
 <body>
 
+    <div class="tab-strip" id="tab-strip">
+        <div class="add-tab" onclick="createNewTab()">+</div>
+    </div>
+
     <nav class="navbar">
-        <div class="logo">IXL MATH</div>
+        <div class="nav-buttons">
+            <span onclick="getCurrentFrame().contentWindow.history.back()">←</span>
+            <span onclick="getCurrentFrame().contentWindow.history.forward()">→</span>
+            <span onclick="getCurrentFrame().contentWindow.location.reload()">↻</span>
+        </div>
         <div class="search-container">
-            <input type="text" placeholder="Enter URL or search term..." id="bar" autocomplete="off">
-            <button onclick="nav()" id="go-btn">Go</button>
+            <input type="text" placeholder="Search Google or type a URL" id="bar" autocomplete="off">
         </div>
     </nav>
 
-    <div class="frame-wrapper">
-        <iframe src="about:blank" id="frame"></iframe>
-    </div>
+    <div class="frame-container" id="frame-container">
+        </div>
 
     <script>
-        // Updated connection paths to /ixlmath
+        let tabs = [];
+        let activeTabId = null;
+
+        // Initialize Scramjet
         const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js")
         connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://wisp.rhw.one/" }])
-
-        const frame = document.getElementById("frame")
-        const bar = document.getElementById("bar")
 
         const { ScramjetController } = $scramjetLoadController()
         const scramjet = new ScramjetController({
@@ -141,24 +191,88 @@
         })
         scramjet.init()
 
+        function createNewTab() {
+            const id = Date.now();
+            const tabObj = { id, url: '' };
+            tabs.push(tabObj);
+
+            // Create iframe
+            const frame = document.createElement('iframe');
+            frame.id = `frame-${id}`;
+            document.getElementById('frame-container').appendChild(frame);
+
+            switchTab(id);
+            renderTabs();
+        }
+
+        function renderTabs() {
+            const strip = document.getElementById('tab-strip');
+            const addButton = strip.querySelector('.add-tab');
+            
+            // Clear existing tabs
+            strip.querySelectorAll('.tab').forEach(t => t.remove());
+
+            tabs.forEach(tab => {
+                const tabEl = document.createElement('div');
+                tabEl.className = `tab ${tab.id === activeTabId ? 'active' : ''}`;
+                tabEl.innerHTML = `
+                    <span onclick="switchTab(${tab.id})">New Tab</span>
+                    <span class="close-tab" onclick="closeTab(event, ${tab.id})">×</span>
+                `;
+                strip.insertBefore(tabEl, addButton);
+            });
+        }
+
+        function switchTab(id) {
+            activeTabId = id;
+            document.querySelectorAll('iframe').forEach(f => f.classList.remove('active'));
+            const activeFrame = document.getElementById(`frame-${id}`);
+            if (activeFrame) activeFrame.classList.add('active');
+            
+            const currentTab = tabs.find(t => t.id === id);
+            document.getElementById('bar').value = currentTab.url || '';
+            renderTabs();
+        }
+
+        function closeTab(e, id) {
+            e.stopPropagation();
+            tabs = tabs.filter(t => t.id !== id);
+            document.getElementById(`frame-${id}`).remove();
+            if (activeTabId === id && tabs.length > 0) {
+                switchTab(tabs[tabs.length - 1].id);
+            } else if (tabs.length === 0) {
+                createNewTab();
+            } else {
+                renderTabs();
+            }
+        }
+
+        function getCurrentFrame() {
+            return document.getElementById(`frame-${activeTabId}`);
+        }
+
         function nav() {
-            let url = bar.value.trim()
+            const bar = document.getElementById('bar');
+            let url = bar.value.trim();
             if (!url) return;
 
             if (!url.includes(".")) {
-                url = "https://search.brave.com/search?q=" + encodeURIComponent(url)
+                url = "https://search.brave.com/search?q=" + encodeURIComponent(url);
             } else if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                url = "https://" + url
+                url = "https://" + url;
             }
 
-            frame.src = scramjet.encodeUrl(url)
+            const currentTab = tabs.find(t => t.id === activeTabId);
+            currentTab.url = url;
+            getCurrentFrame().src = scramjet.encodeUrl(url);
         }
 
-        bar.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
-                nav()
-            }
-        })
+        document.getElementById('bar').addEventListener("keydown", (e) => {
+            if (e.key === "Enter") nav();
+        });
+
+        // Start with one tab
+        createNewTab();
     </script>   
 </body>
 </html>
