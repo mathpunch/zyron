@@ -3,157 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>IXL Math | Learn math online</title>
-    <meta name="description" content="IXL offers hundreds of grade-level math skills to explore and learn! Students can practice math at their own pace with interactive questions and immediate feedback.">
-    <meta name="keywords" content="IXL, math, learning, practice, skills, online math, education">
-    
-    <meta property="og:title" content="IXL Math | Learn math online">
-    <meta property="og:description" content="IXL offers hundreds of grade-level math skills to explore and learn! Students can practice math at their own pace with interactive questions and immediate feedback.">
-    <meta property="og:image" content="https://freeappsforme.com/wp-content/uploads/2020/06/ixl-math-logo-1536x1536.jpg">
-    <meta property="og:image:width" content="1536">
-    <meta property="og:image:height" content="1536">
-    <meta property="og:type" content="website">
-    
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="IXL Math | Learn math online">
-    <meta name="twitter:description" content="IXL offers hundreds of grade-level math skills to explore and learn!">
-    <meta name="twitter:image" content="https://freeappsforme.com/wp-content/uploads/2020/06/ixl-math-logo-1536x1536.jpg">
-    
-    <link rel="icon" href="https://freeappsforme.com/wp-content/uploads/2020/06/ixl-math-logo-1536x1536.jpg">
-
-    <style>
-        @font-face {
-            font-family: "Geist";
-            src: url("https://assets.codepen.io/605876/GeistVF.ttf") format("truetype");
-        }
-
-        body, html {
-            margin: 0; padding: 0;
-            height: 100%; width: 100%;
-            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-            overflow: hidden;
-            font-family: "Geist", sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* load screen logic */
-        #loading_gate {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: #090a0f;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            transition: all 0.6s ease-in-out;
-        }
-
-        .spin_obj {
-            width: 4rem; height: 4rem;
-            border-radius: 50%;
-            border: 8px solid #fff;
-            border-right-color: transparent;
-            animation: rot_loop .7s infinite linear;
-        }
-
-        @keyframes rot_loop {
-            to { transform: rotate(360deg); }
-        }
-
-        .h-hidden {
-            opacity: 0 !important;
-            visibility: hidden;
-        }
-
-        /* bg layers */
-        .bg_wrap {
-            position: fixed;
-            top: 0; left: 0;
-            height: 100%; width: 100%;
-            z-index: 1;
-        }
-
-        #s1, #s2, #s3 { background: transparent; position: absolute; top: 0; left: 0; }
-        #s1 { width: 1px; height: 1px; box-shadow: 412px 720px #fff, 1200px 1100px #fff, 90px 1500px #fff, 1300px 500px #fff, 800px 200px #fff, 1600px 900px #fff; animation: move1 60s linear infinite; }
-        #s2 { width: 2px; height: 2px; box-shadow: 300px 500px #fff, 900px 100px #fff, 1400px 1600px #fff; animation: move1 110s linear infinite; }
-        #s3 { width: 3px; height: 3px; box-shadow: 100px 800px #fff, 1100px 400px #fff; animation: move1 180s linear infinite; }
-
-        @keyframes move1 {
-            from { transform: translateY(0); }
-            to { transform: translateY(-2000px); }
-        }
-
-        /* menu section */
-        .nav_center {
-            position: relative;
-            z-index: 20;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            gap: 15px;
-        }
-
-        h1.title_text {
-            color: #ffffff;
-            font-size: 55px;
-            font-weight: 200;
-            margin: 0 0 30px 0;
-        }
-
-        .btn_link {
-            text-decoration: none;
-            color: #fff;
-            font-size: 18px;
-            padding: 14px 0;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.15);
-            transition: 0.3s;
-            width: 260px;
-            text-align: center;
-        }
-
-        .btn_link:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.4);
-            transform: scale(1.02);
-        }
-    </style>
+    <title>Zyron</title>
+    <script src="/ixlmath/baremux/index.js"></script>
+    <script src="/ixlmath/scram/scramjet.all.js"></script>
+    <script>
+        navigator.serviceWorker.register("/ixlmath/sw.js")
+    </script>
 </head>
 <body>
+    <style>
+        iframe {
+            height: 95vh;
+            width: 100vw;
+            background: #cfcfcf;
+            position: absolute;
+            left:0;
+            bottom: 0;
+        }
+    </style>
 
-    <div id="loading_gate">
-        <div class="spin_obj"></div>
-    </div>
-
-    <div class="bg_wrap">
-        <div id="s1"></div>
-        <div id="s2"></div>
-        <div id="s3"></div>
-    </div>
-
-    <div class="nav_center">
-        <h1 class="title_text">Zyron</h1>
-        <a href="/crazygxmes" class="btn_link">Crazy Gxmes</a>
-        <a href="/gpt" class="btn_link">GPT</a>
-        <a href="/mathpunchv3" class="btn_link">mathpunch V3</a>
-        <a href="/nowgg" class="btn_link">nowgg</a>
-        <a href="/twitch" class="btn_link">Twitch</a>
-        <a href="/zyronportal" class="btn_link">Zyron Portal</a>
-    </div>
+    <input type="text" placeholder="url" id="bar"><button onclick="nav()">Go</button><br>
+    <iframe src="" frameborder="0" id="frame"></iframe>
 
     <script>
-        // kill the loader when page is ready
-        window.addEventListener("load", () => {
-            console.log("assets loaded.");
-            document.getElementById("loading_gate").classList.add("h-hidden");
-        });
-    </script>
+        const connection = new BareMux.BareMuxConnection("/sail/baremux/worker.js") // you could always use epoxy, but libcurl is better imo
+        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://ixlmathlogin.ixl.best/" }]) // use some other wisp here
 
+        const frame = document.getElementById("frame")
+        const bar = document.getElementById("bar")
+
+        const { ScramjetController } = $scramjetLoadController()
+        const scramjet = new ScramjetController({
+            files: {
+                all: "/ixlmath/scram/scramjet.all.js",
+                wasm: "/ixlmath/scram/scramjet.wasm.wasm",
+                sync: "/ixlmath/scram/scramjet.sync.js"
+            },
+            prefix: "/ixlmath/go/" // feel free to change this later
+        })
+        scramjet.init()
+
+        function nav() {
+            let url = bar.value.trim()
+            if (!url) return;
+
+            if (!url.includes(".")) {
+                url = "https://search.brave.com/search?q=" + encodeURIComponent(url)
+            } else if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "https://" + url
+            }
+
+            frame.src = scramjet.encodeUrl(url)
+        }
+
+        bar.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                nav()
+            }
+        })
+    </script>  
+    
 </body>
 </html>
