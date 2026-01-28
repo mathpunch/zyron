@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IXL Math</title>
-    <script src="/ixlmath/baremux/index.js"></script>
-    <script src="/ixlmath/scram/scramjet.all.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -30,37 +28,81 @@
             text-align: center;
             max-width: 80%;
         }
+        #error {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff6b6b;
+            font-size: 16px;
+            text-align: center;
+            max-width: 80%;
+        }
     </style>
 </head>
 <body>
+    <noscript>
+        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center;">
+            JavaScript is disabled. This site requires JavaScript to work.
+        </div>
+    </noscript>
+    
     <div id="loader">Loading...</div>
+    <div id="error"></div>
     <iframe src="" frameborder="0" id="frame" style="display:none;"></iframe>
+    
+    <script>
+        // show we got this far
+        document.getElementById('loader').textContent = 'Scripts loaded...';
+    </script>
+    
+    <script src="/ixlmath/baremux/index.js" onerror="document.getElementById('error').style.display='block';document.getElementById('error').textContent='Failed to load BareMux';document.getElementById('loader').style.display='none';"></script>
+    <script src="/ixlmath/scram/scramjet.all.js" onerror="document.getElementById('error').style.display='block';document.getElementById('error').textContent='Failed to load Scramjet';document.getElementById('loader').style.display='none';"></script>
+    
     <script>
         // Made By Arctic 1.0
         
         let frm = document.getElementById("frame");
         let ld = document.getElementById("loader");
+        let err = document.getElementById("error");
+        
+        // check if dependencies loaded
+        if(typeof BareMux === 'undefined') {
+            err.style.display = 'block';
+            err.textContent = 'BareMux failed to load - check file paths';
+            ld.style.display = 'none';
+            throw new Error('BareMux not loaded');
+        }
+        
+        if(typeof $scramjetLoadController === 'undefined') {
+            err.style.display = 'block';
+            err.textContent = 'Scramjet failed to load - check file paths';
+            ld.style.display = 'none';
+            throw new Error('Scramjet not loaded');
+        }
         
         async function setup() {
             try {
-                ld.textContent = 'Registering service worker...';
-                await navigator.serviceWorker.register("/ixlmath/sw.js");
+                // check service worker support
+                if(!('serviceWorker' in navigator)) {
+                    throw new Error('Service workers not supported on this device');
+                }
                 
-                ld.textContent = 'Waiting for service worker...';
-                await navigator.serviceWorker.ready;
-                await new Promise(resolve => setTimeout(resolve, 500));
+                ld.textContent = 'Starting...';
                 
-                ld.textContent = 'Setting up BareMux...';
+                let reg = await navigator.serviceWorker.register("/ixlmath/sw.js");
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                ld.textContent = 'Connecting...';
                 let conn = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
                 
-                await Promise.race([
-                    conn.setTransport("/ixlmath/libcurl/index.mjs", [{ 
-                        websocket: "wss://ixlmathenglish.wikidelia.net/" 
-                    }]),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('BareMux timeout')), 5000))
-                ]);
+                await conn.setTransport("/ixlmath/libcurl/index.mjs", [{ 
+                    websocket: "wss://ixlmathenglish.wikidelia.net/" 
+                }]);
                 
-                ld.textContent = 'Loading Scramjet...';
+                ld.textContent = 'Almost ready...';
                 let ctrl = $scramjetLoadController();
                 let scram = new ctrl.ScramjetController({
                     files: {
@@ -80,10 +122,21 @@
                 frm.style.display = 'block';
                 
             } catch(e) {
-                console.error('Full error:', e);
-                ld.innerHTML = `<strong>Error:</strong> ${e.message}<br><br>Check console (F12) for details<br><br>Possible issues:<br>- Service workers blocked<br>- Network restrictions<br>- Missing files`;
+                console.error('Error:', e);
+                err.style.display = 'block';
+                err.innerHTML = `<strong>Error:</strong> ${e.message}<br><br>This device may have restrictions that prevent the proxy from working.`;
+                ld.style.display = 'none';
             }
         }
+        
+        // set timeout to show error if nothing happens
+        setTimeout(() => {
+            if(ld.style.display !== 'none' && frm.style.display === 'none') {
+                err.style.display = 'block';
+                err.textContent = 'Taking too long to load - possible network restrictions';
+                ld.style.display = 'none';
+            }
+        }, 10000);
         
         if(document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', setup);
