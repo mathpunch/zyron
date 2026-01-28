@@ -78,31 +78,15 @@
             color: white; padding: 4px 0; font-size: 13px; outline: none;
         }
 
-        /* Bookmarks Bar */
-        .bookmarks-bar {
-            display: flex; align-items: center;
-            height: 32px; background: var(--nav-bg);
-            padding: 0 15px; gap: 15px;
-            border-bottom: 1px solid var(--border);
-            font-size: 11px; font-weight: 500;
-        }
-
-        .bookmark {
-            display: flex; align-items: center; gap: 5px;
-            cursor: pointer; padding: 4px 8px; border-radius: 4px;
-            color: #9aa0a6;
-        }
-        .bookmark:hover { background: rgba(255,255,255,0.05); color: white; }
-
         /* Content Area */
         .frame-container {
-            position: absolute; top: 122px; /* tab-strip + nav + bookmarks */
+            position: absolute; top: 90px; /* Reset to 90px since bookmarks bar is gone */
             left: 0; right: 0; bottom: 0;
             transition: top 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body.fullscreen-mode .frame-container { top: 0; }
-        body.fullscreen-mode .navbar, body.fullscreen-mode .tab-strip, body.fullscreen-mode .bookmarks-bar { display: none; }
+        body.fullscreen-mode .navbar, body.fullscreen-mode .tab-strip { display: none; }
 
         iframe { width: 100%; height: 100%; border: none; background: #fff; display: none; }
         iframe.active { display: block; }
@@ -129,23 +113,17 @@
             <span onclick="reloadPage()">↻</span>
         </div>
         <div class="search-container">
-            <input type="text" placeholder="Search Google or type a URL" id="bar" autocomplete="off">
+            <input type="text" placeholder="Search or type a URL" id="bar" autocomplete="off">
         </div>
         <div class="nav-buttons">
-            <span onclick="addBookmark()" title="Bookmark current page">⭐</span>
             <span onclick="toggleFullScreen()" title="Fullscreen">⛶</span>
         </div>
     </nav>
 
-    <div class="bookmarks-bar" id="bookmarks">
-        <div class="bookmark" onclick="quickNav('https://google.com')">🌐 Google</div>
-        <div class="bookmark" onclick="quickNav('https://mathpunch.github.io')">🎮 Mathpunch</div>
-    </div>
-
     <div class="frame-container" id="frame-container">
         <div id="new-tab-ui" class="new-tab-screen">
             <h1 style="font-weight: 500; margin-bottom: 10px;">IXL Browser</h1>
-            <p style="color: #9aa0a6; font-size: 14px;">Dark Mode Active</p>
+            <p style="color: #9aa0a6; font-size: 14px;">Private Dark Session</p>
         </div>
     </div>
 
@@ -221,17 +199,6 @@
             renderTabs();
         }
 
-        function addBookmark() {
-            const currentTab = tabs.find(t => t.id === activeTabId);
-            if (!currentTab.url) return;
-            const bMark = document.createElement('div');
-            bMark.className = 'bookmark';
-            bMark.innerText = `🔖 ${currentTab.title}`;
-            bMark.onclick = () => quickNav(currentTab.url);
-            document.getElementById('bookmarks').appendChild(bMark);
-        }
-
-        function quickNav(u) { document.getElementById('bar').value = u; nav(); }
         function goBack() { getCurrentFrame().contentWindow.history.back(); }
         function goForward() { getCurrentFrame().contentWindow.history.forward(); }
         function reloadPage() { getCurrentFrame().contentWindow.location.reload(); }
