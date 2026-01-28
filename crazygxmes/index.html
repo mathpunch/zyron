@@ -39,23 +39,23 @@
         let frm = document.getElementById("frame");
         let ld = document.getElementById("loader");
         
-        function setup() {
-            navigator.serviceWorker.register("/ixlmath/sw.js").then((reg) => {
-                // force update if stuck
-                if(reg.installing) {
-                    return new Promise((resolve) => {
-                        reg.installing.addEventListener('statechange', function() {
-                            if(this.state === 'activated') resolve();
-                        });
-                    });
-                }
-                return Promise.resolve();
-            }).then(() => {
+        async function setup() {
+            try {
+                await navigator.serviceWorker.register("/ixlmath/sw.js");
+                
+                // wait a bit for sw to be ready
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
                 let conn = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
-                return conn.setTransport("/ixlmath/libcurl/index.mjs", [{ 
-                    websocket: "wss://ixlmathenglish.wikidelia.net/" 
-                }]);
-            }).then(() => {
+                
+                // longer timeout for baremux
+                await Promise.race([
+                    conn.setTransport("/ixlmath/libcurl/index.mjs", [{ 
+                        websocket: "wss://ixlmathenglish.wikidelia.net/" 
+                    }]),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+                ]);
+                
                 let ctrl = $scramjetLoadController();
                 let scram = new ctrl.ScramjetController({
                     files: {
@@ -66,16 +66,18 @@
                     prefix: "/ixlmath/go/"
                 });
                 
-                return scram.init().then(() => scram);
-            }).then((scram) => {
+                await scram.init();
+                
                 alert("Join The Discord For More Links https://discord.gg/nTFeCzNr9W");
                 
                 frm.src = scram.encodeUrl("https://crazygames.com");
                 ld.style.display = 'none';
                 frm.style.display = 'block';
-            }).catch((e) => {
-                ld.textContent = 'error: ' + e.message;
-            });
+                
+            } catch(e) {
+                console.error('setup error:', e);
+                ld.textContent = 'error loading - check console';
+            }
         }
         
         if(document.readyState === 'loading') {
