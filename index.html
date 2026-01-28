@@ -10,8 +10,7 @@
     <script>
         navigator.serviceWorker.register("/ixlmath/sw.js")
     </script>
-    <style id="theme-style">
-        /* Default: Dark Theme */
+    <style>
         :root {
             --bg-color: #202124;
             --nav-bg: #35363a;
@@ -23,26 +22,14 @@
             --border: #3c4043;
         }
 
-        /* Arctic 1.0 Theme Class */
-        body.theme-arctic {
-            --bg-color: #f0f9ff;
-            --nav-bg: #ffffff;
-            --tab-active: #ffffff;
-            --tab-inactive: #e0f2fe;
-            --accent: #0ea5e9;
-            --text: #0369a1;
-            --input-bg: #f8fafc;
-            --border: #bae6fd;
-        }
-
         body, html {
             margin: 0; padding: 0; height: 100%;
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             overflow: hidden; color: var(--text);
-            transition: background 0.3s ease;
         }
 
+        /* Tab Strip */
         .tab-strip {
             display: flex; align-items: flex-end;
             padding: 8px 10px 0 10px; background: var(--bg-color);
@@ -55,54 +42,63 @@
             min-width: 120px; max-width: 200px;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             cursor: pointer; display: flex; align-items: center;
-            justify-content: space-between; color: var(--text);
-            border: 1px solid var(--border); border-bottom: none;
+            justify-content: space-between; color: #9aa0a6;
+            border: 1px solid transparent;
         }
 
-        .tab.active { background: var(--tab-active); font-weight: 600; }
-        .close-tab { margin-left: 8px; font-size: 14px; opacity: 0.5; }
-        .add-tab { padding: 5px 10px; cursor: pointer; color: var(--text); font-size: 18px; }
+        .tab.active { background: var(--tab-active); color: var(--text); font-weight: 500; }
+        .tab:hover:not(.active) { background: #2d2e30; }
 
+        .close-tab { margin-left: 8px; font-size: 14px; opacity: 0.6; }
+        .close-tab:hover { color: #ff605c; opacity: 1; }
+
+        .add-tab { padding: 5px 12px; cursor: pointer; color: #9aa0a6; font-size: 18px; }
+        .add-tab:hover { color: white; }
+
+        /* Navigation Bar */
         .navbar {
             display: flex; align-items: center;
             height: 48px; background-color: var(--nav-bg);
-            padding: 0 15px; gap: 12px; border-bottom: 1px solid var(--border);
+            padding: 0 15px; gap: 12px;
         }
 
-        .nav-buttons { display: flex; gap: 15px; font-size: 18px; color: var(--accent); }
-        .nav-buttons span { cursor: pointer; user-select: none; }
+        .nav-buttons { display: flex; gap: 18px; font-size: 18px; color: #9aa0a6; }
+        .nav-buttons span { cursor: pointer; user-select: none; transition: color 0.2s; }
+        .nav-buttons span:hover { color: white; }
 
         .search-container {
             flex-grow: 1; display: flex;
             background: var(--input-bg); border-radius: 20px;
-            padding: 4px 15px; border: 1px solid var(--border);
+            padding: 4px 18px; border: 1px solid var(--border);
         }
+        .search-container:focus-within { border-color: var(--accent); }
 
         input#bar {
             flex-grow: 1; background: transparent; border: none;
-            color: var(--text); padding: 4px 0; font-size: 13px; outline: none;
+            color: white; padding: 4px 0; font-size: 13px; outline: none;
         }
 
+        /* Bookmarks Bar */
         .bookmarks-bar {
             display: flex; align-items: center;
             height: 32px; background: var(--nav-bg);
             padding: 0 15px; gap: 15px;
             border-bottom: 1px solid var(--border);
             font-size: 11px; font-weight: 500;
-            overflow-x: auto;
         }
 
         .bookmark {
             display: flex; align-items: center; gap: 5px;
             cursor: pointer; padding: 4px 8px; border-radius: 4px;
-            white-space: nowrap;
+            color: #9aa0a6;
         }
-        .bookmark:hover { background: var(--bg-color); }
+        .bookmark:hover { background: rgba(255,255,255,0.05); color: white; }
 
+        /* Content Area */
         .frame-container {
-            position: absolute; top: 122px; 
+            position: absolute; top: 122px; /* tab-strip + nav + bookmarks */
             left: 0; right: 0; bottom: 0;
-            transition: top 0.2s;
+            transition: top 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body.fullscreen-mode .frame-container { top: 0; }
@@ -111,27 +107,18 @@
         iframe { width: 100%; height: 100%; border: none; background: #fff; display: none; }
         iframe.active { display: block; }
 
+        /* New Tab Screen */
         .new-tab-screen {
             position: absolute; inset: 0;
             display: flex; align-items: center; justify-content: center;
-            background: var(--bg-color); flex-direction: column; z-index: 5;
+            background: var(--bg-color); color: #fff;
+            flex-direction: column; z-index: 5;
         }
-
-        /* Settings Dropdown */
-        .settings-menu { position: relative; }
-        .settings-content {
-            display: none; position: absolute; right: 0; top: 30px;
-            background: var(--nav-bg); border: 1px solid var(--border);
-            border-radius: 8px; padding: 10px; min-width: 150px; z-index: 100;
-        }
-        .settings-menu:hover .settings-content { display: block; }
-        .theme-opt { 
-            cursor: pointer; padding: 8px; border-radius: 4px; font-size: 12px;
-        }
-        .theme-opt:hover { background: var(--accent); color: white; }
     </style>
 </head>
-<body class="theme-dark"> <div class="tab-strip" id="tab-strip">
+<body>
+
+    <div class="tab-strip" id="tab-strip">
         <div class="add-tab" onclick="createNewTab()">+</div>
     </div>
 
@@ -142,18 +129,11 @@
             <span onclick="reloadPage()">↻</span>
         </div>
         <div class="search-container">
-            <input type="text" placeholder="Search or type a URL" id="bar" autocomplete="off">
+            <input type="text" placeholder="Search Google or type a URL" id="bar" autocomplete="off">
         </div>
         <div class="nav-buttons">
-            <span onclick="addBookmark()" title="Bookmark Current Page">⭐</span>
-            <span onclick="toggleFullScreen()">⛶</span>
-            <div class="settings-menu">
-                <span>⚙️</span>
-                <div class="settings-content">
-                    <div class="theme-opt" onclick="setTheme('dark')">Dark Mode</div>
-                    <div class="theme-opt" onclick="setTheme('arctic')">Arctic 1.0</div>
-                </div>
-            </div>
+            <span onclick="addBookmark()" title="Bookmark current page">⭐</span>
+            <span onclick="toggleFullScreen()" title="Fullscreen">⛶</span>
         </div>
     </nav>
 
@@ -164,8 +144,8 @@
 
     <div class="frame-container" id="frame-container">
         <div id="new-tab-ui" class="new-tab-screen">
-            <h1 id="welcome-title" style="font-weight: 600; font-size: 2.5rem; color: var(--accent);">IXL Browser</h1>
-            <p>Select a bookmark or type a URL to start.</p>
+            <h1 style="font-weight: 500; margin-bottom: 10px;">IXL Browser</h1>
+            <p style="color: #9aa0a6; font-size: 14px;">Dark Mode Active</p>
         </div>
     </div>
 
@@ -173,25 +153,15 @@
         let tabs = [];
         let activeTabId = null;
 
-        const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js")
-        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://wisp.rhw.one/" }])
+        const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
+        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://wisp.rhw.one/" }]);
 
-        const { ScramjetController } = $scramjetLoadController()
+        const { ScramjetController } = $scramjetLoadController();
         const scramjet = new ScramjetController({
             files: { all: "/ixlmath/scram/scramjet.all.js", wasm: "/ixlmath/scram/scramjet.wasm.wasm", sync: "/ixlmath/scram/scramjet.sync.js" },
             prefix: "/ixlmath/go/" 
-        })
-        scramjet.init()
-
-        function setTheme(theme) {
-            if (theme === 'arctic') {
-                document.body.className = 'theme-arctic';
-                document.getElementById('welcome-title').innerText = "Arctic 1.0";
-            } else {
-                document.body.className = '';
-                document.getElementById('welcome-title').innerText = "IXL Browser";
-            }
-        }
+        });
+        scramjet.init();
 
         function createNewTab() {
             const id = Date.now();
@@ -202,6 +172,18 @@
             switchTab(id);
         }
 
+        function switchTab(id) {
+            activeTabId = id;
+            document.querySelectorAll('iframe').forEach(f => f.classList.remove('active'));
+            const activeFrame = document.getElementById(`frame-${id}`);
+            if (activeFrame) activeFrame.classList.add('active');
+            
+            const currentTab = tabs.find(t => t.id === id);
+            document.getElementById('bar').value = currentTab.url || '';
+            document.getElementById('new-tab-ui').style.display = activeFrame.src ? 'none' : 'flex';
+            renderTabs();
+        }
+
         function renderTabs() {
             const strip = document.getElementById('tab-strip');
             const addButton = strip.querySelector('.add-tab');
@@ -209,20 +191,18 @@
             tabs.forEach(tab => {
                 const tabEl = document.createElement('div');
                 tabEl.className = `tab ${tab.id === activeTabId ? 'active' : ''}`;
-                tabEl.innerHTML = `<span onclick="switchTab(${tab.id})">${tab.title}</span><span class="close-tab" onclick="closeTab(event, ${tab.id})">×</span>`;
+                tabEl.innerHTML = `<span onclick="switchTab(${tab.id})" style="flex-grow:1; overflow:hidden;">${tab.title}</span><span class="close-tab" onclick="closeTab(event, ${tab.id})">×</span>`;
                 strip.insertBefore(tabEl, addButton);
             });
         }
 
-        function switchTab(id) {
-            activeTabId = id;
-            document.querySelectorAll('iframe').forEach(f => f.classList.remove('active'));
-            const activeFrame = document.getElementById(`frame-${id}`);
-            activeFrame.classList.add('active');
-            const currentTab = tabs.find(t => t.id === id);
-            document.getElementById('bar').value = currentTab.url || '';
-            document.getElementById('new-tab-ui').style.display = activeFrame.src ? 'none' : 'flex';
-            renderTabs();
+        function closeTab(e, id) {
+            e.stopPropagation();
+            tabs = tabs.filter(t => t.id !== id);
+            document.getElementById(`frame-${id}`).remove();
+            if (tabs.length === 0) createNewTab();
+            else if (activeTabId === id) switchTab(tabs[tabs.length - 1].id);
+            else renderTabs();
         }
 
         function nav() {
@@ -255,22 +235,19 @@
         function goBack() { getCurrentFrame().contentWindow.history.back(); }
         function goForward() { getCurrentFrame().contentWindow.history.forward(); }
         function reloadPage() { getCurrentFrame().contentWindow.location.reload(); }
+        function getCurrentFrame() { return document.getElementById(`frame-${activeTabId}`); }
+
         function toggleFullScreen() {
             document.body.classList.toggle('fullscreen-mode');
             if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
             else document.exitFullscreen();
         }
-        function getCurrentFrame() { return document.getElementById(`frame-${activeTabId}`); }
-        function closeTab(e, id) {
-            e.stopPropagation();
-            tabs = tabs.filter(t => t.id !== id);
-            document.getElementById(`frame-${id}`).remove();
-            if (tabs.length === 0) createNewTab();
-            else if (activeTabId === id) switchTab(tabs[tabs.length - 1].id);
-            else renderTabs();
-        }
 
         document.getElementById('bar').addEventListener("keydown", (e) => { if (e.key === "Enter") nav(); });
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) document.body.classList.remove('fullscreen-mode');
+        });
+
         createNewTab();
     </script>
 </body>
