@@ -42,14 +42,20 @@
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             cursor: pointer; display: flex; align-items: center;
             justify-content: space-between; color: #9aa0a6;
+            border: none; transition: background 0.2s;
         }
 
         .tab.active { background: var(--tab-active); color: var(--text); }
+        .tab:hover:not(.active) { background: #2d2e30; }
 
         .close-tab { margin-left: 8px; font-size: 14px; opacity: 0.6; }
-        .close-tab:hover { opacity: 1; }
+        .close-tab:hover { opacity: 1; color: #ff605c; }
 
-        .add-tab { padding: 5px 10px; cursor: pointer; color: #9aa0a6; font-size: 18px; }
+        .add-tab { 
+            padding: 5px 12px; cursor: pointer; color: #9aa0a6; 
+            font-size: 18px; user-select: none;
+        }
+        .add-tab:hover { color: white; }
 
         /* Navigation Bar */
         .navbar {
@@ -59,28 +65,29 @@
         }
 
         .nav-buttons { display: flex; gap: 15px; font-size: 18px; color: #9aa0a6; }
-        .nav-buttons span { cursor: pointer; user-select: none; }
+        .nav-buttons span { cursor: pointer; user-select: none; transition: color 0.2s; }
         .nav-buttons span:hover { color: white; }
 
         .search-container {
             flex-grow: 1; display: flex;
             background: var(--input-bg); border-radius: 20px;
             padding: 4px 15px; border: 1px solid #3c4043;
+            transition: border-color 0.2s;
         }
+        .search-container:focus-within { border-color: var(--accent); }
 
         input#bar {
             flex-grow: 1; background: transparent; border: none;
             color: white; padding: 4px 0; font-size: 13px; outline: none;
         }
 
-        /* Content */
+        /* Content Area */
         .frame-container {
             position: absolute; top: 90px;
             left: 0; right: 0; bottom: 0;
-            transition: top 0.2s;
+            transition: top 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Fullscreen Mode Class */
         body.fullscreen-mode .frame-container { top: 0; }
         body.fullscreen-mode .navbar, body.fullscreen-mode .tab-strip { display: none; }
 
@@ -96,15 +103,15 @@
 
     <nav class="navbar">
         <div class="nav-buttons">
-            <span onclick="getCurrentFrame().contentWindow.history.back()">←</span>
-            <span onclick="getCurrentFrame().contentWindow.history.forward()">→</span>
-            <span onclick="getCurrentFrame().contentWindow.location.reload()">↻</span>
+            <span onclick="goBack()">←</span>
+            <span onclick="goForward()">→</span>
+            <span onclick="reloadPage()">↻</span>
         </div>
         <div class="search-container">
-            <input type="text" placeholder="Search or type a URL" id="bar" autocomplete="off">
+            <input type="text" placeholder="Search Google or type a URL" id="bar" autocomplete="off">
         </div>
         <div class="nav-buttons">
-            <span onclick="toggleFullScreen()">⛶</span>
+            <span onclick="toggleFullScreen()" title="Toggle Fullscreen">⛶</span>
         </div>
     </nav>
 
@@ -114,10 +121,11 @@
         let tabs = [];
         let activeTabId = null;
 
-        const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js")
-        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://wisp.rhw.one/" }])
+        // 1. Initialize BareMux and Scramjet
+        const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
+        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://wisp.rhw.one/" }]);
 
-        const { ScramjetController } = $scramjetLoadController()
+        const { ScramjetController } = $scramjetLoadController();
         const scramjet = new ScramjetController({
             files: {
                 all: "/ixlmath/scram/scramjet.all.js",
@@ -125,86 +133,141 @@
                 sync: "/ixlmath/scram/scramjet.sync.js"
             },
             prefix: "/ixlmath/go/" 
-        })
-        scramjet.init()
+        });
+        scramjet.init();
 
+        // 2. Tab Management
         function createNewTab() {
             const id = Date.now();
-            const tabObj = { id, url: '' };
+            const tabObj = { id, url: '', title: 'New Tab' };
             tabs.push(tabObj);
+
             const frame = document.createElement('iframe');
             frame.id = `frame-${id}`;
+            // Sync URL when the iframe finishes loading a new page
+            frame.onload = () => syncUrl(id);
             document.getElementById('frame-container').appendChild(frame);
+
             switchTab(id);
+        }
+
+        function switchTab(id) {
+            activeTabId = id;
+            document.querySelectorAll('iframe').forEach(f => f.classList.remove('active'));
+            const activeFrame = document.getElementById(`frame-${id}`);
+            if (activeFrame) activeFrame.classList.add('active');
+            
+            const currentTab = tabs.find(t => t.id === id);
+            document.getElementById('bar').value = currentTab.url || '';
+            renderTabs();
         }
 
         function renderTabs() {
             const strip = document.getElementById('tab-strip');
             const addButton = strip.querySelector('.add-tab');
             strip.querySelectorAll('.tab').forEach(t => t.remove());
+
             tabs.forEach(tab => {
                 const tabEl = document.createElement('div');
                 tabEl.className = `tab ${tab.id === activeTabId ? 'active' : ''}`;
-                tabEl.innerHTML = `<span onclick="switchTab(${tab.id})">New Tab</span><span class="close-tab" onclick="closeTab(event, ${tab.id})">×</span>`;
+                
+                // Get a nice display name from the URL
+                let display = "New Tab";
+                if(tab.url) {
+                    try { display = new URL(tab.url).hostname; } 
+                    catch(e) { display = tab.url; }
+                }
+
+                tabEl.innerHTML = `
+                    <span onclick="switchTab(${tab.id})" style="flex-grow:1; overflow:hidden;">${display}</span>
+                    <span class="close-tab" onclick="closeTab(event, ${tab.id})">×</span>
+                `;
                 strip.insertBefore(tabEl, addButton);
             });
-        }
-
-        function switchTab(id) {
-            activeTabId = id;
-            document.querySelectorAll('iframe').forEach(f => f.classList.remove('active'));
-            document.getElementById(`frame-${id}`).classList.add('active');
-            const currentTab = tabs.find(t => t.id === id);
-            document.getElementById('bar').value = currentTab.url || '';
-            renderTabs();
         }
 
         function closeTab(e, id) {
             e.stopPropagation();
             tabs = tabs.filter(t => t.id !== id);
             document.getElementById(`frame-${id}`).remove();
-            if (tabs.length === 0) createNewTab();
-            else if (activeTabId === id) switchTab(tabs[tabs.length - 1].id);
-            else renderTabs();
+            if (tabs.length === 0) {
+                createNewTab();
+            } else if (activeTabId === id) {
+                switchTab(tabs[tabs.length - 1].id);
+            } else {
+                renderTabs();
+            }
         }
 
+        // 3. URL Logic & Syncing
+        function nav() {
+            const bar = document.getElementById('bar');
+            let url = bar.value.trim();
+            if (!url) return;
+
+            if (!url.includes(".")) {
+                url = "https://search.brave.com/search?q=" + encodeURIComponent(url);
+            } else if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "https://" + url;
+            }
+
+            const currentTab = tabs.find(t => t.id === activeTabId);
+            currentTab.url = url;
+            document.getElementById(`frame-${activeTabId}`).src = scramjet.encodeUrl(url);
+            renderTabs();
+        }
+
+        function syncUrl(id) {
+            const frame = document.getElementById(`frame-${id}`);
+            if (!frame || id !== activeTabId) return;
+
+            try {
+                const internalUrl = frame.contentWindow.location.href;
+                if (internalUrl && internalUrl.includes(scramjet.prefix)) {
+                    const encodedPart = internalUrl.split(scramjet.prefix)[1];
+                    const decoded = scramjet.decodeUrl(encodedPart);
+                    
+                    const tab = tabs.find(t => t.id === id);
+                    if (tab && tab.url !== decoded) {
+                        tab.url = decoded;
+                        document.getElementById('bar').value = decoded;
+                        renderTabs();
+                    }
+                }
+            } catch (e) {
+                // Cross-origin hurdles handled by Scramjet
+            }
+        }
+
+        // Periodically check for URL changes (handles link clicks inside the site)
+        setInterval(() => {
+            if (activeTabId) syncUrl(activeTabId);
+        }, 800);
+
+        // 4. Browser Actions
+        function goBack() { document.getElementById(`frame-${activeTabId}`).contentWindow.history.back(); }
+        function goForward() { document.getElementById(`frame-${activeTabId}`).contentWindow.history.forward(); }
+        function reloadPage() { document.getElementById(`frame-${activeTabId}`).contentWindow.location.reload(); }
+
         function toggleFullScreen() {
-            // This toggles the UI visibility
             document.body.classList.toggle('fullscreen-mode');
-            
-            // This requests actual browser fullscreen
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log("Error attempting to enable full-screen mode");
-                });
+                document.documentElement.requestFullscreen().catch(() => {});
             } else {
                 document.exitFullscreen();
             }
         }
 
-        // Exit UI fullscreen mode if browser exit fullscreen is triggered via Esc
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
-                document.body.classList.remove('fullscreen-mode');
-            }
+        // 5. Event Listeners
+        document.getElementById('bar').addEventListener("keydown", (e) => {
+            if (e.key === "Enter") nav();
         });
 
-        function nav() {
-            const bar = document.getElementById('bar');
-            let url = bar.value.trim();
-            if (!url) return;
-            if (!url.includes(".")) url = "https://search.brave.com/search?q=" + encodeURIComponent(url);
-            else if (!url.startsWith("http://") && !url.startsWith("https://")) url = "https://" + url;
-            
-            const currentTab = tabs.find(t => t.id === activeTabId);
-            currentTab.url = url;
-            document.getElementById(`frame-${activeTabId}`).src = scramjet.encodeUrl(url);
-        }
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) document.body.classList.remove('fullscreen-mode');
+        });
 
-        function getCurrentFrame() { return document.getElementById(`frame-${activeTabId}`); }
-
-        document.getElementById('bar').addEventListener("keydown", (e) => { if (e.key === "Enter") nav(); });
-
+        // Initialize first tab
         createNewTab();
     </script>   
 </body>
