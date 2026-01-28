@@ -4,84 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IXL Math</title>
+    <script src="/ixlmath/baremux/index.js"></script>
+    <script src="/ixlmath/scram/scramjet.all.js"></script>
+    <script>
+        navigator.serviceWorker.register("/ixlmath/sw.js")
+    </script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: #0a0a0a;
-            margin: 0;
+        margin: 0;
             padding: 0;
         }
         iframe {
             height: 100vh;
             width: 100vw;
-            background: #0a0a0a;
+        background: #0a0a0a;
             border: none;
             display: block;
-        }
-        #loader {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 16px;
-            text-align: center;
-            max-width: 80%;
         }
     </style>
 </head>
 <body>
-    <div id="loader">Loading...</div>
-    <iframe src="" frameborder="0" id="frame" style="display:none;"></iframe>
-    
-    <script src="/ixlmath/scram/scramjet.all.js"></script>
-    
+    <iframe src="" frameborder="0" id="frame"></iframe>
     <script>
         // Made By Arctic 1.0
+        var connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js")
+        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://ixlmathenglish.wikidelia.net/" }])
+        var frame = document.getElementById("frame")
+        var scramjetStuff = $scramjetLoadController()
+        var scramjet = new scramjetStuff.ScramjetController({
+            files: {
+                all: "/ixlmath/scram/scramjet.all.js",
+                wasm: "/ixlmath/scram/scramjet.wasm.wasm",
+                sync: "/ixlmath/scram/scramjet.sync.js"
+            },
+            prefix: "/ixlmath/go/"
+        })
+        scramjet.init()
+        console.log('scramjet ready');
         
-        let frm = document.getElementById("frame");
-        let ld = document.getElementById("loader");
+        // show discord popup
+        alert("Join The Discord For More Links https://discord.gg/nTFeCzNr9W");
         
-        async function setup() {
-            try {
-                ld.textContent = 'Starting...';
-                
-                await navigator.serviceWorker.register("/ixlmath/sw.js");
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                ld.textContent = 'Loading...';
-                let ctrl = $scramjetLoadController();
-                let scram = new ctrl.ScramjetController({
-                    files: {
-                        all: "/ixlmath/scram/scramjet.all.js",
-                        wasm: "/ixlmath/scram/scramjet.wasm.wasm",
-                        sync: "/ixlmath/scram/scramjet.sync.js"
-                    },
-                    prefix: "/ixlmath/go/",
-                    defaultFlags: {
-                        serviceworkers: true
-                    }
-                });
-                
-                await scram.init();
-                
-                alert("Join The Discord For More Links https://discord.gg/nTFeCzNr9W");
-                
-                frm.src = scram.encodeUrl("https://crazygames.com");
-                ld.style.display = 'none';
-                frm.style.display = 'block';
-                
-            } catch(e) {
-                console.error('Error:', e);
-                ld.innerHTML = `<strong>Error:</strong> ${e.message}<br><br>Try refreshing`;
-            }
-        }
-        
-        if(document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', setup);
-        } else {
-            setup();
-        }
+        // i hope this works lol
+        frame.src = scramjet.encodeUrl("https://crazygames.com")
     </script>  
 </body>
 </html>
