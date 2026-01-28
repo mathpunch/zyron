@@ -40,29 +40,22 @@
         let ld = document.getElementById("loader");
         
         function setup() {
-            console.log('setup started');
-            
-            if(!window.BareMux) {
-                ld.textContent = 'baremux failed to load';
-                return;
-            }
-            
-            if(!window.$scramjetLoadController) {
-                ld.textContent = 'scramjet failed to load';
-                return;
-            }
-            
-            navigator.serviceWorker.register("/ixlmath/sw.js").then(() => {
-                console.log('sw registered');
-                return navigator.serviceWorker.ready;
+            navigator.serviceWorker.register("/ixlmath/sw.js").then((reg) => {
+                // force update if stuck
+                if(reg.installing) {
+                    return new Promise((resolve) => {
+                        reg.installing.addEventListener('statechange', function() {
+                            if(this.state === 'activated') resolve();
+                        });
+                    });
+                }
+                return Promise.resolve();
             }).then(() => {
-                console.log('sw ready');
                 let conn = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
                 return conn.setTransport("/ixlmath/libcurl/index.mjs", [{ 
                     websocket: "wss://ixlmathenglish.wikidelia.net/" 
                 }]);
             }).then(() => {
-                console.log('baremux setup done');
                 let ctrl = $scramjetLoadController();
                 let scram = new ctrl.ScramjetController({
                     files: {
@@ -75,14 +68,12 @@
                 
                 return scram.init().then(() => scram);
             }).then((scram) => {
-                console.log('scramjet ready');
                 alert("Join The Discord For More Links https://discord.gg/nTFeCzNr9W");
                 
                 frm.src = scram.encodeUrl("https://crazygames.com");
                 ld.style.display = 'none';
                 frm.style.display = 'block';
             }).catch((e) => {
-                console.error('error:', e);
                 ld.textContent = 'error: ' + e.message;
             });
         }
