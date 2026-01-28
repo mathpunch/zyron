@@ -6,18 +6,9 @@
     
     <title>IXL Math | Learn math online</title>
     <meta name="description" content="IXL offers hundreds of grade-level math skills to explore and learn! Students can practice math at their own pace with interactive questions and immediate feedback.">
-    <meta name="keywords" content="IXL, math, learning, practice, skills, online math, education">
     
     <meta property="og:title" content="IXL Math | Learn math online">
-    <meta property="og:description" content="IXL offers hundreds of grade-level math skills to explore and learn!">
     <meta property="og:image" content="https://freeappsforme.com/wp-content/uploads/2020/06/ixl-math-logo-1536x1536.jpg">
-    <meta property="og:image:width" content="1536">
-    <meta property="og:image:height" content="1536">
-    <meta property="og:type" content="website">
-    
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://freeappsforme.com/wp-content/uploads/2020/06/ixl-math-logo-1536x1536.jpg">
-    
     <link rel="icon" href="https://freeappsforme.com/wp-content/uploads/2020/06/ixl-math-logo-1536x1536.jpg">
 
     <style>
@@ -36,7 +27,7 @@
             font-family: "Geist", sans-serif;
         }
 
-        /* Loading Screen */
+        /* Loading Screen Styles */
         #loading-overlay {
             position: fixed;
             top: 0;
@@ -71,7 +62,7 @@
             visibility: hidden;
         }
 
-        /* Star Background */
+        /* Star Background Layers */
         .container {
             position: fixed;
             top: 0;
@@ -88,36 +79,9 @@
             left: 0;
         }
 
-        #stars {
-            width: 1px;
-            height: 1px;
-            box-shadow: 501px 811px #fff, 1450px 1324px #fff, 1093px 1780px #fff, 1469px 678px #fff, 904px 741px #fff, 1160px 781px #fff, 1841px 1962px #fff, 1630px 1667px #fff, 1788px 676px #fff, 367px 1734px #fff, 1343px 156px #fff, 1283px 1142px #fff, 1062px 378px #fff, 1395px 467px #fff, 1017px 1891px #fff;
-            animation: animStar 50s linear infinite;
-        }
-
-        #stars2 {
-            width: 2px;
-            height: 2px;
-            box-shadow: 200px 400px #fff, 800px 1200px #fff, 1500px 300px #fff, 400px 1800px #fff, 1200px 100px #fff;
-            animation: animStar 100s linear infinite;
-        }
-
-        #stars3 {
-            width: 3px;
-            height: 3px;
-            box-shadow: 300px 900px #fff, 1100px 500px #fff, 1700px 1100px #fff, 100px 1500px #fff;
-            animation: animStar 150s linear infinite;
-        }
-
-        #stars:after, #stars2:after, #stars3:after {
-            content: " ";
-            position: absolute;
-            top: 2000px;
-            width: inherit;
-            height: inherit;
-            background: transparent;
-            box-shadow: inherit;
-        }
+        #stars { width: 1px; height: 1px; box-shadow: 501px 811px #fff, 1450px 1324px #fff, 1093px 1780px #fff, 1469px 678px #fff, 904px 741px #fff, 1160px 781px #fff, 1841px 1962px #fff, 1630px 1667px #fff, 1788px 676px #fff, 367px 1734px #fff, 1343px 156px #fff, 1283px 1142px #fff, 1062px 378px #fff, 1395px 467px #fff, 1017px 1891px #fff; animation: animStar 50s linear infinite; }
+        #stars2 { width: 2px; height: 2px; box-shadow: 200px 400px #fff, 800px 1200px #fff, 1500px 300px #fff, 400px 1800px #fff, 1200px 100px #fff; animation: animStar 100s linear infinite; }
+        #stars3 { width: 3px; height: 3px; box-shadow: 300px 900px #fff, 1100px 500px #fff, 1700px 1100px #fff, 100px 1500px #fff; animation: animStar 150s linear infinite; }
 
         @keyframes animStar {
             from { transform: translateY(0px); }
@@ -186,9 +150,12 @@
         <a href="/mathpunchv3">mathpunch V3</a>
         <a href="/nowgg">nowgg</a>
         <a href="/twitch">Twitch</a>
+        
+        <a href="/zyronportal">Zyron Portal</a>
     </div>
 
     <script>
+        // Script to hide loader after page loads
         window.addEventListener("load", function() {
             const loader = document.getElementById("loading-overlay");
             loader.classList.add("loader-hidden");
