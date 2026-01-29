@@ -2,7 +2,9 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>IXL Math</title>
     <script src="/ixlmath/baremux/index.js"></script>
     <script src="/ixlmath/scram/scramjet.all.js"></script>
@@ -10,23 +12,41 @@
         navigator.serviceWorker.register("/ixlmath/sw.js")
     </script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: #0a0a0a;
             margin: 0;
             padding: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
         iframe {
-            height: 100vh;
-            width: 100vw;
+            height: 100%;
+            width: 100%;
             background: #0a0a0a;
             border: none;
             display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
     </style>
 </head>
 <body>
-    <iframe src="" frameborder="0" id="frame"></iframe>
+    <iframe src="" frameborder="0" id="frame" allowfullscreen></iframe>
     <script>
         // Made By Arctic 1.0
         var connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js")
