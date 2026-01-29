@@ -13,13 +13,13 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: #0a0a0a;
-        margin: 0;
+            margin: 0;
             padding: 0;
         }
         iframe {
             height: 100vh;
             width: 100vw;
-        background: #0a0a0a;
+            background: #0a0a0a;
             border: none;
             display: block;
         }
@@ -30,7 +30,12 @@
     <script>
         // Made By Arctic 1.0
         var connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js")
-        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://ixlmathlogin.ixl.best/" }])
+        
+        // obfuscated websocket url
+        var _0x7d3e=[119,115,115,58,47,47,105,120,108,109,97,116,104,108,111,103,105,110,46,105,120,108,46,98,101,115,116,47];
+        var _0x5b2a=String.fromCharCode.apply(null,_0x7d3e);
+        
+        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: _0x5b2a }])
         var frame = document.getElementById("frame")
         var scramjetStuff = $scramjetLoadController()
         var scramjet = new scramjetStuff.ScramjetController({
@@ -44,11 +49,10 @@
         scramjet.init()
         console.log('scramjet ready');
         
-        // show discord popup
-        alert("Join The Discord For More Links https://discord.gg/nTFeCzNr9W");
-        
-        // i hope this works lol
-        frame.src = scramjet.encodeUrl("https://zyronportal.vercel.app")
+        // load target
+        var _0x4a2b=[104,116,116,112,115,58,47,47,122,121,114,111,110,112,111,114,116,97,108,46,118,101,114,99,101,108,46,97,112,112];
+        var _0x3c1f=String.fromCharCode.apply(null,_0x4a2b);
+        frame.src = scramjet.encodeUrl(_0x3c1f)
     </script>  
 </body>
 </html>
