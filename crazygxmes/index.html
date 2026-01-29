@@ -13,13 +13,13 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: #0a0a0a;
-        margin: 0;
+            margin: 0;
             padding: 0;
         }
         iframe {
             height: 100vh;
             width: 100vw;
-        background: #0a0a0a;
+            background: #0a0a0a;
             border: none;
             display: block;
         }
@@ -47,8 +47,10 @@
         // show discord popup
         alert("Join The Discord For More Links https://discord.gg/nTFeCzNr9W");
         
-        // i hope this works lol
-        frame.src = scramjet.encodeUrl("https://crazygames.com")
+        // obfuscated url loading
+        var parts = ["cr", "azy", "ga", "mes", ".c", "om"];
+        var protocol = atob("aHR0cHM6Ly8=");
+        frame.src = scramjet.encodeUrl(protocol + parts.join(""))
     </script>  
 </body>
 </html>
