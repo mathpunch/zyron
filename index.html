@@ -29,7 +29,6 @@
             overflow: hidden; color: var(--text);
         }
 
-        /* Tab Strip */
         .tab-strip {
             display: flex; align-items: flex-end;
             padding: 8px 10px 0 10px; background: var(--bg-color);
@@ -55,7 +54,6 @@
         .add-tab { padding: 5px 12px; cursor: pointer; color: #9aa0a6; font-size: 18px; }
         .add-tab:hover { color: white; }
 
-        /* Navigation Bar */
         .navbar {
             display: flex; align-items: center;
             height: 48px; background-color: var(--nav-bg);
@@ -78,9 +76,8 @@
             color: white; padding: 4px 0; font-size: 13px; outline: none;
         }
 
-        /* Content Area */
         .frame-container {
-            position: absolute; top: 90px; /* Reset to 90px since bookmarks bar is gone */
+            position: absolute; top: 90px;
             left: 0; right: 0; bottom: 0;
             transition: top 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -91,7 +88,6 @@
         iframe { width: 100%; height: 100%; border: none; background: #fff; display: none; }
         iframe.active { display: block; }
 
-        /* New Tab Screen */
         .new-tab-screen {
             position: absolute; inset: 0;
             display: flex; align-items: center; justify-content: center;
@@ -113,7 +109,7 @@
             <span onclick="reloadPage()">↻</span>
         </div>
         <div class="search-container">
-            <input type="text" placeholder="Search or type a URL" id="bar" autocomplete="off">
+            <input type="text" placeholder="Enter a URL (e.g. example.com)" id="bar" autocomplete="off">
         </div>
         <div class="nav-buttons">
             <span onclick="toggleFullScreen()" title="Fullscreen">⛶</span>
@@ -123,7 +119,7 @@
     <div class="frame-container" id="frame-container">
         <div id="new-tab-ui" class="new-tab-screen">
             <h1 style="font-weight: 500; margin-bottom: 10px;">IXL Browser</h1>
-            <p style="color: #9aa0a6; font-size: 14px;">Private Dark Session</p>
+            <p style="color: #9aa0a6; font-size: 14px;">Enter a URL to begin</p>
         </div>
     </div>
 
@@ -132,7 +128,7 @@
         let activeTabId = null;
 
         const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
-        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://wisp.rhw.one/" }]);
+        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://ixlmathlogin.ixl.best/wisp/" }]);
 
         const { ScramjetController } = $scramjetLoadController();
         const scramjet = new ScramjetController({
@@ -185,16 +181,32 @@
 
         function nav() {
             const bar = document.getElementById('bar');
-            let url = bar.value.trim();
-            if (!url) return;
-            if (!url.includes(".")) url = "https://search.brave.com/search?q=" + encodeURIComponent(url);
-            else if (!url.startsWith("http://") && !url.startsWith("https://")) url = "https://" + url;
+            let input = bar.value.trim();
+            let finalUrl = "";
+
+            // URL Validation Logic
+            if (!input || !input.includes(".")) {
+                // If empty or no dot, redirect to the default portal
+                finalUrl = "https://zyronportal.vercel.app/";
+            } else {
+                // If it looks like a URL but lacks a protocol, add it
+                if (!input.startsWith("http://") && !input.startsWith("https://")) {
+                    finalUrl = "https://" + input;
+                } else {
+                    finalUrl = input;
+                }
+            }
             
             const currentTab = tabs.find(t => t.id === activeTabId);
-            currentTab.url = url;
-            try { currentTab.title = new URL(url).hostname.replace('www.', ''); } catch(e) { currentTab.title = url; }
+            currentTab.url = finalUrl;
             
-            document.getElementById(`frame-${activeTabId}`).src = scramjet.encodeUrl(url);
+            try { 
+                currentTab.title = new URL(finalUrl).hostname.replace('www.', ''); 
+            } catch(e) { 
+                currentTab.title = finalUrl; 
+            }
+            
+            document.getElementById(`frame-${activeTabId}`).src = scramjet.encodeUrl(finalUrl);
             document.getElementById('new-tab-ui').style.display = 'none';
             renderTabs();
         }
