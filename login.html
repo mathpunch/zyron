@@ -3,62 +3,197 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zyron Login</title>
   <meta name="robots" content="noindex">
-  <title>Zyron | Login</title>
   <style>
+    /* basic reset */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #000000; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: Arial, sans-serif; }
-    .container { --form-width: 315px; --aspect-ratio: 1.33; --login-box-color: #272727; --input-color: #3a3a3a; --button-color: #373737; --footer-color: rgba(255, 255, 255, 0.5); display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; background: var(--login-box-color); border-radius: 24px; width: calc(var(--form-width) + 1px); height: calc(var(--form-width) * var(--aspect-ratio) + 1px); z-index: 8; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.2), 0 0 8px rgba(255, 255, 255, 0.1), 0 0 16px rgba(255, 255, 255, 0.08); }
-    .container::before { content: ""; position: absolute; inset: -50px; z-index: -2; background: conic-gradient(from 45deg, transparent 75%, #fff, transparent 100%); animation: spin 4s ease-in-out infinite; }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-    .login-box { background: var(--login-box-color); border-radius: 24px; padding: 28px; width: var(--form-width); height: calc(var(--form-width) * var(--aspect-ratio)); position: absolute; z-index: 10; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); box-shadow: inset 0 40px 60px -8px rgba(255, 255, 255, 0.12), inset 4px 0 12px -6px rgba(255, 255, 255, 0.12), inset 0 0 12px -4px rgba(255, 255, 255, 0.12); }
-    .form { display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 10px; }
-    .logo { width: 65px; height: 65px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2)); box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.2), -8px -8px 16px rgba(255, 255, 255, 0.06); border-radius: 20px; border: 2px solid #fff; display: flex; justify-content: center; align-items: center; position: relative; }
-    .logo::before { content: ""; position: absolute; bottom: 10px; width: 50%; height: 20%; border-top-left-radius: 40px; border-top-right-radius: 40px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px; border: 2.5px solid #fff; }
-    .logo::after { content: ""; position: absolute; top: 10px; width: 30%; height: 30%; border-radius: 50%; border: 2.5px solid #fff; }
-    .header { width: 100%; text-align: center; font-size: 24px; font-weight: bold; padding: 6px; color: white; display: flex; justify-content: center; align-items: center; }
-    .input { width: 100%; padding: 10px; border: none; border-radius: 12px; background: var(--input-color); color: white; outline: none; font-size: 14px; }
-    .input:focus { border: 1px solid #fff; }
-    .button { width: 100%; height: 40px; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; display: grid; place-content: center; gap: 10px; background: var(--button-color); color: white; transition: 0.3s; box-shadow: inset 0px 3px 6px -4px rgba(255, 255, 255, 0.6), inset 0px -3px 6px -2px rgba(0, 0, 0, 0.8); margin-top: 5px; }
-    .button:hover { background: rgba(255, 255, 255, 0.25); box-shadow: inset 0px 3px 6px rgba(255, 255, 255, 0.6), inset 0px -3px 6px rgba(0, 0, 0, 0.8), 0px 0px 8px rgba(255, 255, 255, 0.05); }
-    .footer { width: 100%; text-align: center; color: var(--footer-color); font-size: 11px; line-height: 1.5; margin-top: 10px; }
-    .error-message { color: #ff4444; font-size: 12px; text-align: center; margin-top: 5px; display: none; }
+
+    body {
+      background: #000;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Main wrapper for the glow effect */
+    .auth-container {
+      position: relative;
+      width: 316px;
+      height: 420px;
+      background: #272727;
+      border-radius: 25px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    /* That spinning border thing */
+    .auth-container::before {
+      content: "";
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: conic-gradient(transparent, transparent, transparent, #ffffff);
+      animation: rotateBorder 4s linear infinite;
+    }
+
+    @keyframes rotateBorder {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .inner-form-box {
+      position: absolute;
+      inset: 3px; /* border thickness */
+      background: #272727;
+      border-radius: 22px;
+      z-index: 10;
+      padding: 30px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .inner-form-box h2 {
+      color: #fff;
+      margin-bottom: 25px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* custom logo icon thingy */
+    .browser-logo {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 15px;
+      border: 2px solid #fff;
+      border-radius: 18px;
+      position: relative;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .browser-logo::after {
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 18px;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 15px;
+      background: #3a3a3a;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: #fff;
+      outline: none;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .input-group input:focus {
+      border-color: #555;
+      background: #444;
+    }
+
+    button#submitBtn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 20px;
+      background: #373737;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: inset 0 2px 5px rgba(255,255,255,0.1);
+    }
+
+    button#submitBtn:hover {
+      background: #444;
+    }
+
+    .err-txt {
+      color: #ff5f5f;
+      font-size: 12px;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .notice {
+      margin-top: 20px;
+      font-size: 10px;
+      color: #777;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="login-box">
-      <form class="form" id="loginForm">
-        <div class="logo"></div>
-        <span class="header">Zyron Browser</span>
-        <input type="text" placeholder="Username" class="input" id="username" required autocomplete="off" />
-        <input type="password" placeholder="Password" class="input" id="password" required />
-        <p class="error-message" id="errorMessage">Invalid Credentials</p>
-        <button type="submit" class="button">Sign In</button>
-        <p class="footer">
-          Access is restricted. Contact admin if you cannot log in.
-        </p>
+
+  <div class="auth-container">
+    <div class="inner-form-box">
+      <div class="browser-logo"></div>
+      <h2>Zyron</h2>
+      
+      <form id="mainLoginForm">
+        <div class="input-group">
+          <input type="text" id="userVal" placeholder="Username" required autocomplete="off">
+        </div>
+        <div class="input-group">
+          <input type="password" id="passInput" placeholder="Password" required>
+        </div>
+        
+        <div id="errorBox" class="err-txt">Wrong username/password.</div>
+        
+        <button type="submit" id="submitBtn">Login</button>
       </form>
+
+      <div class="notice">
+        Access is locked to authorized users only. <br>
+        If you forgot credentials, check with site owner.
+      </div>
     </div>
   </div>
 
   <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+    // Handle form submit
+    const loginForm = document.getElementById('mainLoginForm');
+    
+    loginForm.onsubmit = function(event) {
+      event.preventDefault();
       
-      const u = document.getElementById('username').value;
-      const p = document.getElementById('password').value;
-      const err = document.getElementById('errorMessage');
-      
-      // FIXED CREDENTIALS
-      if (u === 'zyron' && p === 'testing') {
+      const userField = document.getElementById('userVal').value;
+      const passField = document.getElementById('passInput').value;
+      const errorLabel = document.getElementById('errorBox');
+
+      // Simple check for access
+      // Note: we are using local check for now
+      if (userField === 'zyron' && passField === 'testing') {
+        console.log('Login success, redirecting...');
         localStorage.setItem('zyronAuth', 'true');
-        window.location.href = 'index.html'; // Points to your browser page
+        location.href = 'index.html'; 
       } else {
-        err.style.display = 'block';
-        setTimeout(() => { err.style.display = 'none'; }, 3000);
+        // show error
+        errorLabel.style.display = 'block';
+        
+        // hide it after a few seconds
+        setTimeout(function() {
+          errorLabel.style.display = 'none';
+        }, 3500);
       }
-    });
+    };
   </script>
 </body>
 </html>
