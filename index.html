@@ -20,6 +20,7 @@
             --text: #e8eaed;
             --input-bg: #202124;
             --border: #3c4043;
+            --hover: #2d2e30;
         }
 
         body, html {
@@ -33,25 +34,61 @@
             display: flex; align-items: flex-end;
             padding: 8px 10px 0 10px; background: var(--bg-color);
             gap: 5px; height: 34px;
+            overflow-x: auto; overflow-y: hidden;
+            scrollbar-width: thin;
         }
 
+        .tab-strip::-webkit-scrollbar { height: 4px; }
+        .tab-strip::-webkit-scrollbar-track { background: var(--bg-color); }
+        .tab-strip::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
         .tab {
-            background: var(--tab-inactive); padding: 6px 15px;
+            background: var(--tab-inactive); padding: 6px 12px;
             border-radius: 8px 8px 0 0; font-size: 12px;
             min-width: 120px; max-width: 200px;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             cursor: pointer; display: flex; align-items: center;
             justify-content: space-between; color: #9aa0a6;
             border: 1px solid transparent;
+            transition: background 0.15s ease;
+            position: relative;
         }
 
         .tab.active { background: var(--tab-active); color: var(--text); font-weight: 500; }
-        .tab:hover:not(.active) { background: #2d2e30; }
+        .tab:hover:not(.active) { background: var(--hover); }
 
-        .close-tab { margin-left: 8px; font-size: 14px; opacity: 0.6; }
+        .tab-favicon {
+            width: 14px; height: 14px; margin-right: 6px;
+            flex-shrink: 0; border-radius: 2px;
+        }
+
+        .tab-title {
+            flex-grow: 1; overflow: hidden; text-overflow: ellipsis;
+            cursor: pointer;
+        }
+
+        .tab-loading {
+            width: 14px; height: 14px; margin-right: 6px;
+            border: 2px solid var(--accent);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .close-tab { 
+            margin-left: 8px; font-size: 16px; opacity: 0.6; 
+            padding: 0 4px; flex-shrink: 0;
+        }
         .close-tab:hover { color: #ff605c; opacity: 1; }
 
-        .add-tab { padding: 5px 12px; cursor: pointer; color: #9aa0a6; font-size: 18px; }
+        .add-tab { 
+            padding: 5px 12px; cursor: pointer; color: #9aa0a6; 
+            font-size: 18px; flex-shrink: 0;
+        }
         .add-tab:hover { color: white; }
 
         .navbar {
@@ -61,31 +98,97 @@
         }
 
         .nav-buttons { display: flex; gap: 18px; font-size: 18px; color: #9aa0a6; }
-        .nav-buttons span { cursor: pointer; user-select: none; transition: color 0.2s; }
+        .nav-buttons span { 
+            cursor: pointer; user-select: none; transition: color 0.2s;
+            padding: 4px;
+        }
         .nav-buttons span:hover { color: white; }
+        .nav-buttons span.disabled { opacity: 0.3; cursor: not-allowed; }
 
         .search-container {
-            flex-grow: 1; display: flex;
+            flex-grow: 1; display: flex; align-items: center;
             background: var(--input-bg); border-radius: 20px;
             padding: 4px 18px; border: 1px solid var(--border);
+            position: relative;
         }
         .search-container:focus-within { border-color: var(--accent); }
+
+        .url-icon {
+            margin-right: 8px; font-size: 14px; color: #9aa0a6;
+        }
 
         input#bar {
             flex-grow: 1; background: transparent; border: none;
             color: white; padding: 4px 0; font-size: 13px; outline: none;
         }
 
+        .autocomplete {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: var(--nav-bg); border-radius: 8px;
+            margin-top: 4px; max-height: 300px; overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1000; display: none;
+        }
+
+        .autocomplete.show { display: block; }
+
+        .autocomplete-item {
+            padding: 10px 16px; cursor: pointer;
+            display: flex; align-items: center; gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .autocomplete-item:hover { background: var(--hover); }
+        .autocomplete-item:last-child { border-bottom: none; }
+
+        .bookmark-bar {
+            display: flex; gap: 8px; padding: 6px 15px;
+            background: var(--bg-color); border-bottom: 1px solid var(--border);
+            overflow-x: auto; align-items: center;
+        }
+
+        .bookmark-bar::-webkit-scrollbar { height: 4px; }
+        .bookmark-bar::-webkit-scrollbar-track { background: var(--bg-color); }
+        .bookmark-bar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        .bookmark {
+            padding: 4px 12px; background: var(--tab-inactive);
+            border-radius: 6px; font-size: 12px; cursor: pointer;
+            white-space: nowrap; display: flex; align-items: center;
+            gap: 6px; transition: background 0.15s;
+        }
+
+        .bookmark:hover { background: var(--hover); }
+
+        .bookmark-favicon { width: 14px; height: 14px; border-radius: 2px; }
+
+        .add-bookmark {
+            padding: 4px 10px; background: transparent;
+            border: 1px dashed var(--border); border-radius: 6px;
+            font-size: 16px; cursor: pointer; color: #9aa0a6;
+            transition: all 0.15s;
+        }
+
+        .add-bookmark:hover { 
+            border-color: var(--accent); 
+            color: var(--accent);
+        }
+
         .frame-container {
-            position: absolute; top: 90px;
+            position: absolute; top: 139px;
             left: 0; right: 0; bottom: 0;
             transition: top 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body.fullscreen-mode .frame-container { top: 0; }
-        body.fullscreen-mode .navbar, body.fullscreen-mode .tab-strip { display: none; }
+        body.fullscreen-mode .navbar, 
+        body.fullscreen-mode .tab-strip,
+        body.fullscreen-mode .bookmark-bar { display: none; }
 
-        iframe { width: 100%; height: 100%; border: none; background: #fff; display: none; }
+        iframe { 
+            width: 100%; height: 100%; border: none; 
+            background: #fff; display: none; 
+        }
         iframe.active { display: block; }
 
         .new-tab-screen {
@@ -94,38 +197,227 @@
             background: var(--bg-color); color: #fff;
             flex-direction: column; z-index: 5;
         }
+
+        .new-tab-content {
+            text-align: center; max-width: 600px;
+        }
+
+        .shortcuts {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 20px; margin-top: 40px;
+        }
+
+        .shortcut {
+            padding: 20px; background: var(--nav-bg);
+            border-radius: 12px; cursor: pointer;
+            transition: all 0.2s; text-align: center;
+        }
+
+        .shortcut:hover {
+            background: var(--hover);
+            transform: translateY(-2px);
+        }
+
+        .shortcut-icon {
+            font-size: 32px; margin-bottom: 8px;
+        }
+
+        .shortcut-name {
+            font-size: 12px; color: #9aa0a6;
+        }
+
+        .context-menu {
+            position: fixed;
+            background: var(--nav-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10000;
+            display: none;
+            min-width: 180px;
+        }
+
+        .context-menu.show { display: block; }
+
+        .context-menu-item {
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .context-menu-item:hover {
+            background: var(--hover);
+        }
+
+        .context-menu-separator {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0;
+        }
+
+        .loading-bar {
+            position: absolute;
+            top: 0; left: 0;
+            height: 2px;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+            z-index: 1001;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--nav-bg);
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10001;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .keyboard-shortcuts {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10002;
+        }
+
+        .keyboard-shortcuts.show { display: flex; }
+
+        .shortcuts-panel {
+            background: var(--nav-bg);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .shortcut-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .shortcut-row:last-child { border-bottom: none; }
+
+        .key {
+            background: var(--bg-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
 
+    <div class="loading-bar" id="loading-bar"></div>
+
     <div class="tab-strip" id="tab-strip">
-        <div class="add-tab" onclick="createNewTab()">+</div>
+        <div class="add-tab" onclick="createNewTab()" title="New Tab (Ctrl+T)">+</div>
     </div>
 
     <nav class="navbar">
         <div class="nav-buttons">
-            <span onclick="goBack()">←</span>
-            <span onclick="goForward()">→</span>
-            <span onclick="reloadPage()">↻</span>
+            <span onclick="goBack()" id="back-btn" title="Back">←</span>
+            <span onclick="goForward()" id="forward-btn" title="Forward">→</span>
+            <span onclick="reloadPage()" title="Reload (Ctrl+R)">↻</span>
+            <span onclick="goHome()" title="Home">⌂</span>
         </div>
         <div class="search-container">
-            <input type="text" placeholder="Enter A URL" id="bar" autocomplete="off">
+            <span class="url-icon" id="url-icon">🔍</span>
+            <input type="text" placeholder="Search or enter URL" id="bar" autocomplete="off">
+            <div class="autocomplete" id="autocomplete"></div>
         </div>
         <div class="nav-buttons">
-            <span onclick="toggleFullScreen()" title="Fullscreen">⛶</span>
+            <span onclick="toggleBookmark()" title="Bookmark (Ctrl+D)">★</span>
+            <span onclick="showKeyboardShortcuts()" title="Keyboard Shortcuts">⌨</span>
+            <span onclick="toggleFullScreen()" title="Fullscreen (F11)">⛶</span>
         </div>
     </nav>
 
+    <div class="bookmark-bar" id="bookmark-bar">
+        <div class="add-bookmark" onclick="addBookmarkPrompt()" title="Add bookmark">+</div>
+    </div>
+
     <div class="frame-container" id="frame-container">
         <div id="new-tab-ui" class="new-tab-screen">
-            <h1 style="font-weight: 500; margin-bottom: 10px;">Zyron Testing</h1>
-            <p style="color: #9aa0a6; font-size: 14px;">Enter A URL To Begin</p>
+            <div class="new-tab-content">
+                <h1 style="font-weight: 500; margin-bottom: 10px;">Zyron Browser</h1>
+                <p style="color: #9aa0a6; font-size: 14px; margin-bottom: 20px;">Browse safely and privately</p>
+                <div class="shortcuts" id="quick-shortcuts"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="context-menu" id="context-menu"></div>
+    <div class="toast" id="toast"></div>
+
+    <div class="keyboard-shortcuts" id="keyboard-shortcuts-panel" onclick="hideKeyboardShortcuts()">
+        <div class="shortcuts-panel" onclick="event.stopPropagation()">
+            <h2 style="margin-top: 0;">Keyboard Shortcuts</h2>
+            <div class="shortcut-row">
+                <span>New Tab</span>
+                <span class="key">Ctrl + T</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Close Tab</span>
+                <span class="key">Ctrl + W</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Next Tab</span>
+                <span class="key">Ctrl + Tab</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Previous Tab</span>
+                <span class="key">Ctrl + Shift + Tab</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Reload</span>
+                <span class="key">Ctrl + R</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Bookmark Page</span>
+                <span class="key">Ctrl + D</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Focus Search</span>
+                <span class="key">Ctrl + L</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Fullscreen</span>
+                <span class="key">F11</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Show Shortcuts</span>
+                <span class="key">Ctrl + /</span>
+            </div>
         </div>
     </div>
 
     <script>
         let tabs = [];
         let activeTabId = null;
+        let history = [];
+        let bookmarks = [];
 
         const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
         connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://ixlmathlogin.ixl.best/wisp/" }]);
@@ -137,13 +429,82 @@
         });
         scramjet.init();
 
+        // Load saved data
+        function loadData() {
+            const savedTabs = localStorage.getItem('zyron-tabs');
+            const savedBookmarks = localStorage.getItem('zyron-bookmarks');
+            const savedHistory = localStorage.getItem('zyron-history');
+            
+            if (savedBookmarks) {
+                bookmarks = JSON.parse(savedBookmarks);
+                renderBookmarks();
+            } else {
+                // Default bookmarks
+                bookmarks = [
+                    { title: 'Google', url: 'https://google.com', favicon: '🔍' },
+                    { title: 'YouTube', url: 'https://youtube.com', favicon: '▶️' },
+                    { title: 'GitHub', url: 'https://github.com', favicon: '💻' }
+                ];
+                saveBookmarks();
+                renderBookmarks();
+            }
+
+            if (savedHistory) {
+                history = JSON.parse(savedHistory);
+            }
+
+            if (savedTabs) {
+                const tabsData = JSON.parse(savedTabs);
+                if (tabsData.length > 0) {
+                    tabsData.forEach(tab => {
+                        const id = Date.now() + Math.random();
+                        tabs.push({ ...tab, id });
+                        const frame = document.createElement('iframe');
+                        frame.id = `frame-${id}`;
+                        if (tab.url) {
+                            frame.src = scramjet.encodeUrl(tab.url);
+                        }
+                        document.getElementById('frame-container').appendChild(frame);
+                    });
+                    switchTab(tabs[0].id);
+                    return;
+                }
+            }
+            
+            createNewTab();
+        }
+
+        function saveTabs() {
+            const tabsData = tabs.map(t => ({ url: t.url, title: t.title }));
+            localStorage.setItem('zyron-tabs', JSON.stringify(tabsData));
+        }
+
+        function saveBookmarks() {
+            localStorage.setItem('zyron-bookmarks', JSON.stringify(bookmarks));
+        }
+
+        function saveHistory() {
+            localStorage.setItem('zyron-history', JSON.stringify(history.slice(-100))); // Keep last 100
+        }
+
         function createNewTab() {
-            const id = Date.now();
-            tabs.push({ id, url: '', title: 'New Tab' });
+            const id = Date.now() + Math.random();
+            tabs.push({ id, url: '', title: 'New Tab', loading: false });
             const frame = document.createElement('iframe');
             frame.id = `frame-${id}`;
+            
+            frame.addEventListener('load', () => {
+                const tab = tabs.find(t => t.id === id);
+                if (tab) {
+                    tab.loading = false;
+                    renderTabs();
+                    hideLoadingBar();
+                }
+            });
+
             document.getElementById('frame-container').appendChild(frame);
             switchTab(id);
+            saveTabs();
         }
 
         function switchTab(id) {
@@ -155,28 +516,67 @@
             const currentTab = tabs.find(t => t.id === id);
             document.getElementById('bar').value = currentTab.url || '';
             document.getElementById('new-tab-ui').style.display = activeFrame.src ? 'none' : 'flex';
+            
+            updateUrlIcon(currentTab.url);
             renderTabs();
+            updateNavButtons();
         }
 
         function renderTabs() {
             const strip = document.getElementById('tab-strip');
             const addButton = strip.querySelector('.add-tab');
             strip.querySelectorAll('.tab').forEach(t => t.remove());
+            
             tabs.forEach(tab => {
                 const tabEl = document.createElement('div');
                 tabEl.className = `tab ${tab.id === activeTabId ? 'active' : ''}`;
-                tabEl.innerHTML = `<span onclick="switchTab(${tab.id})" style="flex-grow:1; overflow:hidden;">${tab.title}</span><span class="close-tab" onclick="closeTab(event, ${tab.id})">×</span>`;
+                tabEl.setAttribute('data-tab-id', tab.id);
+                
+                let iconHtml = '';
+                if (tab.loading) {
+                    iconHtml = '<div class="tab-loading"></div>';
+                } else if (tab.favicon) {
+                    iconHtml = `<img src="${tab.favicon}" class="tab-favicon" onerror="this.style.display='none'">`;
+                } else {
+                    iconHtml = '<span style="margin-right: 6px;">🌐</span>';
+                }
+                
+                tabEl.innerHTML = `
+                    ${iconHtml}
+                    <span class="tab-title" onclick="switchTab(${tab.id})">${tab.title}</span>
+                    <span class="close-tab" onclick="closeTab(event, ${tab.id})">×</span>
+                `;
+                
+                // Context menu
+                tabEl.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    showContextMenu(e.clientX, e.clientY, tab.id);
+                });
+                
                 strip.insertBefore(tabEl, addButton);
             });
         }
 
         function closeTab(e, id) {
             e.stopPropagation();
+            
+            if (tabs.length === 1) {
+                showToast('Cannot close last tab');
+                return;
+            }
+            
             tabs = tabs.filter(t => t.id !== id);
             document.getElementById(`frame-${id}`).remove();
-            if (tabs.length === 0) createNewTab();
-            else if (activeTabId === id) switchTab(tabs[tabs.length - 1].id);
-            else renderTabs();
+            
+            if (activeTabId === id) {
+                const currentIndex = tabs.findIndex(t => t.id === id);
+                const nextTab = tabs[currentIndex] || tabs[tabs.length - 1];
+                switchTab(nextTab.id);
+            } else {
+                renderTabs();
+            }
+            
+            saveTabs();
         }
 
         function nav() {
@@ -184,52 +584,475 @@
             let input = bar.value.trim();
             let finalUrl = "";
 
-            // URL Validation Logic
-            if (!input || !input.includes(".")) {
-                // If empty or no dot, redirect to the default portal
+            if (!input) {
                 finalUrl = "https://zyronportal.vercel.app/";
-            } else {
-                // If it looks like a URL but lacks a protocol, add it
+            } else if (input.includes('.') && !input.includes(' ')) {
                 if (!input.startsWith("http://") && !input.startsWith("https://")) {
                     finalUrl = "https://" + input;
                 } else {
                     finalUrl = input;
                 }
+            } else {
+                // Search query
+                finalUrl = `https://www.google.com/search?q=${encodeURIComponent(input)}`;
             }
             
+            navigateToUrl(finalUrl);
+            hideAutocomplete();
+        }
+
+        function navigateToUrl(finalUrl) {
             const currentTab = tabs.find(t => t.id === activeTabId);
             currentTab.url = finalUrl;
+            currentTab.loading = true;
             
             try { 
-                currentTab.title = new URL(finalUrl).hostname.replace('www.', ''); 
+                const urlObj = new URL(finalUrl);
+                currentTab.title = urlObj.hostname.replace('www.', '');
+                currentTab.favicon = `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=32`;
             } catch(e) { 
                 currentTab.title = finalUrl; 
             }
             
+            showLoadingBar();
             document.getElementById(`frame-${activeTabId}`).src = scramjet.encodeUrl(finalUrl);
             document.getElementById('new-tab-ui').style.display = 'none';
+            
+            // Add to history
+            history.push({ url: finalUrl, title: currentTab.title, timestamp: Date.now() });
+            saveHistory();
+            
+            updateUrlIcon(finalUrl);
             renderTabs();
+            saveTabs();
         }
 
-        function goBack() { getCurrentFrame().contentWindow.history.back(); }
-        function goForward() { getCurrentFrame().contentWindow.history.forward(); }
-        function reloadPage() { getCurrentFrame().contentWindow.location.reload(); }
-        function getCurrentFrame() { return document.getElementById(`frame-${activeTabId}`); }
+        function goBack() { 
+            const frame = getCurrentFrame();
+            if (frame && frame.contentWindow) {
+                try {
+                    frame.contentWindow.history.back();
+                } catch(e) {}
+            }
+        }
+
+        function goForward() { 
+            const frame = getCurrentFrame();
+            if (frame && frame.contentWindow) {
+                try {
+                    frame.contentWindow.history.forward();
+                } catch(e) {}
+            }
+        }
+
+        function reloadPage() { 
+            const frame = getCurrentFrame();
+            const currentTab = tabs.find(t => t.id === activeTabId);
+            if (frame && currentTab.url) {
+                currentTab.loading = true;
+                renderTabs();
+                showLoadingBar();
+                frame.src = frame.src;
+            }
+        }
+
+        function goHome() {
+            navigateToUrl('https://zyronportal.vercel.app/');
+        }
+
+        function getCurrentFrame() { 
+            return document.getElementById(`frame-${activeTabId}`); 
+        }
+
+        function updateNavButtons() {
+            // This is limited due to iframe restrictions, but we can still show the buttons
+            document.getElementById('back-btn').classList.remove('disabled');
+            document.getElementById('forward-btn').classList.remove('disabled');
+        }
+
+        function updateUrlIcon(url) {
+            const icon = document.getElementById('url-icon');
+            if (url && url.startsWith('https://')) {
+                icon.textContent = '🔒';
+                icon.title = 'Secure connection';
+            } else if (url) {
+                icon.textContent = '🌐';
+                icon.title = 'Connection';
+            } else {
+                icon.textContent = '🔍';
+                icon.title = 'Search';
+            }
+        }
+
+        function showLoadingBar() {
+            const bar = document.getElementById('loading-bar');
+            bar.style.width = '70%';
+        }
+
+        function hideLoadingBar() {
+            const bar = document.getElementById('loading-bar');
+            bar.style.width = '100%';
+            setTimeout(() => {
+                bar.style.width = '0%';
+            }, 300);
+        }
 
         function toggleFullScreen() {
             document.body.classList.toggle('fullscreen-mode');
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
-            else document.exitFullscreen();
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen();
+            }
         }
 
-        document.getElementById('bar').addEventListener("keydown", (e) => { if (e.key === "Enter") nav(); });
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) document.body.classList.remove('fullscreen-mode');
+        // Bookmarks
+        function renderBookmarks() {
+            const bar = document.getElementById('bookmark-bar');
+            const addBtn = bar.querySelector('.add-bookmark');
+            bar.querySelectorAll('.bookmark').forEach(b => b.remove());
+            
+            bookmarks.forEach((bookmark, index) => {
+                const bookmarkEl = document.createElement('div');
+                bookmarkEl.className = 'bookmark';
+                bookmarkEl.innerHTML = `
+                    <span class="bookmark-favicon">${bookmark.favicon || '🌐'}</span>
+                    <span>${bookmark.title}</span>
+                `;
+                bookmarkEl.onclick = () => navigateToUrl(bookmark.url);
+                bookmarkEl.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    showBookmarkContextMenu(e.clientX, e.clientY, index);
+                });
+                bar.insertBefore(bookmarkEl, addBtn);
+            });
+        }
+
+        function toggleBookmark() {
+            const currentTab = tabs.find(t => t.id === activeTabId);
+            if (!currentTab.url) {
+                showToast('No page to bookmark');
+                return;
+            }
+            
+            const existingIndex = bookmarks.findIndex(b => b.url === currentTab.url);
+            if (existingIndex >= 0) {
+                bookmarks.splice(existingIndex, 1);
+                showToast('Bookmark removed');
+            } else {
+                bookmarks.push({
+                    title: currentTab.title,
+                    url: currentTab.url,
+                    favicon: currentTab.favicon || '🌐'
+                });
+                showToast('Bookmark added');
+            }
+            
+            saveBookmarks();
+            renderBookmarks();
+        }
+
+        function addBookmarkPrompt() {
+            const url = prompt('Enter URL:');
+            if (url) {
+                const title = prompt('Enter title:', url);
+                if (title) {
+                    bookmarks.push({ title, url, favicon: '🌐' });
+                    saveBookmarks();
+                    renderBookmarks();
+                }
+            }
+        }
+
+        // Context Menu
+        function showContextMenu(x, y, tabId) {
+            const menu = document.getElementById('context-menu');
+            menu.innerHTML = `
+                <div class="context-menu-item" onclick="reloadTab(${tabId})">
+                    <span>↻</span> Reload
+                </div>
+                <div class="context-menu-item" onclick="duplicateTab(${tabId})">
+                    <span>📋</span> Duplicate
+                </div>
+                <div class="context-menu-separator"></div>
+                <div class="context-menu-item" onclick="closeOtherTabs(${tabId})">
+                    <span>✕</span> Close Others
+                </div>
+                <div class="context-menu-item" onclick="closeTab(event, ${tabId})">
+                    <span>✕</span> Close Tab
+                </div>
+            `;
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            menu.classList.add('show');
+            
+            setTimeout(() => {
+                document.addEventListener('click', hideContextMenu);
+            }, 100);
+        }
+
+        function showBookmarkContextMenu(x, y, index) {
+            const menu = document.getElementById('context-menu');
+            menu.innerHTML = `
+                <div class="context-menu-item" onclick="editBookmark(${index})">
+                    <span>✏️</span> Edit
+                </div>
+                <div class="context-menu-item" onclick="deleteBookmark(${index})">
+                    <span>🗑️</span> Delete
+                </div>
+            `;
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            menu.classList.add('show');
+            
+            setTimeout(() => {
+                document.addEventListener('click', hideContextMenu);
+            }, 100);
+        }
+
+        function hideContextMenu() {
+            document.getElementById('context-menu').classList.remove('show');
+            document.removeEventListener('click', hideContextMenu);
+        }
+
+        function reloadTab(id) {
+            const tab = tabs.find(t => t.id === id);
+            const frame = document.getElementById(`frame-${id}`);
+            if (frame && tab.url) {
+                tab.loading = true;
+                renderTabs();
+                showLoadingBar();
+                frame.src = frame.src;
+            }
+            hideContextMenu();
+        }
+
+        function duplicateTab(id) {
+            const tab = tabs.find(t => t.id === id);
+            const newId = Date.now() + Math.random();
+            tabs.push({ ...tab, id: newId, loading: true });
+            
+            const frame = document.createElement('iframe');
+            frame.id = `frame-${newId}`;
+            if (tab.url) {
+                frame.src = scramjet.encodeUrl(tab.url);
+            }
+            
+            frame.addEventListener('load', () => {
+                const newTab = tabs.find(t => t.id === newId);
+                if (newTab) {
+                    newTab.loading = false;
+                    renderTabs();
+                }
+            });
+            
+            document.getElementById('frame-container').appendChild(frame);
+            switchTab(newId);
+            saveTabs();
+            hideContextMenu();
+        }
+
+        function closeOtherTabs(id) {
+            if (tabs.length === 1) {
+                showToast('No other tabs to close');
+                return;
+            }
+            
+            tabs.forEach(tab => {
+                if (tab.id !== id) {
+                    document.getElementById(`frame-${tab.id}`).remove();
+                }
+            });
+            
+            tabs = tabs.filter(t => t.id === id);
+            switchTab(id);
+            saveTabs();
+            hideContextMenu();
+        }
+
+        function editBookmark(index) {
+            const bookmark = bookmarks[index];
+            const newTitle = prompt('Edit title:', bookmark.title);
+            if (newTitle) {
+                bookmark.title = newTitle;
+                saveBookmarks();
+                renderBookmarks();
+            }
+            hideContextMenu();
+        }
+
+        function deleteBookmark(index) {
+            bookmarks.splice(index, 1);
+            saveBookmarks();
+            renderBookmarks();
+            hideContextMenu();
+        }
+
+        // Toast notifications
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // Autocomplete
+        function showAutocomplete(query) {
+            if (!query) {
+                hideAutocomplete();
+                return;
+            }
+            
+            const matches = history
+                .filter(h => h.url.toLowerCase().includes(query.toLowerCase()) || 
+                           h.title.toLowerCase().includes(query.toLowerCase()))
+                .slice(-5)
+                .reverse();
+            
+            if (matches.length === 0) {
+                hideAutocomplete();
+                return;
+            }
+            
+            const autocomplete = document.getElementById('autocomplete');
+            autocomplete.innerHTML = matches.map(match => `
+                <div class="autocomplete-item" onclick="navigateToUrl('${match.url}'); hideAutocomplete();">
+                    <span>🕐</span>
+                    <div style="flex-grow: 1;">
+                        <div>${match.title}</div>
+                        <div style="font-size: 11px; color: #9aa0a6;">${match.url}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            autocomplete.classList.add('show');
+        }
+
+        function hideAutocomplete() {
+            document.getElementById('autocomplete').classList.remove('show');
+        }
+
+        // Keyboard shortcuts
+        function showKeyboardShortcuts() {
+            document.getElementById('keyboard-shortcuts-panel').classList.add('show');
+        }
+
+        function hideKeyboardShortcuts() {
+            document.getElementById('keyboard-shortcuts-panel').classList.remove('show');
+        }
+
+        // Event listeners
+        document.getElementById('bar').addEventListener("keydown", (e) => { 
+            if (e.key === "Enter") {
+                nav();
+            } else if (e.key === "Escape") {
+                hideAutocomplete();
+            }
         });
 
-        createNewTab();
+        document.getElementById('bar').addEventListener("input", (e) => {
+            showAutocomplete(e.target.value);
+        });
+
+        document.getElementById('bar').addEventListener("focus", () => {
+            document.getElementById('bar').select();
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                document.body.classList.remove('fullscreen-mode');
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl + T - New tab
+            if (e.ctrlKey && e.key === 't') {
+                e.preventDefault();
+                createNewTab();
+            }
+            
+            // Ctrl + W - Close tab
+            if (e.ctrlKey && e.key === 'w') {
+                e.preventDefault();
+                if (tabs.length > 1) {
+                    closeTab(e, activeTabId);
+                }
+            }
+            
+            // Ctrl + Tab - Next tab
+            if (e.ctrlKey && e.key === 'Tab' && !e.shiftKey) {
+                e.preventDefault();
+                const currentIndex = tabs.findIndex(t => t.id === activeTabId);
+                const nextIndex = (currentIndex + 1) % tabs.length;
+                switchTab(tabs[nextIndex].id);
+            }
+            
+            // Ctrl + Shift + Tab - Previous tab
+            if (e.ctrlKey && e.shiftKey && e.key === 'Tab') {
+                e.preventDefault();
+                const currentIndex = tabs.findIndex(t => t.id === activeTabId);
+                const prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+                switchTab(tabs[prevIndex].id);
+            }
+            
+            // Ctrl + R - Reload
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                reloadPage();
+            }
+            
+            // Ctrl + D - Bookmark
+            if (e.ctrlKey && e.key === 'd') {
+                e.preventDefault();
+                toggleBookmark();
+            }
+            
+            // Ctrl + L - Focus search
+            if (e.ctrlKey && e.key === 'l') {
+                e.preventDefault();
+                document.getElementById('bar').focus();
+            }
+            
+            // F11 - Fullscreen
+            if (e.key === 'F11') {
+                e.preventDefault();
+                toggleFullScreen();
+            }
+            
+            // Ctrl + / - Show shortcuts
+            if (e.ctrlKey && e.key === '/') {
+                e.preventDefault();
+                showKeyboardShortcuts();
+            }
+            
+            // Escape - Hide shortcuts
+            if (e.key === 'Escape') {
+                hideKeyboardShortcuts();
+            }
+        });
+
+        // Initialize with quick shortcuts
+        const quickShortcuts = [
+            { name: 'Google', url: 'https://google.com', icon: '🔍' },
+            { name: 'YouTube', url: 'https://youtube.com', icon: '▶️' },
+            { name: 'GitHub', url: 'https://github.com', icon: '💻' },
+            { name: 'Reddit', url: 'https://reddit.com', icon: '🤖' }
+        ];
+
+        const shortcutsContainer = document.getElementById('quick-shortcuts');
+        shortcutsContainer.innerHTML = quickShortcuts.map(s => `
+            <div class="shortcut" onclick="navigateToUrl('${s.url}')">
+                <div class="shortcut-icon">${s.icon}</div>
+                <div class="shortcut-name">${s.name}</div>
+            </div>
+        `).join('');
+
+        // Initialize
+        loadData();
     </script>
 </body>
 </html>
-
-
