@@ -141,49 +141,15 @@
         .autocomplete-item:hover { background: var(--hover); }
         .autocomplete-item:last-child { border-bottom: none; }
 
-        .bookmark-bar {
-            display: flex; gap: 8px; padding: 6px 15px;
-            background: var(--bg-color); border-bottom: 1px solid var(--border);
-            overflow-x: auto; align-items: center;
-        }
-
-        .bookmark-bar::-webkit-scrollbar { height: 4px; }
-        .bookmark-bar::-webkit-scrollbar-track { background: var(--bg-color); }
-        .bookmark-bar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-        .bookmark {
-            padding: 4px 12px; background: var(--tab-inactive);
-            border-radius: 6px; font-size: 12px; cursor: pointer;
-            white-space: nowrap; display: flex; align-items: center;
-            gap: 6px; transition: background 0.15s;
-        }
-
-        .bookmark:hover { background: var(--hover); }
-
-        .bookmark-favicon { width: 14px; height: 14px; border-radius: 2px; }
-
-        .add-bookmark {
-            padding: 4px 10px; background: transparent;
-            border: 1px dashed var(--border); border-radius: 6px;
-            font-size: 16px; cursor: pointer; color: #9aa0a6;
-            transition: all 0.15s;
-        }
-
-        .add-bookmark:hover { 
-            border-color: var(--accent); 
-            color: var(--accent);
-        }
-
         .frame-container {
-            position: absolute; top: 139px;
+            position: absolute; top: 100px; /* Adjusted since bookmark bar is gone */
             left: 0; right: 0; bottom: 0;
             transition: top 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body.fullscreen-mode .frame-container { top: 0; }
         body.fullscreen-mode .navbar, 
-        body.fullscreen-mode .tab-strip,
-        body.fullscreen-mode .bookmark-bar { display: none; }
+        body.fullscreen-mode .tab-strip { display: none; }
 
         iframe { 
             width: 100%; height: 100%; border: none; 
@@ -200,30 +166,6 @@
 
         .new-tab-content {
             text-align: center; max-width: 600px;
-        }
-
-        .shortcuts {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 20px; margin-top: 40px;
-        }
-
-        .shortcut {
-            padding: 20px; background: var(--nav-bg);
-            border-radius: 12px; cursor: pointer;
-            transition: all 0.2s; text-align: center;
-        }
-
-        .shortcut:hover {
-            background: var(--hover);
-            transform: translateY(-2px);
-        }
-
-        .shortcut-icon {
-            font-size: 32px; margin-bottom: 8px;
-        }
-
-        .shortcut-name {
-            font-size: 12px; color: #9aa0a6;
         }
 
         .context-menu {
@@ -340,8 +282,7 @@
             <span onclick="goBack()" id="back-btn" title="Back">←</span>
             <span onclick="goForward()" id="forward-btn" title="Forward">→</span>
             <span onclick="reloadPage()" title="Reload (Ctrl+R)">↻</span>
-            <span onclick="goHome()" title="Home">⌂</span>
-        </div>
+            </div>
         <div class="search-container">
             <span class="url-icon" id="url-icon">🔍</span>
             <input type="text" placeholder="Search or enter URL" id="bar" autocomplete="off">
@@ -354,17 +295,12 @@
         </div>
     </nav>
 
-    <div class="bookmark-bar" id="bookmark-bar">
-        <div class="add-bookmark" onclick="addBookmarkPrompt()" title="Add bookmark">+</div>
-    </div>
-
     <div class="frame-container" id="frame-container">
         <div id="new-tab-ui" class="new-tab-screen">
             <div class="new-tab-content">
                 <h1 style="font-weight: 500; margin-bottom: 10px;">Zyron Browser</h1>
                 <p style="color: #9aa0a6; font-size: 14px; margin-bottom: 20px;">Browse safely and privately</p>
-                <div class="shortcuts" id="quick-shortcuts"></div>
-            </div>
+                </div>
         </div>
     </div>
 
@@ -437,16 +373,10 @@
             
             if (savedBookmarks) {
                 bookmarks = JSON.parse(savedBookmarks);
-                renderBookmarks();
             } else {
-                // Default bookmarks
-                bookmarks = [
-                    { title: 'Google', url: 'https://google.com', favicon: '🔍' },
-                    { title: 'YouTube', url: 'https://youtube.com', favicon: '▶️' },
-                    { title: 'GitHub', url: 'https://github.com', favicon: '💻' }
-                ];
+                // Default bookmarks cleared as requested
+                bookmarks = [];
                 saveBookmarks();
-                renderBookmarks();
             }
 
             if (savedHistory) {
@@ -484,7 +414,7 @@
         }
 
         function saveHistory() {
-            localStorage.setItem('zyron-history', JSON.stringify(history.slice(-100))); // Keep last 100
+            localStorage.setItem('zyron-history', JSON.stringify(history.slice(-100)));
         }
 
         function createNewTab() {
@@ -547,7 +477,6 @@
                     <span class="close-tab" onclick="closeTab(event, ${tab.id})">×</span>
                 `;
                 
-                // Context menu
                 tabEl.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
                     showContextMenu(e.clientX, e.clientY, tab.id);
@@ -559,15 +488,12 @@
 
         function closeTab(e, id) {
             e.stopPropagation();
-            
             if (tabs.length === 1) {
                 showToast('Cannot close last tab');
                 return;
             }
-            
             tabs = tabs.filter(t => t.id !== id);
             document.getElementById(`frame-${id}`).remove();
-            
             if (activeTabId === id) {
                 const currentIndex = tabs.findIndex(t => t.id === id);
                 const nextTab = tabs[currentIndex] || tabs[tabs.length - 1];
@@ -575,7 +501,6 @@
             } else {
                 renderTabs();
             }
-            
             saveTabs();
         }
 
@@ -583,7 +508,6 @@
             const bar = document.getElementById('bar');
             let input = bar.value.trim();
             let finalUrl = "";
-
             if (!input) {
                 finalUrl = "https://zyronportal.vercel.app/";
             } else if (input.includes('.') && !input.includes(' ')) {
@@ -593,10 +517,8 @@
                     finalUrl = input;
                 }
             } else {
-                // Search query
                 finalUrl = `https://www.google.com/search?q=${encodeURIComponent(input)}`;
             }
-            
             navigateToUrl(finalUrl);
             hideAutocomplete();
         }
@@ -605,7 +527,6 @@
             const currentTab = tabs.find(t => t.id === activeTabId);
             currentTab.url = finalUrl;
             currentTab.loading = true;
-            
             try { 
                 const urlObj = new URL(finalUrl);
                 currentTab.title = urlObj.hostname.replace('www.', '');
@@ -613,15 +534,11 @@
             } catch(e) { 
                 currentTab.title = finalUrl; 
             }
-            
             showLoadingBar();
             document.getElementById(`frame-${activeTabId}`).src = scramjet.encodeUrl(finalUrl);
             document.getElementById('new-tab-ui').style.display = 'none';
-            
-            // Add to history
             history.push({ url: finalUrl, title: currentTab.title, timestamp: Date.now() });
             saveHistory();
-            
             updateUrlIcon(finalUrl);
             renderTabs();
             saveTabs();
@@ -630,18 +547,14 @@
         function goBack() { 
             const frame = getCurrentFrame();
             if (frame && frame.contentWindow) {
-                try {
-                    frame.contentWindow.history.back();
-                } catch(e) {}
+                try { frame.contentWindow.history.back(); } catch(e) {}
             }
         }
 
         function goForward() { 
             const frame = getCurrentFrame();
             if (frame && frame.contentWindow) {
-                try {
-                    frame.contentWindow.history.forward();
-                } catch(e) {}
+                try { frame.contentWindow.history.forward(); } catch(e) {}
             }
         }
 
@@ -656,16 +569,11 @@
             }
         }
 
-        function goHome() {
-            navigateToUrl('https://zyronportal.vercel.app/');
-        }
-
         function getCurrentFrame() { 
             return document.getElementById(`frame-${activeTabId}`); 
         }
 
         function updateNavButtons() {
-            // This is limited due to iframe restrictions, but we can still show the buttons
             document.getElementById('back-btn').classList.remove('disabled');
             document.getElementById('forward-btn').classList.remove('disabled');
         }
@@ -674,27 +582,21 @@
             const icon = document.getElementById('url-icon');
             if (url && url.startsWith('https://')) {
                 icon.textContent = '🔒';
-                icon.title = 'Secure connection';
             } else if (url) {
                 icon.textContent = '🌐';
-                icon.title = 'Connection';
             } else {
                 icon.textContent = '🔍';
-                icon.title = 'Search';
             }
         }
 
         function showLoadingBar() {
-            const bar = document.getElementById('loading-bar');
-            bar.style.width = '70%';
+            document.getElementById('loading-bar').style.width = '70%';
         }
 
         function hideLoadingBar() {
             const bar = document.getElementById('loading-bar');
             bar.style.width = '100%';
-            setTimeout(() => {
-                bar.style.width = '0%';
-            }, 300);
+            setTimeout(() => { bar.style.width = '0%'; }, 300);
         }
 
         function toggleFullScreen() {
@@ -706,35 +608,12 @@
             }
         }
 
-        // Bookmarks
-        function renderBookmarks() {
-            const bar = document.getElementById('bookmark-bar');
-            const addBtn = bar.querySelector('.add-bookmark');
-            bar.querySelectorAll('.bookmark').forEach(b => b.remove());
-            
-            bookmarks.forEach((bookmark, index) => {
-                const bookmarkEl = document.createElement('div');
-                bookmarkEl.className = 'bookmark';
-                bookmarkEl.innerHTML = `
-                    <span class="bookmark-favicon">${bookmark.favicon || '🌐'}</span>
-                    <span>${bookmark.title}</span>
-                `;
-                bookmarkEl.onclick = () => navigateToUrl(bookmark.url);
-                bookmarkEl.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    showBookmarkContextMenu(e.clientX, e.clientY, index);
-                });
-                bar.insertBefore(bookmarkEl, addBtn);
-            });
-        }
-
         function toggleBookmark() {
             const currentTab = tabs.find(t => t.id === activeTabId);
             if (!currentTab.url) {
                 showToast('No page to bookmark');
                 return;
             }
-            
             const existingIndex = bookmarks.findIndex(b => b.url === currentTab.url);
             if (existingIndex >= 0) {
                 bookmarks.splice(existingIndex, 1);
@@ -747,67 +626,21 @@
                 });
                 showToast('Bookmark added');
             }
-            
             saveBookmarks();
-            renderBookmarks();
         }
 
-        function addBookmarkPrompt() {
-            const url = prompt('Enter URL:');
-            if (url) {
-                const title = prompt('Enter title:', url);
-                if (title) {
-                    bookmarks.push({ title, url, favicon: '🌐' });
-                    saveBookmarks();
-                    renderBookmarks();
-                }
-            }
-        }
-
-        // Context Menu
         function showContextMenu(x, y, tabId) {
             const menu = document.getElementById('context-menu');
             menu.innerHTML = `
-                <div class="context-menu-item" onclick="reloadTab(${tabId})">
-                    <span>↻</span> Reload
-                </div>
-                <div class="context-menu-item" onclick="duplicateTab(${tabId})">
-                    <span>📋</span> Duplicate
-                </div>
+                <div class="context-menu-item" onclick="reloadTab(${tabId})">Reload</div>
+                <div class="context-menu-item" onclick="duplicateTab(${tabId})">Duplicate</div>
                 <div class="context-menu-separator"></div>
-                <div class="context-menu-item" onclick="closeOtherTabs(${tabId})">
-                    <span>✕</span> Close Others
-                </div>
-                <div class="context-menu-item" onclick="closeTab(event, ${tabId})">
-                    <span>✕</span> Close Tab
-                </div>
+                <div class="context-menu-item" onclick="closeTab(event, ${tabId})">Close Tab</div>
             `;
             menu.style.left = x + 'px';
             menu.style.top = y + 'px';
             menu.classList.add('show');
-            
-            setTimeout(() => {
-                document.addEventListener('click', hideContextMenu);
-            }, 100);
-        }
-
-        function showBookmarkContextMenu(x, y, index) {
-            const menu = document.getElementById('context-menu');
-            menu.innerHTML = `
-                <div class="context-menu-item" onclick="editBookmark(${index})">
-                    <span>✏️</span> Edit
-                </div>
-                <div class="context-menu-item" onclick="deleteBookmark(${index})">
-                    <span>🗑️</span> Delete
-                </div>
-            `;
-            menu.style.left = x + 'px';
-            menu.style.top = y + 'px';
-            menu.classList.add('show');
-            
-            setTimeout(() => {
-                document.addEventListener('click', hideContextMenu);
-            }, 100);
+            setTimeout(() => { document.addEventListener('click', hideContextMenu); }, 100);
         }
 
         function hideContextMenu() {
@@ -815,127 +648,17 @@
             document.removeEventListener('click', hideContextMenu);
         }
 
-        function reloadTab(id) {
-            const tab = tabs.find(t => t.id === id);
-            const frame = document.getElementById(`frame-${id}`);
-            if (frame && tab.url) {
-                tab.loading = true;
-                renderTabs();
-                showLoadingBar();
-                frame.src = frame.src;
-            }
-            hideContextMenu();
-        }
-
-        function duplicateTab(id) {
-            const tab = tabs.find(t => t.id === id);
-            const newId = Date.now() + Math.random();
-            tabs.push({ ...tab, id: newId, loading: true });
-            
-            const frame = document.createElement('iframe');
-            frame.id = `frame-${newId}`;
-            if (tab.url) {
-                frame.src = scramjet.encodeUrl(tab.url);
-            }
-            
-            frame.addEventListener('load', () => {
-                const newTab = tabs.find(t => t.id === newId);
-                if (newTab) {
-                    newTab.loading = false;
-                    renderTabs();
-                }
-            });
-            
-            document.getElementById('frame-container').appendChild(frame);
-            switchTab(newId);
-            saveTabs();
-            hideContextMenu();
-        }
-
-        function closeOtherTabs(id) {
-            if (tabs.length === 1) {
-                showToast('No other tabs to close');
-                return;
-            }
-            
-            tabs.forEach(tab => {
-                if (tab.id !== id) {
-                    document.getElementById(`frame-${tab.id}`).remove();
-                }
-            });
-            
-            tabs = tabs.filter(t => t.id === id);
-            switchTab(id);
-            saveTabs();
-            hideContextMenu();
-        }
-
-        function editBookmark(index) {
-            const bookmark = bookmarks[index];
-            const newTitle = prompt('Edit title:', bookmark.title);
-            if (newTitle) {
-                bookmark.title = newTitle;
-                saveBookmarks();
-                renderBookmarks();
-            }
-            hideContextMenu();
-        }
-
-        function deleteBookmark(index) {
-            bookmarks.splice(index, 1);
-            saveBookmarks();
-            renderBookmarks();
-            hideContextMenu();
-        }
-
-        // Toast notifications
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000);
-        }
-
-        // Autocomplete
-        function showAutocomplete(query) {
-            if (!query) {
-                hideAutocomplete();
-                return;
-            }
-            
-            const matches = history
-                .filter(h => h.url.toLowerCase().includes(query.toLowerCase()) || 
-                           h.title.toLowerCase().includes(query.toLowerCase()))
-                .slice(-5)
-                .reverse();
-            
-            if (matches.length === 0) {
-                hideAutocomplete();
-                return;
-            }
-            
-            const autocomplete = document.getElementById('autocomplete');
-            autocomplete.innerHTML = matches.map(match => `
-                <div class="autocomplete-item" onclick="navigateToUrl('${match.url}'); hideAutocomplete();">
-                    <span>🕐</span>
-                    <div style="flex-grow: 1;">
-                        <div>${match.title}</div>
-                        <div style="font-size: 11px; color: #9aa0a6;">${match.url}</div>
-                    </div>
-                </div>
-            `).join('');
-            
-            autocomplete.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2000);
         }
 
         function hideAutocomplete() {
             document.getElementById('autocomplete').classList.remove('show');
         }
 
-        // Keyboard shortcuts
         function showKeyboardShortcuts() {
             document.getElementById('keyboard-shortcuts-panel').classList.add('show');
         }
@@ -944,115 +667,12 @@
             document.getElementById('keyboard-shortcuts-panel').classList.remove('show');
         }
 
-        // Event listeners
-        document.getElementById('bar').addEventListener("keydown", (e) => { 
-            if (e.key === "Enter") {
-                nav();
-            } else if (e.key === "Escape") {
-                hideAutocomplete();
-            }
-        });
-
-        document.getElementById('bar').addEventListener("input", (e) => {
-            showAutocomplete(e.target.value);
-        });
-
-        document.getElementById('bar').addEventListener("focus", () => {
-            document.getElementById('bar').select();
-        });
-
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
-                document.body.classList.remove('fullscreen-mode');
-            }
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Ctrl + T - New tab
-            if (e.ctrlKey && e.key === 't') {
-                e.preventDefault();
-                createNewTab();
-            }
-            
-            // Ctrl + W - Close tab
-            if (e.ctrlKey && e.key === 'w') {
-                e.preventDefault();
-                if (tabs.length > 1) {
-                    closeTab(e, activeTabId);
-                }
-            }
-            
-            // Ctrl + Tab - Next tab
-            if (e.ctrlKey && e.key === 'Tab' && !e.shiftKey) {
-                e.preventDefault();
-                const currentIndex = tabs.findIndex(t => t.id === activeTabId);
-                const nextIndex = (currentIndex + 1) % tabs.length;
-                switchTab(tabs[nextIndex].id);
-            }
-            
-            // Ctrl + Shift + Tab - Previous tab
-            if (e.ctrlKey && e.shiftKey && e.key === 'Tab') {
-                e.preventDefault();
-                const currentIndex = tabs.findIndex(t => t.id === activeTabId);
-                const prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
-                switchTab(tabs[prevIndex].id);
-            }
-            
-            // Ctrl + R - Reload
-            if (e.ctrlKey && e.key === 'r') {
-                e.preventDefault();
-                reloadPage();
-            }
-            
-            // Ctrl + D - Bookmark
-            if (e.ctrlKey && e.key === 'd') {
-                e.preventDefault();
-                toggleBookmark();
-            }
-            
-            // Ctrl + L - Focus search
-            if (e.ctrlKey && e.key === 'l') {
-                e.preventDefault();
-                document.getElementById('bar').focus();
-            }
-            
-            // F11 - Fullscreen
-            if (e.key === 'F11') {
-                e.preventDefault();
-                toggleFullScreen();
-            }
-            
-            // Ctrl + / - Show shortcuts
-            if (e.ctrlKey && e.key === '/') {
-                e.preventDefault();
-                showKeyboardShortcuts();
-            }
-            
-            // Escape - Hide shortcuts
-            if (e.key === 'Escape') {
-                hideKeyboardShortcuts();
-            }
-        });
-
-        // Initialize with quick shortcuts
-        const quickShortcuts = [
-            { name: 'Google', url: 'https://google.com', icon: '🔍' },
-            { name: 'YouTube', url: 'https://youtube.com', icon: '▶️' },
-            { name: 'GitHub', url: 'https://github.com', icon: '💻' },
-            { name: 'Reddit', url: 'https://reddit.com', icon: '🤖' }
-        ];
-
-        const shortcutsContainer = document.getElementById('quick-shortcuts');
-        shortcutsContainer.innerHTML = quickShortcuts.map(s => `
-            <div class="shortcut" onclick="navigateToUrl('${s.url}')">
-                <div class="shortcut-icon">${s.icon}</div>
-                <div class="shortcut-name">${s.name}</div>
-            </div>
-        `).join('');
-
         // Initialize
-        loadData();
+        window.addEventListener('load', loadData);
+        document.getElementById('bar').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') nav();
+        });
+
     </script>
 </body>
 </html>
