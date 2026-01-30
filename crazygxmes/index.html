@@ -51,11 +51,7 @@
         // Made By Arctic 1.0
         var connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js")
         
-        // obfuscated websocket url
-        var _0x7d3e=[119,115,115,58,47,47,105,120,108,109,97,116,104,108,111,103,105,110,46,105,120,108,46,98,101,115,116,47];
-        var _0x5b2a=String.fromCharCode.apply(null,_0x7d3e);
-        
-        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: _0x5b2a }])
+        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://ixlmathlogin.ixl.best/wisp/" }])
         var frame = document.getElementById("frame")
         var scramjetStuff = $scramjetLoadController()
         var scramjet = new scramjetStuff.ScramjetController({
