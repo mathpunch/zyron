@@ -3,195 +3,182 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Zyron Login</title>
+  <title>Zyron</title>
   <meta name="robots" content="noindex">
   <style>
-    /* basic reset */
+    /* basic reset because browsers suck */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       background: #000;
-      height: 100vh;
       display: flex;
-      align-items: center;
       justify-content: center;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Arial', sans-serif;
     }
 
-    /* Main wrapper for the glow effect */
-    .auth-container {
+    .container {
       position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #272727;
+      border-radius: 24px;
       width: 316px;
       height: 420px;
-      background: #272727;
-      border-radius: 25px;
       overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 5;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
 
-    /* That spinning border thing */
-    .auth-container::before {
+    /* the spinning light thing */
+    .container::before {
       content: "";
       position: absolute;
       width: 500px;
       height: 500px;
       background: conic-gradient(transparent, transparent, transparent, #ffffff);
-      animation: rotateBorder 4s linear infinite;
+      animation: spin-loop 4s linear infinite;
     }
 
-    @keyframes rotateBorder {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    @keyframes spin-loop {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
-    .inner-form-box {
-      position: absolute;
-      inset: 3px; /* border thickness */
+    .login-box {
       background: #272727;
-      border-radius: 22px;
-      z-index: 10;
+      border-radius: 24px;
       padding: 30px;
-      text-align: center;
-      backdrop-filter: blur(10px);
-    }
-
-    .inner-form-box h2 {
-      color: #fff;
-      margin-bottom: 25px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-
-    /* custom logo icon thingy */
-    .browser-logo {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 15px;
-      border: 2px solid #fff;
-      border-radius: 18px;
-      position: relative;
-      background: rgba(255,255,255,0.05);
-    }
-
-    .browser-logo::after {
-      content: '';
+      width: 315px;
+      height: 418px;
       position: absolute;
-      top: 12px;
-      left: 18px;
-      width: 20px;
-      height: 20px;
+      z-index: 10;
+      /* blur effect for the glass look */
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      box-shadow: inset 0 20px 40px rgba(255,255,255,0.05);
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 64px;
+      height: 64px;
       border: 2px solid #fff;
-      border-radius: 50%;
+      border-radius: 20px;
+      position: relative;
+      margin-bottom: 5px;
     }
 
-    .input-group {
-      margin-bottom: 15px;
-    }
-
-    .input-group input {
-      width: 100%;
-      padding: 12px 15px;
-      background: #3a3a3a;
-      border: 1px solid transparent;
+    .logo::before {
+      content: "";
+      position: absolute;
+      bottom: 8px;
+      left: 25%;
+      width: 50%;
+      height: 15%;
+      border: 2px solid #fff;
       border-radius: 10px;
+    }
+
+    .header {
+      font-size: 22px;
+      font-weight: 700;
       color: #fff;
-      outline: none;
-      font-size: 14px;
-      transition: 0.2s;
+      margin-bottom: 10px;
     }
 
-    .input-group input:focus {
-      border-color: #555;
-      background: #444;
-    }
-
-    button#submitBtn {
+    .input {
       width: 100%;
       padding: 12px;
-      border: none;
-      border-radius: 20px;
+      border-radius: 10px;
+      background: #3a3a3a;
+      border: 1px solid transparent;
+      color: #fff;
+      outline: none;
+    }
+
+    .input:focus { border: 1px solid #666; }
+
+    .btn {
+      width: 100%;
+      height: 42px;
       background: #373737;
       color: #fff;
-      font-weight: bold;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
       cursor: pointer;
       margin-top: 10px;
-      box-shadow: inset 0 2px 5px rgba(255,255,255,0.1);
     }
 
-    button#submitBtn:hover {
-      background: #444;
+    .btn:hover { background: #4a4a4a; }
+
+    .footer {
+      color: rgba(255,255,255,0.4);
+      font-size: 11px;
+      text-align: center;
+      margin-top: 15px;
     }
 
-    .err-txt {
-      color: #ff5f5f;
-      font-size: 12px;
-      margin-bottom: 10px;
+    #msg_box {
+      color: #ff4d4d;
+      font-size: 13px;
       display: none;
-    }
-
-    .notice {
-      margin-top: 20px;
-      font-size: 10px;
-      color: #777;
-      line-height: 1.4;
     }
   </style>
 </head>
 <body>
 
-  <div class="auth-container">
-    <div class="inner-form-box">
-      <div class="browser-logo"></div>
-      <h2>Zyron</h2>
-      
-      <form id="mainLoginForm">
-        <div class="input-group">
-          <input type="text" id="userVal" placeholder="Username" required autocomplete="off">
-        </div>
-        <div class="input-group">
-          <input type="password" id="passInput" placeholder="Password" required>
-        </div>
+  <div class="container">
+    <div class="login-box">
+      <form class="form" id="login_form">
+        <div class="logo"></div>
+        <span class="header">Zyron Login</span>
         
-        <div id="errorBox" class="err-txt">Wrong username/password.</div>
+        <input type="text" id="user_in" class="input" placeholder="Username" required autocomplete="off">
+        <input type="password" id="pass_in" class="input" placeholder="Password" required>
         
-        <button type="submit" id="submitBtn">Login</button>
+        <p id="msg_box">Bad username or password</p>
+        
+        <button type="submit" class="btn">Sign In</button>
+        
+        <p class="footer">
+          Username/Password are hardcoded. <br>
+          Clear cookies to reset everything.
+        </p>
       </form>
-
-      <div class="notice">
-        Access is locked to authorized users only. <br>
-        If you forgot credentials, check with site owner.
-      </div>
     </div>
   </div>
 
   <script>
-    // Handle form submit
-    const loginForm = document.getElementById('mainLoginForm');
-    
-    loginForm.onsubmit = function(event) {
-      event.preventDefault();
-      
-      const userField = document.getElementById('userVal').value;
-      const passField = document.getElementById('passInput').value;
-      const errorLabel = document.getElementById('errorBox');
+    // handle the login logic
+    const theForm = document.getElementById('login_form');
 
-      // Simple check for access
-      // Note: we are using local check for now
-      if (userField === 'zyron' && passField === 'testing') {
-        console.log('Login success, redirecting...');
+    theForm.onsubmit = function(e) {
+      e.preventDefault();
+      
+      var u = document.getElementById('user_in').value;
+      var p = document.getElementById('pass_in').value;
+      var warn = document.getElementById('msg_box');
+
+      // check against the owner creds
+      if (u === 'zyron' && p === 'testing') {
+        console.log('auth good');
         localStorage.setItem('zyronAuth', 'true');
-        location.href = 'index.html'; 
+        window.location.href = 'index.html'; 
       } else {
-        // show error
-        errorLabel.style.display = 'block';
-        
-        // hide it after a few seconds
+        warn.style.display = 'block';
         setTimeout(function() {
-          errorLabel.style.display = 'none';
-        }, 3500);
+          warn.style.display = 'none';
+        }, 3000);
       }
     };
   </script>
