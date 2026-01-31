@@ -23,6 +23,7 @@
     .button:hover { background: rgba(255, 255, 255, 0.25); box-shadow: inset 0px 3px 6px rgba(255, 255, 255, 0.6), inset 0px -3px 6px rgba(0, 0, 0, 0.8), 0px 0px 8px rgba(255, 255, 255, 0.05); }
     .footer { width: 100%; text-align: center; color: rgba(255, 255, 255, 0.5); font-size: 11px; line-height: 1.5; margin-top: 10px; }
     .error-message { color: #ff4444; font-size: 12px; text-align: center; margin-top: 5px; display: none; }
+    .success-message { color: #44ff44; font-size: 12px; text-align: center; margin-top: 5px; display: none; }
   </style>
 </head>
 <body>
@@ -34,13 +35,51 @@
         <input type="text" placeholder="Username" class="input" id="username" required autocomplete="off" />
         <input type="password" placeholder="Password" class="input" id="password" required />
         <p class="error-message" id="errorMessage">Invalid Credentials</p>
+        <p class="success-message" id="successMessage">Login Success! Redirecting...</p>
         <button type="submit" class="button">Sign In</button>
         <p class="footer">if You Need The Login Ask Owner IRL Or Ask For it in Discord</p>
       </form>
     </div>
   </div>
   <script>
-(function(_0x4a2e,_0x1b3f){var _0x5c6d=function(_0x2e7a){while(--_0x2e7a){_0x4a2e['push'](_0x4a2e['shift']());}};_0x5c6d(++_0x1b3f);}(window['_0x3d8f']=['\x76\x61\x6c\x75\x65','\x67\x65\x74\x45\x6c\x65\x6d\x65\x6e\x74\x42\x79\x49\x64','\x73\x75\x62\x6d\x69\x74','\x61\x64\x64\x45\x76\x65\x6e\x74\x4c\x69\x73\x74\x65\x6e\x65\x72','\x70\x72\x65\x76\x65\x6e\x74\x44\x65\x66\x61\x75\x6c\x74','\x75\x73\x65\x72\x6e\x61\x6d\x65','\x70\x61\x73\x73\x77\x6f\x72\x64','\x65\x72\x72\x6f\x72\x4d\x65\x73\x73\x61\x67\x65','\x73\x74\x79\x6c\x65','\x64\x69\x73\x70\x6c\x61\x79','\x62\x6c\x6f\x63\x6b','\x6e\x6f\x6e\x65','\x7a\x79\x72\x6f\x6e\x41\x75\x74\x68','\x73\x65\x74\x49\x74\x65\x6d','\x74\x72\x75\x65','\x6c\x6f\x63\x61\x74\x69\x6f\x6e','\x68\x72\x65\x66','\x69\x6e\x64\x65\x78\x2e\x68\x74\x6d\x6c','\x6c\x6f\x67\x69\x6e\x46\x6f\x72\x6d','\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74','\x6c\x65\x6e\x67\x74\x68','\x66\x72\x6f\x6d\x43\x68\x61\x72\x43\x6f\x64\x65'],0x1f7));var _0x2f8c=function(_0x4a2e,_0x1b3f){_0x4a2e=_0x4a2e-0x0;var _0x5c6d=window['_0x3d8f'][_0x4a2e];return _0x5c6d;};var _0x7e4a=[0x76,0x7c,0x73,0x70,0x6f];var _0x8f5b=[0x74,0x65,0x73,0x74,0x69,0x6e,0x67];function _0x9a6c(_0x1d2e){var _0x3f4a='';for(var _0x5b6c=0x0;_0x5b6c<_0x1d2e[_0x2f8c('0x14')];_0x5b6c++){_0x3f4a+=String[_0x2f8c('0x15')](_0x1d2e[_0x5b6c]^0x2a);}return _0x3f4a;}function _0xb7d(_0x2e3f,_0x4c5d){if(_0x2e3f[_0x2f8c('0x14')]!==_0x7e4a[_0x2f8c('0x14')])return![];for(var _0x6e7f=0x0;_0x6e7f<_0x2e3f[_0x2f8c('0x14')];_0x6e7f++){if(_0x2e3f[_0x2f8c('0x13')](_0x6e7f)!==_0x7e4a[_0x6e7f])return![];}if(_0x4c5d[_0x2f8c('0x14')]!==_0x8f5b[_0x2f8c('0x14')])return![];for(var _0x7f8a=0x0;_0x7f8a<_0x4c5d[_0x2f8c('0x14')];_0x7f8a++){if(_0x4c5d[_0x2f8c('0x13')](_0x7f8a)!==_0x8f5b[_0x7f8a])return![];}return!![];}document[_0x2f8c('0x1')](_0x2f8c('0x12'))[_0x2f8c('0x3')](_0x2f8c('0x2'),function(_0xa9b){_0xa9b[_0x2f8c('0x4')]();var _0xc1d=document[_0x2f8c('0x1')](_0x2f8c('0x5'))[_0x2f8c('0x0')];var _0xd2e=document[_0x2f8c('0x1')](_0x2f8c('0x6'))[_0x2f8c('0x0')];var _0xe3f=document[_0x2f8c('0x1')](_0x2f8c('0x7'));if(_0xb7d(_0xc1d,_0xd2e)){localStorage[_0x2f8c('0xd')](_0x2f8c('0xc'),_0x2f8c('0xe'));window[_0x2f8c('0xf')][_0x2f8c('0x10')]=_0x2f8c('0x11');}else{_0xe3f[_0x2f8c('0x8')][_0x2f8c('0x9')]=_0x2f8c('0xa');setTimeout(function(){_0xe3f[_0x2f8c('0x8')][_0x2f8c('0x9')]=_0x2f8c('0xb');},0xbb8);}});
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('errorMessage');
+      const successMsg = document.getElementById('successMessage');
+      
+      console.log('Form submitted!');
+      console.log('Username entered:', username);
+      console.log('Password entered:', password);
+      
+      if (username === 'zyron' && password === 'testing') {
+        console.log('Credentials match! Logging in...');
+        
+        successMsg.style.display = 'block';
+        errorMsg.style.display = 'none';
+        
+        localStorage.setItem('zyronAuth', 'true');
+        console.log('localStorage set:', localStorage.getItem('zyronAuth'));
+        
+        setTimeout(function() {
+          console.log('Redirecting to index.html...');
+          window.location.href = 'index.html';
+        }, 1000);
+        
+      } else {
+        console.log('Credentials do NOT match!');
+        errorMsg.style.display = 'block';
+        successMsg.style.display = 'none';
+        
+        setTimeout(function() { 
+          errorMsg.style.display = 'none'; 
+        }, 3000);
+      }
+    });
+    
+    console.log('Login page loaded successfully!');
   </script>
 </body>
 </html>
