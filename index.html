@@ -118,8 +118,8 @@
             display: flex; align-items: center;
         }
 
-        /* Styling for your custom HTTPS icon */
-        .secure-icon {
+        /* Custom Icon Styling */
+        .secure-icon, .generic-icon {
             width: 14px;
             height: 14px;
             object-fit: contain;
@@ -474,7 +474,8 @@
                 } else if (tab.favicon) {
                     iconHtml = `<img src="${tab.favicon}" class="tab-favicon" onerror="this.style.display='none'">`;
                 } else {
-                    iconHtml = '<span style="margin-right: 6px;">🌐</span>';
+                    // UPDATED TAB STRIP INTERNET ICON
+                    iconHtml = '<img src="internetlogo.png" class="tab-favicon" style="margin-right: 6px;">';
                 }
                 
                 tabEl.innerHTML = `
@@ -587,10 +588,10 @@
         function updateUrlIcon(url) {
             const icon = document.getElementById('url-icon');
             if (url && url.startsWith('https://')) {
-                // REPLACED LOCK EMOJI WITH PNG
                 icon.innerHTML = '<img src="sucurehttpsicon.png" class="secure-icon" alt="Secure">';
             } else if (url) {
-                icon.textContent = '🌐';
+                // UPDATED URL BAR INTERNET ICON
+                icon.innerHTML = '<img src="internetlogo.png" class="generic-icon" alt="Web">';
             } else {
                 icon.textContent = '🔎︎';
             }
@@ -650,7 +651,7 @@
         }
 
         function hideKeyboardShortcuts() {
-            document.getElementById('keyboard-shortcuts-panel').classList.remove('remove');
+            document.getElementById('keyboard-shortcuts-panel').classList.remove('show');
         }
 
         window.addEventListener('load', loadData);
