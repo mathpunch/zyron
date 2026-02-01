@@ -78,9 +78,7 @@
         }
         .nav-button:hover { background: var(--hover); color: var(--accent); }
 
-        .settings-icon-img {
-            width: 20px; height: 20px; object-fit: contain; opacity: 0.7; transition: 0.2s;
-        }
+        .settings-icon-img { width: 20px; height: 20px; object-fit: contain; opacity: 0.7; transition: 0.2s; }
         .nav-button:hover .settings-icon-img { opacity: 1; filter: drop-shadow(0 0 5px var(--accent)); }
 
         .search-container { flex-grow: 1; display: flex; align-items: center; background: var(--input-bg); border-radius: 12px; padding: 0 16px; border: 1px solid var(--border); height: 38px; transition: all 0.2s ease; }
@@ -94,7 +92,6 @@
         .new-tab-screen { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a1a2e 0%, var(--bg-color) 100%); color: #fff; flex-direction: column; z-index: 5; }
         .new-tab-content h1 { font-size: 48px; font-weight: 700; background: linear-gradient(to bottom, #fff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
 
-        /* settings modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(4px); }
         .modal-overlay.show { display: flex; }
         .modal-content { background: #1a1a1e; padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 420px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
@@ -206,10 +203,7 @@
         let currentWisp = wispUrls.main;
 
         const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
-        
-        function initProxy() {
-            connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: currentWisp }]);
-        }
+        function initProxy() { connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: currentWisp }]); }
 
         const { ScramjetController } = $scramjetLoadController();
         const scramjet = new ScramjetController({
@@ -223,9 +217,7 @@
         function setWisp(type) {
             currentWisp = wispUrls[type];
             document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
-            if(document.getElementById(`wisp-${type}`)) {
-                document.getElementById(`wisp-${type}`).classList.add('active-wisp');
-            }
+            if(document.getElementById(`wisp-${type}`)) document.getElementById(`wisp-${type}`).classList.add('active-wisp');
             initProxy();
         }
 
@@ -273,10 +265,7 @@
                 const tabEl = document.createElement('div');
                 tabEl.className = `tab ${tab.id === activeTabId ? 'active' : ''}`;
                 tabEl.onclick = () => switchTab(tab.id);
-                tabEl.innerHTML = `
-                    <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${tab.title}</span>
-                    <button class="close-tab-btn" onclick="closeTab(event, ${tab.id})">×</button>
-                `;
+                tabEl.innerHTML = `<span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${tab.title}</span><button class="close-tab-btn" onclick="closeTab(event, ${tab.id})">×</button>`;
                 strip.insertBefore(tabEl, addBtn);
             });
         }
@@ -284,10 +273,7 @@
         function nav() {
             const val = document.getElementById('bar').value.trim();
             if(!val) return;
-
-            // DISMISS KEYBOARD ON MOBILE
             document.activeElement.blur(); 
-            
             showBH();
             let url = (val.includes('.') && !val.includes(' ')) ? (val.startsWith('http') ? val : 'https://' + val) : `https://search.brave.com/search?q=${encodeURIComponent(val)}`;
             const tab = tabs.find(t => t.id === activeTabId);
@@ -297,11 +283,40 @@
             renderTabs();
         }
 
-        function hideNavbar() {
-            document.body.classList.add('nav-hidden');
-            hideSettings();
+        // --- SMART REFRESH FUNCTION ---
+        function reloadPage() {
+            const frame = document.getElementById(`frame-${activeTabId}`);
+            if (!frame || !frame.src) return;
+            showBH();
+            try {
+                // Tells the iframe to reload its CURRENT location, not the original src
+                frame.contentWindow.location.reload();
+            } catch (e) {
+                // Fallback if the script is blocked
+                frame.src = frame.src;
+            }
         }
 
+        // --- URL SYNC (Keeps the bar updated so you refresh the right spot) ---
+        setInterval(() => {
+            if (!activeTabId) return;
+            const frame = document.getElementById(`frame-${activeTabId}`);
+            if (!frame || !frame.src) return;
+            try {
+                const path = frame.contentWindow.location.pathname;
+                if (path.includes('/ixlmath/go/')) {
+                    const encoded = path.split('/ixlmath/go/')[1];
+                    const decoded = scramjet.decodeUrl(encoded);
+                    const tab = tabs.find(t => t.id === activeTabId);
+                    if (tab && tab.url !== decoded && document.activeElement !== document.getElementById('bar')) {
+                        tab.url = decoded;
+                        document.getElementById('bar').value = decoded;
+                    }
+                }
+            } catch (e) {}
+        }, 1000);
+
+        function hideNavbar() { document.body.classList.add('nav-hidden'); hideSettings(); }
         function openAboutBlank() {
             const win = window.open('about:blank', '_blank');
             if (!win) return alert('Popups blocked!');
@@ -317,7 +332,6 @@
         function closeTab(e, id) { e.stopPropagation(); if(tabs.length === 1) return; tabs = tabs.filter(t => t.id !== id); document.getElementById(`frame-${id}`).remove(); if(activeTabId === id) switchTab(tabs[0].id); else renderTabs(); }
         function showSettings() { document.getElementById('settings-modal').classList.add('show'); }
         function hideSettings() { document.getElementById('settings-modal').classList.remove('show'); }
-        function reloadPage() { showBH(); document.getElementById(`frame-${activeTabId}`).src = document.getElementById(`frame-${activeTabId}`).src; }
         function goBack() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.back(); } catch(e){} }
         function goForward() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.forward(); } catch(e){} }
         function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
