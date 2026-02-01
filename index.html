@@ -114,7 +114,7 @@
             
             <span class="section-label">General</span>
             <button class="setting-btn primary" onclick="openAboutBlank()">Open in About:Blank</button>
-            <button class="setting-btn" onclick="hideNavbar()">Hide Navigation Bar</button>
+            <button class="setting-btn" id="nav-toggle-btn" onclick="toggleNavbar()">Hide Navigation Bar</button>
 
             <span class="section-label">Identity (Spoofer)</span>
             <select id="ua-switcher" onchange="updateUserAgent(this.value)">
@@ -126,7 +126,7 @@
 
             <span class="section-label">Wisp Servers</span>
             <div style="display: flex; flex-direction: column; gap: 0;">
-                <button id="wisp-main" class="setting-btn active-wisp" onclick="setWisp('main')">Main Server</button>
+                <button id="wisp-main" class="setting-btn" onclick="setWisp('main')">Main Server</button>
                 <div class="btn-row">
                     <button id="wisp-backup2" class="setting-btn" onclick="setWisp('backup2')">Backup 2</button>
                     <button id="wisp-backup3" class="setting-btn" onclick="setWisp('backup3')">Backup 3</button>
@@ -170,13 +170,18 @@
 
         let tabs = [];
         let activeTabId = null;
+        
+        // Load Saved Settings or Defaults
         let currentWisp = localStorage.getItem('zyron-wisp') || wispUrls.main;
-        let selectedUA = localStorage.getItem('zyron-ua') || userAgents.default;
+        let selectedUAKey = localStorage.getItem('zyron-ua-key') || 'default';
+        let selectedUA = userAgents[selectedUAKey];
+        let isNavHidden = localStorage.getItem('zyron-nav-hidden') === 'true';
 
         const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
         function initProxy() {
             connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: currentWisp, headers: { "User-Agent": selectedUA } }]);
             checkPing();
+            updateUIFromSettings();
         }
 
         const { ScramjetController } = $scramjetLoadController();
@@ -187,6 +192,24 @@
         
         initProxy();
         scramjet.init();
+
+        function updateUIFromSettings() {
+            // Highlight active Wisp button
+            document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
+            for (let key in wispUrls) {
+                if (wispUrls[key] === currentWisp) {
+                    const btn = document.getElementById(`wisp-${key}`);
+                    if (btn) btn.classList.add('active-wisp');
+                }
+            }
+            // Set User-Agent dropdown
+            document.getElementById('ua-switcher').value = selectedUAKey;
+            // Set Navbar state
+            if (isNavHidden) {
+                document.body.classList.add('nav-hidden');
+                document.getElementById('nav-toggle-btn').innerText = "Show Navigation Bar";
+            }
+        }
 
         async function checkPing() {
             const start = Date.now();
@@ -203,17 +226,16 @@
         }
         setInterval(checkPing, 8000);
 
-        function updateUserAgent(val) {
-            selectedUA = userAgents[val];
-            localStorage.setItem('zyron-ua', selectedUA);
+        function updateUserAgent(key) {
+            selectedUAKey = key;
+            selectedUA = userAgents[key];
+            localStorage.setItem('zyron-ua-key', key);
             initProxy();
         }
 
         function setWisp(type) {
             currentWisp = wispUrls[type];
             localStorage.setItem('zyron-wisp', currentWisp);
-            document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
-            if(document.getElementById(`wisp-${type}`)) document.getElementById(`wisp-${type}`).classList.add('active-wisp');
             initProxy();
         }
 
@@ -224,6 +246,14 @@
             localStorage.setItem('zyron-wisp', url);
             initProxy();
             alert('Custom Wisp Connected');
+        }
+
+        function toggleNavbar() {
+            isNavHidden = !isNavHidden;
+            localStorage.setItem('zyron-nav-hidden', isNavHidden);
+            document.body.classList.toggle('nav-hidden', isNavHidden);
+            document.getElementById('nav-toggle-btn').innerText = isNavHidden ? "Show Navigation Bar" : "Hide Navigation Bar";
+            if(isNavHidden) hideSettings();
         }
 
         function showBH() { document.getElementById('loading-screen').style.display='flex'; document.getElementById('loading-screen').style.opacity='1'; }
@@ -282,7 +312,6 @@
             try { frame.contentWindow.location.reload(); } catch (e) { frame.src = frame.src; }
         }
 
-        // URL Sync for smart refresh
         setInterval(() => {
             if (!activeTabId) return;
             const frame = document.getElementById(`frame-${activeTabId}`);
@@ -303,7 +332,6 @@
             } catch (e) {}
         }, 1000);
 
-        function hideNavbar() { document.body.classList.add('nav-hidden'); hideSettings(); }
         function openAboutBlank() {
             const win = window.open('about:blank', '_blank');
             const doc = win.document;
