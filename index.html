@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zyron</title>
+    <title>Zyron | Modern</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="/ixlmath/baremux/index.js"></script>
     <script src="/ixlmath/scram/scramjet.all.js"></script>
-    <script>
-        navigator.serviceWorker.register("/ixlmath/sw.js")
-    </script>
+    <script>navigator.serviceWorker.register("/ixlmath/sw.js")</script>
     <style>
         :root {
-            --bg-color: #202124;
-            --nav-bg: #35363a;
-            --tab-active: #35363a;
-            --tab-inactive: #202124;
-            --accent: #8ab4f8;
-            --text: #e8eaed;
-            --input-bg: #202124;
-            --border: #3c4043;
-            --hover: #2d2e30;
+            --bg-color: #0a0a0c;
+            --nav-bg: rgba(20, 20, 23, 0.8);
+            --tab-active: #1a1a1e;
+            --tab-inactive: transparent;
+            --accent: #a855f7; /* Modern Purple */
+            --accent-glow: rgba(168, 85, 247, 0.4);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --input-bg: #111114;
+            --border: #27272a;
+            --hover: #1e1e22;
         }
 
         body, html {
@@ -39,141 +39,157 @@
             z-index: 99999; 
             transition: opacity 0.5s ease;
         }
-        .ring-3 { box-shadow: 0px 0px 10px 15px #fff; border-radius: 50%; padding: 2px; }
-        .ring-2 { box-shadow: 0px 0px 2px 10px #000; border-radius: 50%; padding: 2px; }
-        .ring-1 { box-shadow: 0px 0px 10px 15px #fff; border-radius: 50%; padding: 2px; }
-        .black-hole { height: 128px; aspect-ratio: 1; background-color: black; border-radius: 50%; box-shadow: 0px 0px 20px 10px #000, inset 0px 0px 10px #ffffff88; position: relative; }
-        .glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 350px; height: 350px; background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 5%, rgba(255, 255, 255, 0.1) 20%, rgba(255, 255, 255, 0) 70%); border-radius: 50%; z-index: -1; }
-        .container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotateX(75deg); }
-        .crescent { filter: drop-shadow(0px 0px 5px #fff) drop-shadow(0px 0px 15px #fff) drop-shadow(0px 0px 25px #fff) drop-shadow(0px 0px 50px #fff); position: absolute; color: transparent !important; top: 50%; left: 50%; transform: rotate(180deg); width: 200px; height: 12px; clip-path: ellipse(60% 100% at 100% 50%); offset-path: path("M 0,-100 A 100,100 0 1,1 0,100 A 100,100 0 1,1 0,-100 Z"); offset-distance: 0%; opacity: 0; }
-        .crescent-1 { animation: moveOval 500ms ease-in-out 0ms infinite; }
-        .crescent-2 { animation: moveOval 500ms ease-in-out 83ms infinite; }
-        .crescent-3 { animation: moveOval 500ms ease-in-out 167ms infinite; }
-        .crescent-4 { animation: moveOval 500ms ease-in-out 250ms infinite; }
-        .crescent-5 { animation: moveOval 500ms ease-in-out 333ms infinite; }
-        .crescent-6 { animation: moveOval 500ms ease-in-out 417ms infinite; }
-        @keyframes moveOval { 18% { offset-distance: 25%; opacity: 0; } 25% { opacity: 1; } 75% { opacity: 1; } 100% { offset-distance: 90%; opacity: 0; } }
+        .black-hole { 
+            height: 100px; aspect-ratio: 1; background-color: black; border-radius: 50%; 
+            box-shadow: 0px 0px 40px 10px var(--accent), inset 0px 0px 10px #ffffff88; 
+            position: relative; animation: breathe 3s infinite ease-in-out;
+        }
+        @keyframes breathe { 0%, 100% { transform: scale(1); box-shadow: 0px 0px 40px 10px var(--accent); } 50% { transform: scale(1.05); box-shadow: 0px 0px 60px 20px var(--accent); } }
 
-        /* --- ORIGINAL STYLES --- */
-        .tab-strip { display: flex; align-items: flex-end; padding: 8px 10px 0 10px; background: var(--bg-color); gap: 5px; height: 34px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
-        .tab-strip::-webkit-scrollbar { height: 4px; }
-        .tab-strip::-webkit-scrollbar-track { background: var(--bg-color); }
-        .tab-strip::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-        .tab { background: var(--tab-inactive); padding: 6px 12px; border-radius: 8px 8px 0 0; font-size: 12px; min-width: 120px; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; display: flex; align-items: center; justify-content: space-between; color: #9aa0a6; border: 1px solid transparent; transition: background 0.15s ease; position: relative; }
-        .tab.active { background: var(--tab-active); color: var(--text); font-weight: 500; }
-        .tab:hover:not(.active) { background: var(--hover); }
-        .tab-favicon { width: 14px; height: 14px; margin-right: 6px; flex-shrink: 0; border-radius: 2px; object-fit: contain; }
-        .tab-title { flex-grow: 1; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
-        .tab-loading { width: 14px; height: 14px; margin-right: 6px; border: 2px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .close-tab { margin-left: 8px; font-size: 16px; opacity: 0.6; padding: 0 4px; flex-shrink: 0; }
-        .close-tab:hover { color: #ff605c; opacity: 1; }
-        .add-tab { padding: 5px 12px; cursor: pointer; color: #9aa0a6; font-size: 18px; flex-shrink: 0; }
-        .add-tab:hover { color: white; }
-        .navbar { display: flex; align-items: center; height: 48px; background-color: var(--nav-bg); padding: 0 15px; gap: 12px; }
-        .nav-buttons { display: flex; gap: 18px; font-size: 18px; color: #9aa0a6; }
-        .nav-buttons span { cursor: pointer; user-select: none; transition: color 0.2s; padding: 4px; }
-        .nav-buttons span:hover { color: white; }
-        .nav-buttons span.disabled { opacity: 0.3; cursor: not-allowed; }
-        .search-container { flex-grow: 1; display: flex; align-items: center; background: var(--input-bg); border-radius: 20px; padding: 4px 18px; border: 1px solid var(--border); position: relative; }
-        .search-container:focus-within { border-color: var(--accent); }
-        .url-icon { margin-right: 8px; display: flex; align-items: center; }
-        .url-icon img { width: 14px; height: 14px; object-fit: contain; }
-        input#bar { flex-grow: 1; background: transparent; border: none; color: white; padding: 4px 0; font-size: 13px; outline: none; }
-        .autocomplete { position: absolute; top: 100%; left: 0; right: 0; background: var(--nav-bg); border-radius: 8px; margin-top: 4px; max-height: 300px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1000; display: none; }
-        .autocomplete.show { display: block; }
-        .autocomplete-item { padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
-        .autocomplete-item:hover { background: var(--hover); }
-        .autocomplete-item:last-child { border-bottom: none; }
-        .frame-container { position: absolute; top: 100px; left: 0; right: 0; bottom: 0; transition: top 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        body.fullscreen-mode .frame-container { top: 0; }
-        body.fullscreen-mode .navbar, body.fullscreen-mode .tab-strip { display: none; }
-        iframe { width: 100%; height: 100%; border: none; background: #fff; display: none; }
+        /* --- MODERN UI --- */
+        .tab-strip { 
+            display: flex; align-items: flex-end; padding: 12px 15px 0 15px; 
+            background: var(--bg-color); gap: 4px; height: 40px; 
+            backdrop-filter: blur(10px);
+        }
+
+        .tab { 
+            background: var(--tab-inactive); padding: 8px 16px; 
+            border-radius: 10px 10px 0 0; font-size: 13px; 
+            min-width: 140px; max-width: 220px; color: var(--text-muted); 
+            border: 1px solid transparent; border-bottom: none;
+            transition: all 0.2s ease; position: relative;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .tab.active { 
+            background: var(--tab-active); color: var(--text); 
+            border-color: var(--border);
+        }
+
+        .tab.active::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+            height: 2px; background: var(--accent); box-shadow: 0 -2px 10px var(--accent);
+        }
+
+        .tab:hover:not(.active) { background: var(--hover); color: var(--text); }
+
+        .navbar { 
+            display: flex; align-items: center; height: 56px; 
+            background-color: var(--nav-bg); padding: 0 20px; gap: 16px;
+            border-bottom: 1px solid var(--border); backdrop-filter: blur(12px);
+        }
+
+        .nav-buttons { display: flex; gap: 12px; }
+        .nav-buttons span { 
+            cursor: pointer; padding: 8px; border-radius: 8px;
+            transition: all 0.2s; color: var(--text-muted);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .nav-buttons span:hover { background: var(--hover); color: var(--accent); }
+
+        .search-container { 
+            flex-grow: 1; display: flex; align-items: center; 
+            background: var(--input-bg); border-radius: 12px; 
+            padding: 0 16px; border: 1px solid var(--border); height: 38px;
+            transition: all 0.2s ease;
+        }
+        .search-container:focus-within { 
+            border-color: var(--accent); 
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .url-icon img { width: 16px; height: 16px; opacity: 0.7; }
+
+        input#bar { 
+            flex-grow: 1; background: transparent; border: none; 
+            color: white; padding: 8px; font-size: 14px; outline: none; 
+        }
+
+        .frame-container { position: absolute; top: 108px; left: 0; right: 0; bottom: 0; background: #000; }
+        iframe { width: 100%; height: 100%; border: none; display: none; }
         iframe.active { display: block; }
-        .new-tab-screen { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--bg-color); color: #fff; flex-direction: column; z-index: 5; }
-        .new-tab-content { text-align: center; max-width: 600px; }
-        .context-menu { position: fixed; background: var(--nav-bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 10000; display: none; min-width: 180px; }
-        .context-menu.show { display: block; }
-        .context-menu-item { padding: 8px 16px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 10px; }
-        .context-menu-item:hover { background: var(--hover); }
-        .context-menu-separator { height: 1px; background: var(--border); margin: 4px 0; }
-        .loading-bar { position: absolute; top: 0; left: 0; height: 2px; background: var(--accent); width: 0%; transition: width 0.3s ease; z-index: 1001; }
-        .toast { position: fixed; bottom: 20px; right: 20px; background: var(--nav-bg); padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 10001; opacity: 0; transform: translateY(20px); transition: all 0.3s ease; }
-        .toast.show { opacity: 1; transform: translateY(0); }
-        .keyboard-shortcuts { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 10002; }
-        .keyboard-shortcuts.show { display: flex; }
-        .shortcuts-panel { background: var(--nav-bg); padding: 30px; border-radius: 12px; max-width: 500px; max-height: 80vh; overflow-y: auto; }
-        .shortcut-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
-        .shortcut-row:last-child { border-bottom: none; }
-        .key { background: var(--bg-color); padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; }
+
+        .new-tab-screen { 
+            position: absolute; inset: 0; display: flex; align-items: center; 
+            justify-content: center; background: radial-gradient(circle at center, #1a1a2e 0%, var(--bg-color) 100%); 
+            color: #fff; flex-direction: column; z-index: 5; 
+        }
+
+        .new-tab-content h1 { 
+            font-size: 48px; font-weight: 700; letter-spacing: -1px;
+            background: linear-gradient(to bottom, #fff, #a855f7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 0;
+        }
+
+        .add-tab { 
+            font-size: 20px; color: var(--text-muted); padding: 0 10px; 
+            cursor: pointer; align-self: center; margin-bottom: 6px;
+        }
+        .add-tab:hover { color: var(--accent); }
+
+        /* --- LOADING BAR --- */
+        .loading-bar { 
+            position: absolute; top: 0; left: 0; height: 3px; 
+            background: linear-gradient(90deg, var(--accent), #d8b4fe); 
+            width: 0%; transition: width 0.3s ease; z-index: 10000; 
+        }
+
+        /* --- TOAST & CONTEXT --- */
+        .context-menu { 
+            position: fixed; background: #1a1a1e; border: 1px solid var(--border);
+            border-radius: 12px; padding: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: none; min-width: 180px; z-index: 100000;
+        }
+        .context-menu-item { 
+            padding: 10px 12px; border-radius: 6px; font-size: 13px; 
+            cursor: pointer; transition: 0.2s;
+        }
+        .context-menu-item:hover { background: var(--accent); color: white; }
     </style>
 </head>
 <body>
 
     <div id="loading-screen">
-        <div class="ring-3"><div class="ring-2"><div class="ring-1"><div class="black-hole"></div><div class="glow"></div></div></div></div>
-        <div class="container">
-            <svg class="crescent crescent-1" viewBox="0 0 50 50"><path d="M 0 0 C 54 50 185 57 226 0 C 198 39 35 32 0 0" fill="#ffffff55"></path></svg>
-            <svg class="crescent crescent-2" viewBox="0 0 50 50"><path d="M 0 0 C 54 50 185 57 226 0 C 198 39 35 32 0 0" fill="#ffffff55"></path></svg>
-            <svg class="crescent crescent-3" viewBox="0 0 50 50"><path d="M 0 0 C 54 50 185 57 226 0 C 198 39 35 32 0 0" fill="#ffffff55"></path></svg>
-            <svg class="crescent crescent-4" viewBox="0 0 50 50"><path d="M 0 0 C 54 50 185 57 226 0 C 198 39 35 32 0 0" fill="#ffffff55"></path></svg>
-            <svg class="crescent crescent-5" viewBox="0 0 50 50"><path d="M 0 0 C 54 50 185 57 226 0 C 198 39 35 32 0 0" fill="#ffffff55"></path></svg>
-            <svg class="crescent crescent-6" viewBox="0 0 50 50"><path d="M 0 0 C 54 50 185 57 226 0 C 198 39 35 32 0 0" fill="#ffffff55"></path></svg>
-        </div>
-        <p style="margin-top: 180px; font-weight: 500; letter-spacing: 2px; color: white;">LOADING WAIT NERD</p>
+        <div class="black-hole"></div>
+        <p style="margin-top: 40px; font-weight: 500; letter-spacing: 4px; color: var(--accent); font-size: 12px;">INITIALIZING ZYRON</p>
     </div>
 
     <div class="loading-bar" id="loading-bar"></div>
 
     <div class="tab-strip" id="tab-strip">
-        <div class="add-tab" onclick="createNewTab()" title="New Tab (Ctrl+T)">+</div>
+        <div class="add-tab" onclick="createNewTab()">+</div>
     </div>
 
     <nav class="navbar">
         <div class="nav-buttons">
-            <span onclick="goBack()" id="back-btn" title="Back">←</span>
-            <span onclick="goForward()" id="forward-btn" title="Forward">→</span>
-            <span onclick="reloadPage()" title="Reload (Ctrl+R)">↻</span>
+            <span onclick="goBack()">←</span>
+            <span onclick="goForward()">→</span>
+            <span onclick="reloadPage()">↻</span>
         </div>
         <div class="search-container">
             <span class="url-icon" id="url-icon"><img src="internetlogo.png"></span>
-            <input type="text" placeholder="Search or enter URL" id="bar" autocomplete="off">
-            <div class="autocomplete" id="autocomplete"></div>
+            <input type="text" placeholder="Search the web or enter a URL..." id="bar" autocomplete="off">
         </div>
         <div class="nav-buttons">
-            <span onclick="showKeyboardShortcuts()" title="Keyboard Shortcuts">⌨</span>
-            <span onclick="toggleFullScreen()" title="Fullscreen (F11)">⛶</span>
+            <span onclick="showKeyboardShortcuts()">⌨</span>
+            <span onclick="toggleFullScreen()">⛶</span>
         </div>
     </nav>
 
     <div class="frame-container" id="frame-container">
         <div id="new-tab-ui" class="new-tab-screen">
-            <div class="new-tab-content">
-                <h1 style="font-weight: 500; margin-bottom: 10px;">Zyron</h1>
-                <p style="color: #9aa0a6; font-size: 14px; margin-bottom: 20px;">Made By Arctic 1.0</p>
+            <div class="new-tab-content" style="text-align: center;">
+                <h1>Zyron</h1>
+                <p style="color: var(--text-muted); font-size: 14px; margin-top: 10px; letter-spacing: 1px;">PREMIUM BROWSING EXPERIENCE</p>
             </div>
         </div>
     </div>
 
     <div class="context-menu" id="context-menu"></div>
-    <div class="toast" id="toast"></div>
-
-    <div class="keyboard-shortcuts" id="keyboard-shortcuts-panel" onclick="hideKeyboardShortcuts()">
-        <div class="shortcuts-panel" onclick="event.stopPropagation()">
-            <h2 style="margin-top: 0;">Keyboard Shortcuts</h2>
-            <div class="shortcut-row"><span>New Tab</span><span class="key">Ctrl + T</span></div>
-            <div class="shortcut-row"><span>Close Tab</span><span class="key">Ctrl + W</span></div>
-            <div class="shortcut-row"><span>Next Tab</span><span class="key">Ctrl + Tab</span></div>
-            <div class="shortcut-row"><span>Previous Tab</span><span class="key">Ctrl + Shift + Tab</span></div>
-            <div class="shortcut-row"><span>Reload</span><span class="key">Ctrl + R</span></div>
-            <div class="shortcut-row"><span>Focus Search</span><span class="key">Ctrl + L</span></div>
-            <div class="shortcut-row"><span>Fullscreen</span><span class="key">F11</span></div>
-            <div class="shortcut-row"><span>Show Shortcuts</span><span class="key">Ctrl + /</span></div>
-        </div>
-    </div>
 
     <script>
-        // AUTH REMOVED
         let tabs = [];
         let activeTabId = null;
 
@@ -228,7 +244,6 @@
             });
             document.getElementById('frame-container').appendChild(frame);
             switchTab(id);
-            localStorage.setItem('zyron-tabs', JSON.stringify(tabs.map(t => ({ url: t.url, title: t.title }))));
         }
 
         function switchTab(id) {
@@ -250,15 +265,16 @@
             tabs.forEach(tab => {
                 const tabEl = document.createElement('div');
                 tabEl.className = `tab ${tab.id === activeTabId ? 'active' : ''}`;
-                let icon = tab.loading ? '<div class="tab-loading"></div>' : `<img src="internetlogo.png" class="tab-favicon">`;
-                tabEl.innerHTML = `${icon}<span class="tab-title" onclick="switchTab(${tab.id})">${tab.title}</span><span class="close-tab" onclick="closeTab(event, ${tab.id})">×</span>`;
+                let icon = tab.loading ? '⏳' : `<img src="internetlogo.png" style="width:14px">`;
+                tabEl.innerHTML = `<span>${icon}</span><span style="flex:1; overflow:hidden; text-overflow:ellipsis;">${tab.title}</span><span onclick="closeTab(event, ${tab.id})" style="opacity:0.5">×</span>`;
+                tabEl.onclick = () => switchTab(tab.id);
                 strip.insertBefore(tabEl, addButton);
             });
         }
 
         function nav() {
             const input = document.getElementById('bar').value.trim();
-            let finalUrl = !input ? "https://zyronportal.vercel.app/" : (input.includes('.') && !input.includes(' ')) ? (input.startsWith("http") ? input : "https://" + input) : `https://www.google.com/search?q=${encodeURIComponent(input)}`;
+            let finalUrl = !input ? "https://google.com" : (input.includes('.') && !input.includes(' ')) ? (input.startsWith("http") ? input : "https://" + input) : `https://www.google.com/search?q=${encodeURIComponent(input)}`;
             navigateToUrl(finalUrl);
         }
 
@@ -266,7 +282,7 @@
             showBH(); showLoadingBar();
             const currentTab = tabs.find(t => t.id === activeTabId);
             currentTab.url = finalUrl; currentTab.loading = true;
-            try { const urlObj = new URL(finalUrl); currentTab.title = urlObj.hostname.replace('www.', ''); } catch(e) { currentTab.title = finalUrl; }
+            try { const urlObj = new URL(finalUrl); currentTab.title = urlObj.hostname; } catch(e) { currentTab.title = finalUrl; }
             document.getElementById(`frame-${activeTabId}`).src = scramjet.encodeUrl(finalUrl);
             document.getElementById('new-tab-ui').style.display = 'none';
             updateUrlIcon(finalUrl); renderTabs();
@@ -283,13 +299,10 @@
         function closeTab(e, id) { e.stopPropagation(); if (tabs.length === 1) return; tabs = tabs.filter(t => t.id !== id); document.getElementById(`frame-${id}`).remove(); if (activeTabId === id) switchTab(tabs[0].id); else renderTabs(); }
         function showLoadingBar() { document.getElementById('loading-bar').style.width = '70%'; }
         function hideLoadingBar() { const bar = document.getElementById('loading-bar'); bar.style.width = '100%'; setTimeout(() => { bar.style.width = '0%'; }, 300); }
-        function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); document.body.classList.toggle('fullscreen-mode'); }
-        function showKeyboardShortcuts() { document.getElementById('keyboard-shortcuts-panel').classList.add('show'); }
-        function hideKeyboardShortcuts() { document.getElementById('keyboard-shortcuts-panel').classList.remove('show'); }
+        function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
 
         window.addEventListener('load', () => { loadData(); setTimeout(hideBH, 1000); });
         document.getElementById('bar').addEventListener('keydown', (e) => { if (e.key === 'Enter') nav(); });
     </script>
 </body>
 </html>
-
