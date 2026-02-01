@@ -90,16 +90,16 @@
         /* --- SETTINGS MODAL --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(4px); }
         .modal-overlay.show { display: flex; }
-        .modal-content { background: #1a1a1e; padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 350px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
+        .modal-content { background: #1a1a1e; padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 380px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
         
         .setting-btn {
-            width: 100%; padding: 14px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--border);
+            width: 100%; padding: 12px; margin: 6px 0; border-radius: 10px; border: 1px solid var(--border);
             background: var(--hover); color: var(--text); font-weight: 500; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; text-transform: uppercase; letter-spacing: 1px; font-size: 11px;
+            display: flex; align-items: center; justify-content: center; text-transform: uppercase; letter-spacing: 1px; font-size: 10px;
         }
         .setting-btn:hover { border-color: var(--accent); background: var(--tab-active); color: var(--accent); }
         .setting-btn.active-wisp { border-color: var(--accent); background: var(--accent-glow); color: white; }
-        .setting-btn.primary { background: var(--accent); color: white; border: none; }
+        .setting-btn.primary { background: var(--accent); color: white; border: none; font-size: 12px; padding: 14px; }
 
         .section-label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin: 15px 0 5px 0; display: block; }
 
@@ -149,10 +149,13 @@
             <button class="setting-btn primary" onclick="openAboutBlank()">Open in About:Blank</button>
             <button class="setting-btn" onclick="hideNavbar()">Hide Navigation Bar</button>
 
-            <span class="section-label">Wisp Server</span>
-            <div style="display: flex; gap: 8px;">
-                <button id="wisp-default" class="setting-btn active-wisp" style="flex:1;" onclick="setWisp('default')">Default</button>
-                <button id="wisp-backup" class="setting-btn" style="flex:1;" onclick="setWisp('backup')">Backup 2</button>
+            <span class="section-label">Wisp Servers</span>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <button id="wisp-main" class="setting-btn active-wisp" onclick="setWisp('main')">Main Server</button>
+                <div style="display: flex; gap: 8px;">
+                    <button id="wisp-backup2" class="setting-btn" style="flex:1;" onclick="setWisp('backup2')">Backup 2</button>
+                    <button id="wisp-backup3" class="setting-btn" style="flex:1;" onclick="setWisp('backup3')">Backup 3</button>
+                </div>
             </div>
 
             <button class="setting-btn" onclick="hideSettings()" style="margin-top: 20px; border: none; background: transparent; opacity: 0.6; text-transform: none; letter-spacing: 0;">
@@ -164,7 +167,15 @@
     <script>
         let tabs = [];
         let activeTabId = null;
-        let currentWisp = "wss://ixlmathlogin.ixl.best/wisp/";
+        
+        // Server URLs
+        const wispUrls = {
+            main: "wss://zyrongardeningalore.speedinsure.hk/wisp/",
+            backup2: "wss://wisp.rhw.one/",
+            backup3: "wss://ixlmathlogin.ixl.best/wisp/"
+        };
+        
+        let currentWisp = wispUrls.main;
 
         const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
         
@@ -182,17 +193,13 @@
         scramjet.init();
 
         function setWisp(type) {
-            if (type === 'default') {
-                currentWisp = "wss://ixlmathlogin.ixl.best/wisp/";
-                document.getElementById('wisp-default').classList.add('active-wisp');
-                document.getElementById('wisp-backup').classList.remove('active-wisp');
-            } else {
-                currentWisp = "wss://wisp.rhw.one/";
-                document.getElementById('wisp-backup').classList.add('active-wisp');
-                document.getElementById('wisp-default').classList.remove('active-wisp');
-            }
+            currentWisp = wispUrls[type];
+            
+            // UI Update
+            document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
+            document.getElementById(`wisp-${type}`).classList.add('active-wisp');
+            
             initProxy();
-            console.log("Wisp switched to: " + currentWisp);
         }
 
         function showBH() { document.getElementById('loading-screen').style.display = 'flex'; document.getElementById('loading-screen').style.opacity = '1'; }
