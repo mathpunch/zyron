@@ -95,7 +95,7 @@
         .new-tab-screen { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a1a2e 0%, var(--bg-color) 100%); color: #fff; flex-direction: column; z-index: 5; }
         .new-tab-content h1 { font-size: 48px; font-weight: 700; background: linear-gradient(to bottom, #fff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
 
-        /* settings menu */
+        /* settings modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(4px); }
         .modal-overlay.show { display: flex; }
         .modal-content { background: #1a1a1e; padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 380px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
@@ -110,13 +110,11 @@
         .setting-btn.primary { background: var(--accent); color: white; border: none; font-size: 12px; padding: 14px; }
 
         .section-label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin: 15px 0 5px 0; display: block; }
-        .loading-bar { position: absolute; top: 0; left: 0; height: 3px; background: var(--accent); width: 0%; transition: width 0.3s; z-index: 10001; }
     </style>
 </head>
 <body>
 
     <div id="loading-screen"><div class="black-hole"></div></div>
-    <div class="loading-bar" id="loading-bar"></div>
 
     <div id="top-ui">
         <div class="tab-strip" id="tab-strip">
@@ -217,7 +215,7 @@
             frame.id = `frame-${id}`;
             frame.onload = () => { 
                 const t = tabs.find(x => x.id === id); 
-                if(t) { t.loading = false; renderTabs(); hideBH(); hideLoadingBar(); }
+                if(t) { t.loading = false; renderTabs(); hideBH(); }
             };
             document.getElementById('frame-container').appendChild(frame);
             switchTab(id);
@@ -253,7 +251,7 @@
         function nav() {
             const val = document.getElementById('bar').value.trim();
             if(!val) return;
-            showBH(); showLoadingBar();
+            showBH();
             let url = (val.includes('.') && !val.includes(' ')) ? (val.startsWith('http') ? val : 'https://' + val) : `https://www.google.com/search?q=${encodeURIComponent(val)}`;
             const tab = tabs.find(t => t.id === activeTabId);
             tab.url = url; tab.title = url.split('/')[2] || url;
@@ -285,8 +283,6 @@
         function reloadPage() { showBH(); document.getElementById(`frame-${activeTabId}`).src = document.getElementById(`frame-${activeTabId}`).src; }
         function goBack() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.back(); } catch(e){} }
         function goForward() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.forward(); } catch(e){} }
-        function showLoadingBar() { document.getElementById('loading-bar').style.width = '70%'; }
-        function hideLoadingBar() { document.getElementById('loading-bar').style.width = '100%'; setTimeout(()=> document.getElementById('loading-bar').style.width='0', 300); }
         function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
 
         window.onload = () => { createNewTab(); setTimeout(hideBH, 1000); };
