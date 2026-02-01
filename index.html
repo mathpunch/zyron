@@ -160,7 +160,7 @@
             
             <span class="section-label">General</span>
             <button class="setting-btn primary" onclick="openAboutBlank()">Open in About:Blank</button>
-            <button class="setting-btn" onclick="hideNavbar()">Hide Navigation Bar</button>
+            <button id="toggle-nav-btn" class="setting-btn" onclick="toggleNavbar()">Hide Navigation Bar</button>
 
             <span class="section-label">Wisp Servers</span>
             <div style="display: flex; flex-direction: column; gap: 0;">
@@ -227,9 +227,57 @@
             files: { all: "/ixlmath/scram/scramjet.all.js", wasm: "/ixlmath/scram/scramjet.wasm.wasm", sync: "/ixlmath/scram/scramjet.sync.js" },
             prefix: "/ixlmath/go/" 
         });
-        
-        initProxy();
-        scramjet.init();
+
+        // --- LOAD SETTINGS FROM STORAGE ---
+        function loadSettings() {
+            const savedWispKey = localStorage.getItem('zyron-wisp-key');
+            const savedCustomWisp = localStorage.getItem('zyron-custom-wisp');
+            const navHidden = localStorage.getItem('zyron-nav-hidden') === 'true';
+
+            if (savedCustomWisp) {
+                currentWisp = savedCustomWisp;
+                document.getElementById('custom-wisp-url').value = savedCustomWisp;
+            } else if (savedWispKey && wispUrls[savedWispKey]) {
+                currentWisp = wispUrls[savedWispKey];
+                updateWispUI(savedWispKey);
+            }
+
+            if (navHidden) {
+                document.body.classList.add('nav-hidden');
+                document.getElementById('toggle-nav-btn').innerText = "Show Navigation Bar";
+            }
+        }
+
+        function updateWispUI(type) {
+            document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
+            const btn = document.getElementById(`wisp-${type}`);
+            if (btn) btn.classList.add('active-wisp');
+        }
+
+        function setWisp(type) {
+            currentWisp = wispUrls[type];
+            localStorage.setItem('zyron-wisp-key', type);
+            localStorage.removeItem('zyron-custom-wisp');
+            updateWispUI(type);
+            initProxy();
+        }
+
+        function setCustomWisp() {
+            const url = document.getElementById('custom-wisp-url').value.trim();
+            if(!url.startsWith('ws')) return alert('Please enter a valid wss:// URL');
+            currentWisp = url;
+            localStorage.setItem('zyron-custom-wisp', url);
+            localStorage.removeItem('zyron-wisp-key');
+            document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
+            initProxy();
+            alert('Connected and Saved custom Wisp server');
+        }
+
+        function toggleNavbar() {
+            const isHidden = document.body.classList.toggle('nav-hidden');
+            localStorage.setItem('zyron-nav-hidden', isHidden);
+            document.getElementById('toggle-nav-btn').innerText = isHidden ? "Show Navigation Bar" : "Hide Navigation Bar";
+        }
 
         // --- PING LOGIC ---
         async function checkWispPing(url, elementId) {
@@ -241,34 +289,14 @@
                     document.getElementById(elementId).innerText = ping + "ms";
                     socket.close();
                 };
-                socket.onerror = () => {
-                    document.getElementById(elementId).innerText = "ERR";
-                };
-            } catch (e) {
-                document.getElementById(elementId).innerText = "ERR";
-            }
+                socket.onerror = () => { document.getElementById(elementId).innerText = "ERR"; };
+            } catch (e) { document.getElementById(elementId).innerText = "ERR"; }
         }
 
         function refreshAllPings() {
             Object.keys(wispUrls).forEach(key => {
                 checkWispPing(wispUrls[key], `ping-${key}`);
             });
-        }
-
-        function setWisp(type) {
-            currentWisp = wispUrls[type];
-            document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
-            if(document.getElementById(`wisp-${type}`)) document.getElementById(`wisp-${type}`).classList.add('active-wisp');
-            initProxy();
-        }
-
-        function setCustomWisp() {
-            const url = document.getElementById('custom-wisp-url').value.trim();
-            if(!url.startsWith('ws')) return alert('Please enter a valid wss:// URL');
-            currentWisp = url;
-            document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
-            initProxy();
-            alert('Connected to custom Wisp server');
         }
 
         function showBH() { document.getElementById('loading-screen').style.display = 'flex'; document.getElementById('loading-screen').style.opacity = '1'; }
@@ -328,11 +356,7 @@
             const frame = document.getElementById(`frame-${activeTabId}`);
             if (!frame || !frame.src) return;
             showBH();
-            try {
-                frame.contentWindow.location.reload();
-            } catch (e) {
-                frame.src = frame.src;
-            }
+            try { frame.contentWindow.location.reload(); } catch (e) { frame.src = frame.src; }
         }
 
         setInterval(() => {
@@ -353,7 +377,6 @@
             } catch (e) {}
         }, 1000);
 
-        function hideNavbar() { document.body.classList.add('nav-hidden'); hideSettings(); }
         function openAboutBlank() {
             const win = window.open('about:blank', '_blank');
             if (!win) return alert('Popups blocked!');
@@ -367,18 +390,19 @@
         }
 
         function closeTab(e, id) { e.stopPropagation(); if(tabs.length === 1) return; tabs = tabs.filter(t => t.id !== id); document.getElementById(`frame-${id}`).remove(); if(activeTabId === id) switchTab(tabs[0].id); else renderTabs(); }
-        
-        function showSettings() { 
-            document.getElementById('settings-modal').classList.add('show'); 
-            refreshAllPings(); // Refresh pings when menu opens
-        }
-        
+        function showSettings() { document.getElementById('settings-modal').classList.add('show'); refreshAllPings(); }
         function hideSettings() { document.getElementById('settings-modal').classList.remove('show'); }
         function goBack() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.back(); } catch(e){} }
         function goForward() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.forward(); } catch(e){} }
         function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
 
-        window.onload = () => { createNewTab(); setTimeout(hideBH, 1000); };
+        window.onload = () => { 
+            loadSettings(); 
+            initProxy();
+            scramjet.init();
+            createNewTab(); 
+            setTimeout(hideBH, 1000); 
+        };
         document.getElementById('bar').onkeydown = (e) => { if(e.key === 'Enter') nav(); };
     </script>
 </body>
