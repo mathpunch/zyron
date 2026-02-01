@@ -78,7 +78,6 @@
         }
         .nav-button:hover { background: var(--hover); color: var(--accent); }
 
-        /* settings button icon */
         .settings-icon-img {
             width: 20px; height: 20px; object-fit: contain; opacity: 0.7; transition: 0.2s;
         }
@@ -98,7 +97,7 @@
         /* settings modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(4px); }
         .modal-overlay.show { display: flex; }
-        .modal-content { background: #1a1a1e; padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 380px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
+        .modal-content { background: #1a1a1e; padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
         
         .setting-btn {
             width: 100%; padding: 12px; margin: 6px 0; border-radius: 10px; border: 1px solid var(--border);
@@ -163,6 +162,7 @@
                     <button id="wisp-backup2" class="setting-btn" style="flex:1;" onclick="setWisp('backup2')">Backup 2</button>
                     <button id="wisp-backup3" class="setting-btn" style="flex:1;" onclick="setWisp('backup3')">Backup 3</button>
                 </div>
+                <button id="wisp-backup4" class="setting-btn" onclick="setWisp('backup4')">Backup 4 (Render)</button>
             </div>
 
             <button class="setting-btn" onclick="hideSettings()" style="margin-top: 20px; border: none; background: transparent; opacity: 0.6; text-transform: none; letter-spacing: 0;">
@@ -172,11 +172,12 @@
     </div>
 
     <script>
-        // server list
+        // server list - updated with backup 4
         const wispUrls = {
             main: "wss://zyrongardeningalore.speedinsure.hk/wisp/",
             backup2: "wss://wisp.rhw.one/",
-            backup3: "wss://ixlmathlogin.ixl.best/wisp/"
+            backup3: "wss://ixlmathlogin.ixl.best/wisp/",
+            backup4: "wss://s0lace-j2np.onrender.com/wisp/"
         };
         
         let tabs = [];
@@ -203,6 +204,7 @@
             document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
             document.getElementById(`wisp-${type}`).classList.add('active-wisp');
             initProxy();
+            // maybe add a small alert or toast here later?
         }
 
         function showBH() { document.getElementById('loading-screen').style.display = 'flex'; document.getElementById('loading-screen').style.opacity = '1'; }
