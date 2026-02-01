@@ -93,12 +93,15 @@
         .modal-content { background: #1a1a1e; padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 350px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
         
         .setting-btn {
-            width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border);
+            width: 100%; padding: 14px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--border);
             background: var(--hover); color: var(--text); font-weight: 500; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;
+            display: flex; align-items: center; justify-content: center; text-transform: uppercase; letter-spacing: 1px; font-size: 11px;
         }
         .setting-btn:hover { border-color: var(--accent); background: var(--tab-active); color: var(--accent); }
+        .setting-btn.active-wisp { border-color: var(--accent); background: var(--accent-glow); color: white; }
         .setting-btn.primary { background: var(--accent); color: white; border: none; }
+
+        .section-label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin: 15px 0 5px 0; display: block; }
 
         .loading-bar { position: absolute; top: 0; left: 0; height: 3px; background: var(--accent); width: 0%; transition: width 0.3s; z-index: 10001; }
     </style>
@@ -142,13 +145,15 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 style="margin-top:0; color: var(--accent); letter-spacing: 2px; font-size: 18px; text-transform: uppercase;">Settings</h2>
             
-            <button class="setting-btn primary" onclick="openAboutBlank()">
-                Open in About:Blank
-            </button>
+            <span class="section-label">General</span>
+            <button class="setting-btn primary" onclick="openAboutBlank()">Open in About:Blank</button>
+            <button class="setting-btn" onclick="hideNavbar()">Hide Navigation Bar</button>
 
-            <button class="setting-btn" onclick="hideNavbar()">
-                Hide Navigation Bar
-            </button>
+            <span class="section-label">Wisp Server</span>
+            <div style="display: flex; gap: 8px;">
+                <button id="wisp-default" class="setting-btn active-wisp" style="flex:1;" onclick="setWisp('default')">Default</button>
+                <button id="wisp-backup" class="setting-btn" style="flex:1;" onclick="setWisp('backup')">Backup 2</button>
+            </div>
 
             <button class="setting-btn" onclick="hideSettings()" style="margin-top: 20px; border: none; background: transparent; opacity: 0.6; text-transform: none; letter-spacing: 0;">
                 Close
@@ -159,15 +164,36 @@
     <script>
         let tabs = [];
         let activeTabId = null;
+        let currentWisp = "wss://ixlmathlogin.ixl.best/wisp/";
 
         const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
-        connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: "wss://ixlmathlogin.ixl.best/wisp/" }]);
+        
+        function initProxy() {
+            connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: currentWisp }]);
+        }
+
         const { ScramjetController } = $scramjetLoadController();
         const scramjet = new ScramjetController({
             files: { all: "/ixlmath/scram/scramjet.all.js", wasm: "/ixlmath/scram/scramjet.wasm.wasm", sync: "/ixlmath/scram/scramjet.sync.js" },
             prefix: "/ixlmath/go/" 
         });
+        
+        initProxy();
         scramjet.init();
+
+        function setWisp(type) {
+            if (type === 'default') {
+                currentWisp = "wss://ixlmathlogin.ixl.best/wisp/";
+                document.getElementById('wisp-default').classList.add('active-wisp');
+                document.getElementById('wisp-backup').classList.remove('active-wisp');
+            } else {
+                currentWisp = "wss://wisp.rhw.one/";
+                document.getElementById('wisp-backup').classList.add('active-wisp');
+                document.getElementById('wisp-default').classList.remove('active-wisp');
+            }
+            initProxy();
+            console.log("Wisp switched to: " + currentWisp);
+        }
 
         function showBH() { document.getElementById('loading-screen').style.display = 'flex'; document.getElementById('loading-screen').style.opacity = '1'; }
         function hideBH() { document.getElementById('loading-screen').style.opacity = '0'; setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 500); }
