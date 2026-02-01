@@ -58,7 +58,7 @@
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(8px); }
         .modal-overlay.show { display: flex; }
-        .modal-content { background: #141417; padding: 25px; border-radius: 20px; border: 1px solid var(--border); width: 420px; max-height: 85vh; overflow-y: auto; text-align: center; }
+        .modal-content { background: #141417; padding: 25px; border-radius: 20px; border: 1px solid var(--border); width: 420px; max-height: 85vh; overflow-y: auto; text-align: center; position: relative; }
         
         .setting-btn { width: 100%; padding: 12px; margin: 4px 0; border-radius: 10px; border: 1px solid var(--border); background: var(--hover); color: var(--text); font-size: 10px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .setting-btn:hover { border-color: var(--accent); color: var(--accent); }
@@ -70,6 +70,8 @@
 
         .section-label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin: 15px 0 8px 0; display: block; text-align: left; }
         select, .custom-input { width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 5px; box-sizing: border-box; outline: none; }
+        
+        #save-indicator { position: absolute; top: 10px; right: 20px; font-size: 9px; color: var(--ping-good); opacity: 0; transition: 0.3s; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -107,6 +109,7 @@
 
     <div class="modal-overlay" id="settings-modal" onclick="hideSettings()">
         <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="save-indicator">SETTINGS SAVED</div>
             <h2 style="margin: 0 0 20px 0; letter-spacing: 2px; color: var(--accent);">SETTINGS</h2>
             
             <span class="section-label">General</span>
@@ -122,7 +125,7 @@
             </select>
 
             <span class="section-label">Wisp Servers</span>
-            <div style="display: flex; flex-direction: column; gap: 0;">
+            <div id="wisp-container" style="display: flex; flex-direction: column; gap: 0;">
                 <button id="wisp-main" class="setting-btn wisp-opt" onclick="setWisp('main')">Main Server</button>
                 <div class="btn-row">
                     <button id="wisp-backup2" class="setting-btn wisp-opt" onclick="setWisp('backup2')">Backup 2</button>
@@ -167,54 +170,60 @@
 
         let tabs = [];
         let activeTabId = null;
-        
-        // Initial Settings Load
-        let savedWisp = localStorage.getItem('zyron_wisp_url') || wispUrls.main;
-        let savedUAKey = localStorage.getItem('zyron_ua_key') || 'default';
-        let savedNavHidden = localStorage.getItem('zyron_nav_hide') === 'true';
 
         const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
-        
-        function initProxy() {
-            connection.setTransport("/ixlmath/libcurl/index.mjs", [{ 
-                websocket: savedWisp, 
-                headers: { "User-Agent": userAgents[savedUAKey] } 
-            }]);
-            checkPing();
-            applySavedUI();
-        }
-
         const { ScramjetController } = $scramjetLoadController();
         const scramjet = new ScramjetController({
             files: { all: "/ixlmath/scram/scramjet.all.js", wasm: "/ixlmath/scram/scramjet.wasm.wasm", sync: "/ixlmath/scram/scramjet.sync.js" },
             prefix: "/ixlmath/go/" 
         });
 
-        initProxy();
-        scramjet.init();
-
-        function applySavedUI() {
-            // Apply Navbar
-            document.body.classList.toggle('nav-hidden', savedNavHidden);
-            document.getElementById('nav-toggle-btn').innerText = savedNavHidden ? "Show Navigation Bar" : "Hide Navigation Bar";
+        // RE-WRITTEN CORE: PULLS LIVE FROM LOCALSTORAGE
+        function initProxy() {
+            const wisp = localStorage.getItem('zyron_wisp_url') || wispUrls.main;
+            const uaKey = localStorage.getItem('zyron_ua_key') || 'default';
             
-            // Apply UA Dropdown
-            document.getElementById('ua-switcher').value = savedUAKey;
+            connection.setTransport("/ixlmath/libcurl/index.mjs", [{ 
+                websocket: wisp, 
+                headers: { "User-Agent": userAgents[uaKey] } 
+            }]);
+            
+            updateUIState();
+            checkPing(wisp);
+        }
 
-            // Apply Wisp Highlights
+        function updateUIState() {
+            const wisp = localStorage.getItem('zyron_wisp_url') || wispUrls.main;
+            const uaKey = localStorage.getItem('zyron_ua_key') || 'default';
+            const navHide = localStorage.getItem('zyron_nav_hide') === 'true';
+
+            // Nav
+            document.body.classList.toggle('nav-hidden', navHide);
+            document.getElementById('nav-toggle-btn').innerText = navHide ? "Show Navigation Bar" : "Hide Navigation Bar";
+            
+            // UA
+            document.getElementById('ua-switcher').value = uaKey;
+
+            // Wisp Buttons
             document.querySelectorAll('.wisp-opt').forEach(btn => btn.classList.remove('active-opt'));
             for(let key in wispUrls) {
-                if(wispUrls[key] === savedWisp) {
+                if(wispUrls[key] === wisp) {
                     const btn = document.getElementById(`wisp-${key}`);
                     if(btn) btn.classList.add('active-opt');
                 }
             }
         }
 
-        async function checkPing() {
+        function notifySave() {
+            const el = document.getElementById('save-indicator');
+            el.style.opacity = '1';
+            setTimeout(() => el.style.opacity = '0', 1500);
+        }
+
+        async function checkPing(url) {
             const start = Date.now();
             try {
-                const ws = new WebSocket(savedWisp);
+                const ws = new WebSocket(url);
                 ws.onopen = () => {
                     const ms = Date.now() - start;
                     const el = document.getElementById('ping-monitor');
@@ -224,36 +233,37 @@
                 };
             } catch(e) {}
         }
-        setInterval(checkPing, 8000);
 
-        function updateUserAgent(key) {
-            savedUAKey = key;
-            localStorage.setItem('zyron_ua_key', key);
-            initProxy();
-        }
-
+        // SETTING ACTIONS
         function setWisp(type) {
-            savedWisp = wispUrls[type];
-            localStorage.setItem('zyron_wisp_url', savedWisp);
+            localStorage.setItem('zyron_wisp_url', wispUrls[type]);
             initProxy();
+            notifySave();
         }
 
         function setCustomWisp() {
             const url = document.getElementById('custom-wisp-url').value.trim();
             if(!url.startsWith('ws')) return alert('Invalid Wisp URL');
-            savedWisp = url;
             localStorage.setItem('zyron_wisp_url', url);
             initProxy();
-            alert('Custom Wisp Saved');
+            notifySave();
+        }
+
+        function updateUserAgent(key) {
+            localStorage.setItem('zyron_ua_key', key);
+            initProxy();
+            notifySave();
         }
 
         function toggleNavbar() {
-            savedNavHidden = !savedNavHidden;
-            localStorage.setItem('zyron_nav_hide', savedNavHidden);
-            applySavedUI();
-            if(savedNavHidden) hideSettings();
+            const currentState = localStorage.getItem('zyron_nav_hide') === 'true';
+            localStorage.setItem('zyron_nav_hide', !currentState);
+            updateUIState();
+            notifySave();
+            if(!currentState) hideSettings();
         }
 
+        // TABS AND NAVIGATION
         function showBH() { document.getElementById('loading-screen').style.display='flex'; document.getElementById('loading-screen').style.opacity='1'; }
         function hideBH() { document.getElementById('loading-screen').style.opacity='0'; setTimeout(()=>document.getElementById('loading-screen').style.display='none', 500); }
 
@@ -310,6 +320,7 @@
             try { frame.contentWindow.location.reload(); } catch (e) { frame.src = frame.src; }
         }
 
+        // Sync Bar with URL
         setInterval(() => {
             if (!activeTabId) return;
             const frame = document.getElementById(`frame-${activeTabId}`);
@@ -347,7 +358,12 @@
         function goForward() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.forward(); } catch(e){} }
         function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
 
-        window.onload = () => { createNewTab(); setTimeout(hideBH, 1000); };
+        window.onload = () => { 
+            initProxy();
+            scramjet.init();
+            createNewTab(); 
+            setTimeout(hideBH, 1000); 
+        };
         document.getElementById('bar').onkeydown = (e) => { if(e.key === 'Enter') nav(); };
     </script>
 </body>
