@@ -6,6 +6,15 @@
     <title>Zyron</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E9DZ1KWKQT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-E9DZ1KWKQT');
+    </script>
+    
     <script src="/ixlmath/baremux/index.js"></script>
     <script src="/ixlmath/scram/scramjet.all.js"></script>
     <script>navigator.serviceWorker.register("/ixlmath/sw.js")</script>
@@ -226,7 +235,6 @@
             prefix: "/ixlmath/go/" 
         });
 
-        // bro this is not ai gng and im tired of the haters fr fr
         function loadWispSettings() {
             const savedWispKey = localStorage.getItem('zyron-wisp-key');
             const savedCustomWisp = localStorage.getItem('zyron-custom-wisp');
