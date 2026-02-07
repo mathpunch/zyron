@@ -11,6 +11,7 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
+
       gtag('config', 'G-E9DZ1KWKQT');
     </script>
     
@@ -110,7 +111,6 @@
         }
         .setting-btn:hover { border-color: var(--accent); background: var(--tab-active); color: var(--accent); }
         .setting-btn.active-wisp { border-color: var(--accent); background: var(--accent-glow); color: white; }
-        .setting-btn.active-device { border-color: var(--accent); background: var(--accent-glow); color: white; } /* Added for Spoofing */
         .setting-btn.primary { background: var(--accent); color: white; border: none; font-size: 12px; padding: 14px; }
 
         .ping-tag { position: absolute; right: 10px; font-size: 8px; opacity: 0.6; }
@@ -169,16 +169,6 @@
             <button class="setting-btn primary" onclick="openAboutBlank()">Open in About:Blank</button>
             <button class="setting-btn" onclick="hideNavbar()">Hide Navigation Bar</button>
 
-            <span class="section-label">Device Identity</span>
-            <div class="btn-row">
-                <button id="ua-pc" class="setting-btn active-device" onclick="setDevice('pc')">PC</button>
-                <button id="ua-ipad" class="setting-btn" onclick="setDevice('ipad')">iPad</button>
-            </div>
-            <div class="btn-row">
-                <button id="ua-iphone" class="setting-btn" onclick="setDevice('iphone')">iPhone</button>
-                <button id="ua-android" class="setting-btn" onclick="setDevice('android')">Android</button>
-            </div>
-
             <span class="section-label">Wisp Servers</span>
             <div style="display: flex; flex-direction: column; gap: 0;">
                 <button id="wisp-main" class="setting-btn active-wisp" onclick="setWisp('main')">
@@ -231,19 +221,10 @@
             backup6: "wss://glseries.net/wisp/",
             backup7: "wss://gointospace.app/wisp/"
         };
-
-        // Spoof Configs Added
-        const deviceConfigs = {
-            pc: { ua: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" },
-            ipad: { ua: "Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1" },
-            iphone: { ua: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1" },
-            android: { ua: "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36" }
-        };
         
         let tabs = [];
         let activeTabId = null;
         let currentWisp = wispUrls.main;
-        let currentDevice = localStorage.getItem('zyron-device') || 'pc'; // Spoof Variable Added
 
         const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
         function initProxy() { connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: currentWisp }]); }
@@ -253,14 +234,6 @@
             files: { all: "/ixlmath/scram/scramjet.all.js", wasm: "/ixlmath/scram/scramjet.wasm.wasm", sync: "/ixlmath/scram/scramjet.sync.js" },
             prefix: "/ixlmath/go/" 
         });
-
-        // Set Device Function Added
-        function setDevice(type) {
-            currentDevice = type;
-            localStorage.setItem('zyron-device', type);
-            document.querySelectorAll('.active-device').forEach(btn => btn.classList.remove('active-device'));
-            document.getElementById(`ua-${type}`).classList.add('active-device');
-        }
 
         function loadWispSettings() {
             const savedWispKey = localStorage.getItem('zyron-wisp-key');
@@ -365,10 +338,6 @@
             let url = (val.includes('.') && !val.includes(' ')) ? (val.startsWith('http') ? val : 'https://' + val) : `https://search.brave.com/search?q=${encodeURIComponent(val)}`;
             const tab = tabs.find(t => t.id === activeTabId);
             tab.url = url; tab.title = url.split('/')[2] || url;
-            
-            // Set UserAgent in Scramjet Config Added
-            scramjet.arguments.userAgent = deviceConfigs[currentDevice].ua;
-
             document.getElementById(`frame-${activeTabId}`).src = scramjet.encodeUrl(url);
             document.getElementById('new-tab-ui').style.display = 'none';
             renderTabs();
@@ -424,9 +393,6 @@
             initProxy();
             scramjet.init();
             createNewTab(); 
-            // Highlight saved device Added
-            document.querySelectorAll('.active-device').forEach(btn => btn.classList.remove('active-device'));
-            if(document.getElementById(`ua-${currentDevice}`)) document.getElementById(`ua-${currentDevice}`).classList.add('active-device');
             setTimeout(hideBH, 1000); 
         };
         document.getElementById('bar').onkeydown = (e) => { if(e.key === 'Enter') nav(); };
