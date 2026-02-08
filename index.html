@@ -267,19 +267,17 @@
 
         function setCustomWisp() {
             const url = document.getElementById('custom-wisp-url').value.trim();
-            if(!url.startsWith('ws')) return alert('Please enter a valid wss:// URL');
+            if(!url.startsWith('ws')) return alert('Invalid URL');
             currentWisp = url;
             localStorage.setItem('zyron-custom-wisp', url);
             localStorage.removeItem('zyron-wisp-key');
             document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
             initProxy();
-            alert('Connected and Saved custom Wisp server');
         }
 
         async function checkWispPing(url, elementId) {
             const start = Date.now();
             try {
-                // Background check with a shorter timeout for better failover performance
                 const socket = new WebSocket(url);
                 const timeout = setTimeout(() => { socket.close(); }, 3000);
 
@@ -308,7 +306,6 @@
         }
 
         function autoSwitch() {
-            console.warn("Connection lost. Hunting for healthy backup...");
             for (const [key, url] of Object.entries(wispUrls)) {
                 const el = document.getElementById(`ping-${key}`);
                 const pingText = el ? el.innerText : "ERR";
@@ -323,7 +320,6 @@
             }
         }
 
-        // Heartbeat Watchdog: Check the active server every 10 seconds silently
         setInterval(() => {
             checkWispPing(currentWisp, `ping-${localStorage.getItem('zyron-wisp-key') || 'main'}`);
         }, 10000);
@@ -409,7 +405,7 @@
         function hideNavbar() { document.body.classList.add('nav-hidden'); hideSettings(); }
         function openAboutBlank() {
             const win = window.open('about:blank', '_blank');
-            if (!win) return alert('Popups blocked!');
+            if (!win) return;
             const doc = win.document;
             const iframe = doc.createElement('iframe');
             doc.title = 'Classes';
