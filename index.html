@@ -11,7 +11,6 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-E9DZ1KWKQT');
     </script>
     
@@ -198,6 +197,11 @@
                         Backup 7 <span class="ping-tag" id="ping-backup7">--ms</span>
                     </button>
                 </div>
+                <div class="btn-row">
+                    <button id="wisp-backup8" class="setting-btn" onclick="setWisp('backup8')">
+                        Backup 8 <span class="ping-tag" id="ping-backup8">--ms</span>
+                    </button>
+                </div>
                 
                 <div class="custom-wisp-box">
                     <input type="text" id="custom-wisp-url" class="custom-wisp-input" placeholder="wss://your-wisp-server/wisp/">
@@ -219,7 +223,8 @@
             backup4: "wss://s0lace-j2np.onrender.com/wisp/",
             backup5: "wss://d3s9ejv11av7fd.cloudfront.net/wisp/",
             backup6: "wss://glseries.net/wisp/",
-            backup7: "wss://gointospace.app/wisp/"
+            backup7: "wss://gointospace.app/wisp/",
+            backup8: "wss://dash.goip.de/wisp/"
         };
         
         let tabs = [];
@@ -280,7 +285,10 @@
                     document.getElementById(elementId).innerText = ping + "ms";
                     socket.close();
                 };
-                socket.onerror = () => { document.getElementById(elementId).innerText = "ERR"; };
+                socket.onerror = () => { 
+                    document.getElementById(elementId).innerText = "ERR"; 
+                    if (url === currentWisp) autoSwitch();
+                };
             } catch (e) { document.getElementById(elementId).innerText = "ERR"; }
         }
 
@@ -288,6 +296,19 @@
             Object.keys(wispUrls).forEach(key => {
                 checkWispPing(wispUrls[key], `ping-${key}`);
             });
+        }
+
+        function autoSwitch() {
+            for (const [key, url] of Object.entries(wispUrls)) {
+                const pingText = document.getElementById(`ping-${key}`).innerText;
+                if (pingText !== "ERR" && pingText !== "--ms") {
+                    setWisp(key);
+                    const bar = document.getElementById('bar');
+                    bar.placeholder = `FAILOVER: Connected to ${key}`;
+                    setTimeout(() => { bar.placeholder = "Search with Brave or enter URL"; }, 3000);
+                    return;
+                }
+            }
         }
 
         function showBH() { document.getElementById('loading-screen').style.display = 'flex'; document.getElementById('loading-screen').style.opacity = '1'; }
@@ -393,6 +414,7 @@
             initProxy();
             scramjet.init();
             createNewTab(); 
+            refreshAllPings(); // Scan all backups immediately on load
             setTimeout(hideBH, 1000); 
         };
         document.getElementById('bar').onkeydown = (e) => { if(e.key === 'Enter') nav(); };
