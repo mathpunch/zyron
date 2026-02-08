@@ -6,14 +6,6 @@
     <title>Zyron</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E9DZ1KWKQT"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-E9DZ1KWKQT');
-    </script>
-    
     <script src="/ixlmath/baremux/index.js"></script>
     <script src="/ixlmath/scram/scramjet.all.js"></script>
     <script>navigator.serviceWorker.register("/ixlmath/sw.js")</script>
@@ -23,7 +15,6 @@
             --bg-color: #0a0a0c;
             --nav-bg: rgba(20, 20, 23, 0.9);
             --tab-active: #1a1a1e;
-            --tab-inactive: transparent;
             --accent: #a855f7;
             --accent-glow: rgba(168, 85, 247, 0.4);
             --text: #f8fafc;
@@ -33,95 +24,31 @@
             --hover: #1e1e22;
         }
 
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            overflow: hidden; color: var(--text);
-        }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background-color: var(--bg-color); overflow: hidden; color: var(--text); }
+        #loading-screen { position: fixed; inset: 0; background: var(--bg-color); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; transition: opacity 0.5s ease; }
+        .black-hole { height: 100px; aspect-ratio: 1; background: black; border-radius: 50%; box-shadow: 0 0 40px 10px var(--accent); animation: breathe 3s infinite; }
+        @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); box-shadow: 0 0 60px 20px var(--accent); } }
 
-        #loading-screen {
-            position: fixed; inset: 0;
-            background: var(--bg-color);
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            z-index: 99999; transition: opacity 0.5s ease;
-        }
-        .black-hole { 
-            height: 100px; aspect-ratio: 1; background-color: black; border-radius: 50%; 
-            box-shadow: 0px 0px 40px 10px var(--accent), inset 0px 0px 10px #ffffff88; 
-            position: relative; animation: breathe 3s infinite ease-in-out;
-        }
-        @keyframes breathe { 0%, 100% { transform: scale(1); box-shadow: 0px 0px 40px 10px var(--accent); } 50% { transform: scale(1.05); box-shadow: 0px 0px 60px 20px var(--accent); } }
-
-        #top-ui { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        body.nav-hidden #top-ui { transform: translateY(-108px); }
-        body.nav-hidden .frame-container { top: 0 !important; }
-
-        .tab-strip { display: flex; align-items: flex-end; padding: 12px 15px 0 15px; background: var(--bg-color); gap: 4px; height: 40px; }
-        .tab { 
-            background: var(--tab-inactive); padding: 8px 12px; border-radius: 10px 10px 0 0; 
-            font-size: 13px; min-width: 140px; max-width: 200px; color: var(--text-muted); 
-            border: 1px solid transparent; border-bottom: none; transition: all 0.2s ease; 
-            position: relative; display: flex; align-items: center; gap: 8px; cursor: pointer;
-        }
-        .tab.active { background: var(--tab-active); color: var(--text); border-color: var(--border); }
-        .tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--accent); box-shadow: 0 -2px 10px var(--accent); }
+        .tab-strip { display: flex; padding: 12px 15px 0; background: var(--bg-color); gap: 4px; height: 40px; }
+        .tab { background: var(--tab-inactive); padding: 8px 12px; border-radius: 10px 10px 0 0; font-size: 13px; min-width: 140px; color: var(--text-muted); border: 1px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+        .tab.active { background: var(--tab-active); color: var(--text); border-color: var(--border); border-bottom: 2px solid var(--accent); }
         
-        .close-tab-btn {
-            background: none; border: none; color: inherit; font-size: 16px;
-            cursor: pointer; padding: 2px 6px; border-radius: 4px; line-height: 1;
-            display: flex; align-items: center; justify-content: center; opacity: 0.5;
-        }
-        .close-tab-btn:hover { background: rgba(255, 96, 92, 0.2); color: #ff605c; opacity: 1; }
-
-        .navbar { display: flex; align-items: center; height: 56px; background-color: var(--nav-bg); padding: 0 20px; gap: 16px; border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
-        .nav-buttons { display: flex; gap: 8px; }
-        .nav-button { 
-            cursor: pointer; width: 34px; height: 34px; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s; color: var(--text-muted); user-select: none;
-        }
+        .navbar { display: flex; align-items: center; height: 56px; background: var(--nav-bg); padding: 0 20px; gap: 16px; border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
+        .nav-button { cursor: pointer; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
         .nav-button:hover { background: var(--hover); color: var(--accent); }
 
-        .settings-icon-img { width: 20px; height: 20px; object-fit: contain; opacity: 0.7; transition: 0.2s; }
-        .nav-button:hover .settings-icon-img { opacity: 1; filter: drop-shadow(0 0 5px var(--accent)); }
+        .search-container { flex-grow: 1; background: var(--input-bg); border-radius: 12px; padding: 0 16px; border: 1px solid var(--border); display: flex; align-items: center; height: 38px; }
+        input#bar { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 14px; }
 
-        .search-container { flex-grow: 1; display: flex; align-items: center; background: var(--input-bg); border-radius: 12px; padding: 0 16px; border: 1px solid var(--border); height: 38px; transition: all 0.2s ease; }
-        .search-container:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-        input#bar { flex-grow: 1; background: transparent; border: none; color: white; padding: 8px; font-size: 14px; outline: none; }
-
-        .frame-container { position: absolute; top: 108px; left: 0; right: 0; bottom: 0; background: #000; transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .frame-container { position: absolute; top: 108px; left: 0; right: 0; bottom: 0; }
         iframe { width: 100%; height: 100%; border: none; display: none; }
         iframe.active { display: block; }
 
-        .new-tab-screen { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a1a2e 0%, var(--bg-color) 100%); color: #fff; flex-direction: column; z-index: 5; }
-        .new-tab-content h1 { font-size: 48px; font-weight: 700; background: linear-gradient(to bottom, #fff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
-
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(4px); }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
         .modal-overlay.show { display: flex; }
-        .modal-content { background: #1a1a1e; padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 420px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
-        
-        .setting-btn {
-            width: 100%; padding: 12px; margin: 4px 0; border-radius: 10px; border: 1px solid var(--border);
-            background: var(--hover); color: var(--text); font-weight: 500; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; text-transform: uppercase; letter-spacing: 1px; font-size: 10px;
-            position: relative;
-        }
-        .setting-btn:hover { border-color: var(--accent); background: var(--tab-active); color: var(--accent); }
-        .setting-btn.active-wisp { border-color: var(--accent); background: var(--accent-glow); color: white; }
-        .setting-btn.primary { background: var(--accent); color: white; border: none; font-size: 12px; padding: 14px; }
-
-        .ping-tag { position: absolute; right: 10px; font-size: 8px; opacity: 0.6; }
-
-        .btn-row { display: flex; gap: 8px; }
-        .btn-row .setting-btn { flex: 1; }
-
-        .custom-wisp-box { display: flex; gap: 5px; margin-top: 5px; }
-        .custom-wisp-input { flex: 1; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; color: white; padding: 8px; font-size: 11px; outline: none; }
-        .custom-wisp-input:focus { border-color: var(--accent); }
-
-        .section-label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin: 15px 0 5px 0; display: block; }
+        .modal-content { background: #1a1a1e; padding: 25px; border-radius: 16px; width: 350px; border: 1px solid var(--border); }
+        .setting-btn { width: 100%; padding: 10px; margin: 4px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--hover); color: white; cursor: pointer; font-size: 11px; display: flex; justify-content: space-between; }
+        .setting-btn.active-wisp { border-color: var(--accent); background: var(--accent-glow); }
     </style>
 </head>
 <body>
@@ -130,88 +57,33 @@
 
     <div id="top-ui">
         <div class="tab-strip" id="tab-strip">
-            <div class="nav-button" onclick="createNewTab()" style="font-size: 24px;">+</div>
+            <div class="nav-button" onclick="createNewTab()">+</div>
         </div>
-
         <nav class="navbar">
             <div class="nav-buttons">
                 <div class="nav-button" onclick="goBack()">←</div>
-                <div class="nav-button" onclick="goForward()">→</div>
                 <div class="nav-button" onclick="reloadPage()">↻</div>
             </div>
             <div class="search-container">
-                <input type="text" placeholder="Search with Brave or enter URL" id="bar" autocomplete="off">
+                <input type="text" placeholder="Search or enter URL" id="bar">
             </div>
-            <div class="nav-buttons">
-                <div class="nav-button" onclick="showSettings()">
-                    <img src="settingsicon.png" class="settings-icon-img" alt="Settings">
-                </div>
-                <div class="nav-button" onclick="toggleFullScreen()">⛶</div>
-            </div>
+            <div class="nav-button" onclick="showSettings()">⚙</div>
         </nav>
     </div>
 
     <div class="frame-container" id="frame-container">
-        <div id="new-tab-ui" class="new-tab-screen">
-            <div class="new-tab-content" style="text-align: center;">
-                <h1>Zyron</h1>
-                <p style="color: var(--text-muted); letter-spacing: 2px; font-size: 12px;">MADE BY ARCTIC 1.0</p>
-            </div>
+        <div id="new-tab-ui" style="display:flex; height:100%; align-items:center; justify-content:center; flex-direction:column;">
+            <h1 style="font-size: 50px; margin:0;">ZYRON</h1>
+            <p style="color:var(--accent); letter-spacing:5px;">STAY CONNECTED</p>
         </div>
     </div>
 
     <div class="modal-overlay" id="settings-modal" onclick="hideSettings()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 style="margin-top:0; color: var(--accent); letter-spacing: 2px; font-size: 18px; text-transform: uppercase;">Settings</h2>
-            
-            <span class="section-label">General</span>
-            <button class="setting-btn primary" onclick="openAboutBlank()">Open in About:Blank</button>
-            <button class="setting-btn" onclick="hideNavbar()">Hide Navigation Bar</button>
-
-            <span class="section-label">Wisp Servers</span>
-            <div style="display: flex; flex-direction: column; gap: 0;">
-                <button id="wisp-main" class="setting-btn active-wisp" onclick="setWisp('main')">
-                    Main Server <span class="ping-tag" id="ping-main">--ms</span>
-                </button>
-                <div class="btn-row">
-                    <button id="wisp-backup2" class="setting-btn" onclick="setWisp('backup2')">
-                        Backup 2 <span class="ping-tag" id="ping-backup2">--ms</span>
-                    </button>
-                    <button id="wisp-backup3" class="setting-btn" onclick="setWisp('backup3')">
-                        Backup 3 <span class="ping-tag" id="ping-backup3">--ms</span>
-                    </button>
+            <h3 style="text-align:center; color:var(--accent);">WISP NODES</h3>
+            <div id="wisp-list">
                 </div>
-                <div class="btn-row">
-                    <button id="wisp-backup4" class="setting-btn" onclick="setWisp('backup4')">
-                        Backup 4 <span class="ping-tag" id="ping-backup4">--ms</span>
-                    </button>
-                    <button id="wisp-backup5" class="setting-btn" onclick="setWisp('backup5')">
-                        Backup 5 <span class="ping-tag" id="ping-backup5">--ms</span>
-                    </button>
-                </div>
-                <div class="btn-row">
-                    <button id="wisp-backup6" class="setting-btn" onclick="setWisp('backup6')">
-                        Backup 6 <span class="ping-tag" id="ping-backup6">--ms</span>
-                    </button>
-                    <button id="wisp-backup7" class="setting-btn" onclick="setWisp('backup7')">
-                        Backup 7 <span class="ping-tag" id="ping-backup7">--ms</span>
-                    </button>
-                </div>
-                <div class="btn-row">
-                    <button id="wisp-backup8" class="setting-btn" onclick="setWisp('backup8')">
-                        Backup 8 <span class="ping-tag" id="ping-backup8">--ms</span>
-                    </button>
-                </div>
-                
-                <div class="custom-wisp-box">
-                    <input type="text" id="custom-wisp-url" class="custom-wisp-input" placeholder="wss://your-wisp-server/wisp/">
-                    <button class="setting-btn" style="margin:0; width: auto; padding: 0 15px;" onclick="setCustomWisp()">Use</button>
-                </div>
-            </div>
-
-            <button class="setting-btn" onclick="hideSettings()" style="margin-top: 20px; border: none; background: transparent; opacity: 0.6; text-transform: none; letter-spacing: 0;">
-                Close
-            </button>
+            <button class="setting-btn" onclick="hideSettings()" style="margin-top:15px; justify-content:center; border:none; opacity:0.5;">CLOSE</button>
         </div>
     </div>
 
@@ -230,9 +102,85 @@
         let tabs = [];
         let activeTabId = null;
         let currentWisp = wispUrls.main;
-
         const connection = new BareMux.BareMuxConnection("/ixlmath/baremux/worker.js");
-        function initProxy() { connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: currentWisp }]); }
+
+        async function initProxy() {
+            console.log("Connecting to Wisp:", currentWisp);
+            await connection.setTransport("/ixlmath/libcurl/index.mjs", [{ websocket: currentWisp }]);
+        }
+
+        // --- ENHANCED AUTO FAILOVER LOGIC ---
+
+        async function getPing(url) {
+            return new Promise((resolve) => {
+                const start = Date.now();
+                const socket = new WebSocket(url);
+                const timeout = setTimeout(() => { socket.close(); resolve(9999); }, 2500);
+
+                socket.onopen = () => {
+                    clearTimeout(timeout);
+                    const ms = Date.now() - start;
+                    socket.close();
+                    resolve(ms);
+                };
+                socket.onerror = () => { clearTimeout(timeout); resolve(9999); };
+            });
+        }
+
+        async function autoSwitch() {
+            console.warn("Current Wisp unresponsive. Finding best backup...");
+            let bestKey = 'main';
+            let bestPing = 9999;
+
+            for (const [key, url] of Object.entries(wispUrls)) {
+                const p = await getPing(url);
+                if (p < bestPing) {
+                    bestPing = p;
+                    bestKey = key;
+                }
+            }
+
+            if (bestPing < 9999) {
+                console.log(`Auto-switched to healthy node: ${bestKey} (${bestPing}ms)`);
+                setWisp(bestKey);
+                const bar = document.getElementById('bar');
+                bar.placeholder = `FIXED: Switched to ${bestKey}`;
+                setTimeout(() => bar.placeholder = "Search or enter URL", 3000);
+            }
+        }
+
+        // Heartbeat: Check connection every 10 seconds
+        setInterval(async () => {
+            const p = await getPing(currentWisp);
+            if (p >= 9999) {
+                autoSwitch();
+            }
+        }, 10000);
+
+        function setWisp(key) {
+            currentWisp = wispUrls[key];
+            localStorage.setItem('zyron-wisp-key', key);
+            initProxy();
+            renderWispList();
+        }
+
+        function renderWispList() {
+            const container = document.getElementById('wisp-list');
+            container.innerHTML = '';
+            Object.keys(wispUrls).forEach(async key => {
+                const btn = document.createElement('button');
+                btn.className = `setting-btn ${wispUrls[key] === currentWisp ? 'active-wisp' : ''}`;
+                btn.onclick = () => setWisp(key);
+                btn.innerHTML = `<span>${key.toUpperCase()}</span> <span id="p-${key}">...</span>`;
+                container.appendChild(btn);
+                
+                const ms = await getPing(wispUrls[key]);
+                const span = document.getElementById(`p-${key}`);
+                if (span) span.innerText = ms >= 9999 ? "ERR" : ms + "ms";
+            });
+        }
+
+        // --- CORE UI LOGIC ---
 
         const { ScramjetController } = $scramjetLoadController();
         const scramjet = new ScramjetController({
@@ -240,89 +188,12 @@
             prefix: "/ixlmath/go/" 
         });
 
-        function loadWispSettings() {
-            const savedWispKey = localStorage.getItem('zyron-wisp-key');
-            const savedCustomWisp = localStorage.getItem('zyron-custom-wisp');
-
-            if (savedCustomWisp) {
-                currentWisp = savedCustomWisp;
-                document.getElementById('custom-wisp-url').value = savedCustomWisp;
-                document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
-            } else if (savedWispKey && wispUrls[savedWispKey]) {
-                currentWisp = wispUrls[savedWispKey];
-                document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
-                const btn = document.getElementById(`wisp-${savedWispKey}`);
-                if (btn) btn.classList.add('active-wisp');
-            }
-        }
-
-        function setWisp(type) {
-            currentWisp = wispUrls[type];
-            localStorage.setItem('zyron-wisp-key', type);
-            localStorage.removeItem('zyron-custom-wisp');
-            document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
-            if(document.getElementById(`wisp-${type}`)) document.getElementById(`wisp-${type}`).classList.add('active-wisp');
-            initProxy();
-        }
-
-        function setCustomWisp() {
-            const url = document.getElementById('custom-wisp-url').value.trim();
-            if(!url.startsWith('ws')) return alert('Please enter a valid wss:// URL');
-            currentWisp = url;
-            localStorage.setItem('zyron-custom-wisp', url);
-            localStorage.removeItem('zyron-wisp-key');
-            document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
-            initProxy();
-            alert('Connected and Saved custom Wisp server');
-        }
-
-        async function checkWispPing(url, elementId) {
-            const start = Date.now();
-            try {
-                const socket = new WebSocket(url);
-                socket.onopen = () => {
-                    const ping = Date.now() - start;
-                    document.getElementById(elementId).innerText = ping + "ms";
-                    socket.close();
-                };
-                socket.onerror = () => { 
-                    document.getElementById(elementId).innerText = "ERR"; 
-                    if (url === currentWisp) autoSwitch();
-                };
-            } catch (e) { document.getElementById(elementId).innerText = "ERR"; }
-        }
-
-        function refreshAllPings() {
-            Object.keys(wispUrls).forEach(key => {
-                checkWispPing(wispUrls[key], `ping-${key}`);
-            });
-        }
-
-        function autoSwitch() {
-            for (const [key, url] of Object.entries(wispUrls)) {
-                const pingText = document.getElementById(`ping-${key}`).innerText;
-                if (pingText !== "ERR" && pingText !== "--ms") {
-                    setWisp(key);
-                    const bar = document.getElementById('bar');
-                    bar.placeholder = `FAILOVER: Connected to ${key}`;
-                    setTimeout(() => { bar.placeholder = "Search with Brave or enter URL"; }, 3000);
-                    return;
-                }
-            }
-        }
-
-        function showBH() { document.getElementById('loading-screen').style.display = 'flex'; document.getElementById('loading-screen').style.opacity = '1'; }
-        function hideBH() { document.getElementById('loading-screen').style.opacity = '0'; setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 500); }
-
         function createNewTab() {
-            const id = Date.now() + Math.random();
-            tabs.push({ id, url: '', title: 'New Tab', loading: false });
+            const id = Date.now();
+            tabs.push({ id, url: '', title: 'New Tab' });
             const frame = document.createElement('iframe');
             frame.id = `frame-${id}`;
-            frame.onload = () => { 
-                const t = tabs.find(x => x.id === id); 
-                if(t) { t.loading = false; renderTabs(); hideBH(); }
-            };
+            frame.onload = () => { hideBH(); };
             document.getElementById('frame-container').appendChild(frame);
             switchTab(id);
         }
@@ -330,11 +201,9 @@
         function switchTab(id) {
             activeTabId = id;
             document.querySelectorAll('iframe').forEach(f => f.classList.remove('active'));
-            const frame = document.getElementById(`frame-${id}`);
-            if(frame) frame.classList.add('active');
-            const tab = tabs.find(t => t.id === id);
-            document.getElementById('bar').value = tab.url || '';
-            document.getElementById('new-tab-ui').style.display = frame.src ? 'none' : 'flex';
+            const f = document.getElementById(`frame-${id}`);
+            if(f) f.classList.add('active');
+            document.getElementById('new-tab-ui').style.display = f.src ? 'none' : 'flex';
             renderTabs();
         }
 
@@ -343,81 +212,51 @@
             const addBtn = strip.querySelector('.nav-button');
             strip.querySelectorAll('.tab').forEach(t => t.remove());
             tabs.forEach(tab => {
-                const tabEl = document.createElement('div');
-                tabEl.className = `tab ${tab.id === activeTabId ? 'active' : ''}`;
-                tabEl.onclick = () => switchTab(tab.id);
-                tabEl.innerHTML = `<span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${tab.title}</span><button class="close-tab-btn" onclick="closeTab(event, ${tab.id})">×</button>`;
-                strip.insertBefore(tabEl, addBtn);
+                const el = document.createElement('div');
+                el.className = `tab ${tab.id === activeTabId ? 'active' : ''}`;
+                el.onclick = () => switchTab(tab.id);
+                el.innerHTML = `<span>${tab.title}</span>`;
+                strip.insertBefore(el, addBtn);
             });
         }
 
         function nav() {
-            const val = document.getElementById('bar').value.trim();
+            const val = document.getElementById('bar').value;
             if(!val) return;
-            document.activeElement.blur(); 
             showBH();
-            let url = (val.includes('.') && !val.includes(' ')) ? (val.startsWith('http') ? val : 'https://' + val) : `https://search.brave.com/search?q=${encodeURIComponent(val)}`;
+            let url = val.includes('.') ? (val.startsWith('http') ? val : 'https://' + val) : `https://search.brave.com/search?q=${encodeURIComponent(val)}`;
             const tab = tabs.find(t => t.id === activeTabId);
-            tab.url = url; tab.title = url.split('/')[2] || url;
+            tab.title = url.split('/')[2];
             document.getElementById(`frame-${activeTabId}`).src = scramjet.encodeUrl(url);
             document.getElementById('new-tab-ui').style.display = 'none';
             renderTabs();
         }
 
-        function reloadPage() {
-            const frame = document.getElementById(`frame-${activeTabId}`);
-            if (!frame || !frame.src) return;
-            showBH();
-            try { frame.contentWindow.location.reload(); } catch (e) { frame.src = frame.src; }
-        }
-
-        setInterval(() => {
-            if (!activeTabId) return;
-            const frame = document.getElementById(`frame-${activeTabId}`);
-            if (!frame || !frame.src) return;
-            try {
-                const path = frame.contentWindow.location.pathname;
-                if (path.includes('/ixlmath/go/')) {
-                    const encoded = path.split('/ixlmath/go/')[1];
-                    const decoded = scramjet.decodeUrl(encoded);
-                    const tab = tabs.find(t => t.id === activeTabId);
-                    if (tab && tab.url !== decoded && document.activeElement !== document.getElementById('bar')) {
-                        tab.url = decoded;
-                        document.getElementById('bar').value = decoded;
-                    }
-                }
-            } catch (e) {}
-        }, 1000);
-
-        function hideNavbar() { document.body.classList.add('nav-hidden'); hideSettings(); }
-        function openAboutBlank() {
-            const win = window.open('about:blank', '_blank');
-            if (!win) return alert('Popups blocked!');
-            const doc = win.document;
-            const iframe = doc.createElement('iframe');
-            doc.title = 'Classes';
-            iframe.style = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;';
-            iframe.src = window.location.href;
-            doc.body.appendChild(iframe);
-            window.location.replace('https://google.com'); 
-        }
-
-        function closeTab(e, id) { e.stopPropagation(); if(tabs.length === 1) return; tabs = tabs.filter(t => t.id !== id); document.getElementById(`frame-${id}`).remove(); if(activeTabId === id) switchTab(tabs[0].id); else renderTabs(); }
-        function showSettings() { document.getElementById('settings-modal').classList.add('show'); refreshAllPings(); }
+        function showBH() { document.getElementById('loading-screen').style.display = 'flex'; document.getElementById('loading-screen').style.opacity = '1'; }
+        function hideBH() { document.getElementById('loading-screen').style.opacity = '0'; setTimeout(()=>document.getElementById('loading-screen').style.display='none', 500); }
+        function showSettings() { document.getElementById('settings-modal').classList.add('show'); renderWispList(); }
         function hideSettings() { document.getElementById('settings-modal').classList.remove('show'); }
-        function goBack() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.back(); } catch(e){} }
-        function goForward() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.forward(); } catch(e){} }
-        function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+        function reloadPage() { const f = document.getElementById(`frame-${activeTabId}`); if(f.src) f.src = f.src; }
+        function goBack() { document.getElementById(`frame-${activeTabId}`).contentWindow.history.back(); }
 
-        window.onload = () => { 
-            loadWispSettings();
-            initProxy();
+        document.getElementById('bar').onkeydown = (e) => { if(e.key==='Enter') nav(); };
+
+        window.onload = async () => {
+            const saved = localStorage.getItem('zyron-wisp-key');
+            if(saved) currentWisp = wispUrls[saved];
+            
+            // Critical: Initial health check before starting
+            const initialPing = await getPing(currentWisp);
+            if (initialPing >= 9999) {
+                await autoSwitch();
+            } else {
+                await initProxy();
+            }
+            
             scramjet.init();
-            createNewTab(); 
-            refreshAllPings(); // Scan all backups immediately on load
-            setTimeout(hideBH, 1000); 
+            createNewTab();
+            setTimeout(hideBH, 1000);
         };
-        document.getElementById('bar').onkeydown = (e) => { if(e.key === 'Enter') nav(); };
     </script>
 </body>
 </html>
