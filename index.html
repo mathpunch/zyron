@@ -267,12 +267,32 @@
 
         function setCustomWisp() {
             const url = document.getElementById('custom-wisp-url').value.trim();
-            if(!url.startsWith('ws')) return alert('Invalid URL');
-            currentWisp = url;
-            localStorage.setItem('zyron-custom-wisp', url);
-            localStorage.removeItem('zyron-wisp-key');
-            document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
-            initProxy();
+            if(!url.startsWith('ws')) {
+                alert('failed to connect to custom wisp server url');
+                return;
+            }
+            
+            const testSocket = new WebSocket(url);
+            const timeout = setTimeout(() => {
+                testSocket.close();
+                alert('failed to connect to custom wisp server url');
+            }, 5000);
+
+            testSocket.onopen = () => {
+                clearTimeout(timeout);
+                currentWisp = url;
+                localStorage.setItem('zyron-custom-wisp', url);
+                localStorage.removeItem('zyron-wisp-key');
+                document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
+                initProxy();
+                testSocket.close();
+                alert('successfully connected to custom wisp server');
+            };
+
+            testSocket.onerror = () => {
+                clearTimeout(timeout);
+                alert('failed to connect to custom wisp server url');
+            };
         }
 
         async function checkWispPing(url, elementId) {
