@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Docs</title> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Zyron</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-E9DZ1KWKQT"></script>
     <script>
@@ -38,22 +39,6 @@
             background-color: var(--bg-color);
             overflow: hidden; color: var(--text);
         }
-
-        /* --- DECOY OVERLAY STYLES --- */
-        #decoy-overlay {
-            position: fixed; inset: 0; background: var(--bg-color);
-            z-index: 300000; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; text-align: center;
-        }
-        .decoy-msg { color: #1a1a1e; font-family: monospace; letter-spacing: 2px; font-weight: 600; margin-bottom: 50px; }
-        .mobile-unlock-btn { 
-            background: transparent; border: 1px solid #111; color: #1a1a1e; 
-            padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 10px;
-            text-transform: uppercase; letter-spacing: 2px;
-        }
-
-        /* --- WRAPPER TO HIDE ORIGINAL UI --- */
-        #main-site-content { display: none; height: 100%; width: 100%; }
 
         #loading-screen {
             position: fixed; inset: 0;
@@ -141,44 +126,36 @@
 </head>
 <body>
 
-    <div id="decoy-overlay">
-        <div class="decoy-msg">DOC_ERR: ASYNC_RECOVERY_REQUIRED</div>
-        <div style="color: #111; font-size: 11px; margin-bottom: 20px;">To resume session, press Shift+P or use the trigger.</div>
-        <button class="mobile-unlock-btn" onclick="unlockSite()">Initialize Recovery</button>
-    </div>
+    <div id="loading-screen"><div class="black-hole"></div></div>
 
-    <div id="main-site-content">
-        <div id="loading-screen"><div class="black-hole"></div></div>
-
-        <div id="top-ui">
-            <div class="tab-strip" id="tab-strip">
-                <div class="nav-button" onclick="createNewTab()" style="font-size: 24px;">+</div>
-            </div>
-
-            <nav class="navbar">
-                <div class="nav-buttons">
-                    <div class="nav-button" onclick="goBack()">←</div>
-                    <div class="nav-button" onclick="goForward()">→</div>
-                    <div class="nav-button" onclick="reloadPage()">↻</div>
-                </div>
-                <div class="search-container">
-                    <input type="text" placeholder="Search with Brave or enter URL" id="bar" autocomplete="off">
-                </div>
-                <div class="nav-buttons">
-                    <div class="nav-button" onclick="showSettings()">
-                        <img src="settingsicon.png" class="settings-icon-img" alt="Settings">
-                    </div>
-                    <div class="nav-button" onclick="toggleFullScreen()">⛶</div>
-                </div>
-            </nav>
+    <div id="top-ui">
+        <div class="tab-strip" id="tab-strip">
+            <div class="nav-button" onclick="createNewTab()" style="font-size: 24px;">+</div>
         </div>
 
-        <div class="frame-container" id="frame-container">
-            <div id="new-tab-ui" class="new-tab-screen">
-                <div class="new-tab-content" style="text-align: center;">
-                    <h1>Zyron</h1>
-                    <p style="color: var(--text-muted); letter-spacing: 2px; font-size: 12px;">MADE BY ARCTIC 1.0</p>
+        <nav class="navbar">
+            <div class="nav-buttons">
+                <div class="nav-button" onclick="goBack()">←</div>
+                <div class="nav-button" onclick="goForward()">→</div>
+                <div class="nav-button" onclick="reloadPage()">↻</div>
+            </div>
+            <div class="search-container">
+                <input type="text" placeholder="Search with Brave or enter URL" id="bar" autocomplete="off">
+            </div>
+            <div class="nav-buttons">
+                <div class="nav-button" onclick="showSettings()">
+                    <img src="settingsicon.png" class="settings-icon-img" alt="Settings">
                 </div>
+                <div class="nav-button" onclick="toggleFullScreen()">⛶</div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="frame-container" id="frame-container">
+        <div id="new-tab-ui" class="new-tab-screen">
+            <div class="new-tab-content" style="text-align: center;">
+                <h1>Zyron</h1>
+                <p style="color: var(--text-muted); letter-spacing: 2px; font-size: 12px;">MADE BY ARCTIC 1.0</p>
             </div>
         </div>
     </div>
@@ -197,8 +174,41 @@
                     Main Server <span class="ping-tag" id="ping-main">--ms</span>
                 </button>
                 <div class="btn-row">
-                    <button id="wisp-backup2" class="setting-btn" onclick="setWisp('backup2')">B2 <span class="ping-tag" id="ping-backup2">--ms</span></button>
-                    <button id="wisp-backup10" class="setting-btn" onclick="setWisp('backup10')">B10 <span class="ping-tag" id="ping-backup10">--ms</span></button>
+                    <button id="wisp-backup2" class="setting-btn" onclick="setWisp('backup2')">
+                        Backup 2 <span class="ping-tag" id="ping-backup2">--ms</span>
+                    </button>
+                    <button id="wisp-backup3" class="setting-btn" onclick="setWisp('backup3')">
+                        Backup 3 <span class="ping-tag" id="ping-backup3">--ms</span>
+                    </button>
+                </div>
+                <div class="btn-row">
+                    <button id="wisp-backup4" class="setting-btn" onclick="setWisp('backup4')">
+                        Backup 4 <span class="ping-tag" id="ping-backup4">--ms</span>
+                    </button>
+                    <button id="wisp-backup5" class="setting-btn" onclick="setWisp('backup5')">
+                        Backup 5 <span class="ping-tag" id="ping-backup5">--ms</span>
+                    </button>
+                </div>
+                <div class="btn-row">
+                    <button id="wisp-backup6" class="setting-btn" onclick="setWisp('backup6')">
+                        Backup 6 <span class="ping-tag" id="ping-backup6">--ms</span>
+                    </button>
+                    <button id="wisp-backup7" class="setting-btn" onclick="setWisp('backup7')">
+                        Backup 7 <span class="ping-tag" id="ping-backup7">--ms</span>
+                    </button>
+                </div>
+                <div class="btn-row">
+                    <button id="wisp-backup8" class="setting-btn" onclick="setWisp('backup8')">
+                        Backup 8 <span class="ping-tag" id="ping-backup8">--ms</span>
+                    </button>
+                    <button id="wisp-backup9" class="setting-btn" onclick="setWisp('backup9')">
+                        Backup 9 <span class="ping-tag" id="ping-backup9">--ms</span>
+                    </button>
+                </div>
+                <div class="btn-row">
+                    <button id="wisp-backup10" class="setting-btn" onclick="setWisp('backup10')">
+                        Backup 10 <span class="ping-tag" id="ping-backup10">--ms</span>
+                    </button>
                 </div>
                 
                 <div class="custom-wisp-box">
@@ -214,22 +224,7 @@
     </div>
 
     <script>
-        // --- NEW STEALTH LOGIC ---
-        function unlockSite() {
-            document.getElementById('decoy-overlay').style.display = 'none';
-            document.getElementById('main-site-content').style.display = 'block';
-            document.title = "Zyron";
-        }
-
-        window.addEventListener('keydown', (e) => {
-            if (e.shiftKey && e.key === 'P') unlockSite();
-            if (e.key === '`') window.location.href = 'https://google.com';
-        });
-
-        window.onblur = () => { if(document.getElementById('main-site-content').style.display === 'block') document.title = "Google Docs"; };
-        window.onfocus = () => { if(document.getElementById('main-site-content').style.display === 'block') document.title = "Zyron"; };
-
-        // --- ORIGINAL SCRIPT LOGIC (Unchanged) ---
+        // Helper to decode Base64 hidden strings
         const _d = (s) => atob(s);
 
         const wispUrls = {
@@ -258,17 +253,112 @@
             prefix: "/ixlmath/go/" 
         });
 
-        // ... Keep all your original functions (loadWispSettings, nav, createNewTab, etc.) below exactly as you had them.
-
         function loadWispSettings() {
             const savedWispKey = localStorage.getItem('zyron-wisp-key');
             const savedCustomWisp = localStorage.getItem('zyron-custom-wisp');
+
             if (savedCustomWisp) {
                 currentWisp = savedCustomWisp;
+                document.getElementById('custom-wisp-url').value = savedCustomWisp;
+                document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
             } else if (savedWispKey && wispUrls[savedWispKey]) {
                 currentWisp = wispUrls[savedWispKey];
+                document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
+                const btn = document.getElementById(`wisp-${savedWispKey}`);
+                if (btn) btn.classList.add('active-wisp');
             }
         }
+
+        function setWisp(type) {
+            currentWisp = wispUrls[type];
+            localStorage.setItem('zyron-wisp-key', type);
+            localStorage.removeItem('zyron-custom-wisp');
+            document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
+            if(document.getElementById(`wisp-${type}`)) document.getElementById(`wisp-${type}`).classList.add('active-wisp');
+            initProxy();
+        }
+
+        function setCustomWisp() {
+            const url = document.getElementById('custom-wisp-url').value.trim();
+            if(!url.startsWith('ws')) {
+                alert('failed to connect to custom wisp server url');
+                return;
+            }
+            
+            const testSocket = new WebSocket(url);
+            const timeout = setTimeout(() => {
+                testSocket.close();
+                alert('failed to connect to custom wisp server url');
+            }, 5000);
+
+            testSocket.onopen = () => {
+                clearTimeout(timeout);
+                currentWisp = url;
+                localStorage.setItem('zyron-custom-wisp', url);
+                localStorage.removeItem('zyron-wisp-key');
+                document.querySelectorAll('.active-wisp').forEach(btn => btn.classList.remove('active-wisp'));
+                initProxy();
+                testSocket.close();
+                alert('successfully connected to custom wisp server');
+            };
+
+            testSocket.onerror = () => {
+                clearTimeout(timeout);
+                alert('failed to connect to custom wisp server url');
+            };
+        }
+
+        async function checkWispPing(url, elementId) {
+            const start = Date.now();
+            try {
+                const socket = new WebSocket(url);
+                const timeout = setTimeout(() => { socket.close(); }, 3000);
+
+                socket.onopen = () => {
+                    clearTimeout(timeout);
+                    const ping = Date.now() - start;
+                    const el = document.getElementById(elementId);
+                    if(el) el.innerText = ping + "ms";
+                    socket.close();
+                };
+                socket.onerror = () => { 
+                    const el = document.getElementById(elementId);
+                    if(el) el.innerText = "ERR"; 
+                    if (url === currentWisp) autoSwitch();
+                };
+            } catch (e) { 
+                const el = document.getElementById(elementId);
+                if(el) el.innerText = "ERR"; 
+            }
+        }
+
+        function refreshAllPings() {
+            Object.keys(wispUrls).forEach(key => {
+                checkWispPing(wispUrls[key], `ping-${key}`);
+            });
+        }
+
+        function autoSwitch() {
+            for (const [key, url] of Object.entries(wispUrls)) {
+                const el = document.getElementById(`ping-${key}`);
+                const pingText = el ? el.innerText : "ERR";
+                
+                if (pingText !== "ERR" && pingText !== "--ms") {
+                    setWisp(key);
+                    const bar = document.getElementById('bar');
+                    bar.placeholder = `AUTO-RECOVERY: Switched to ${key}`;
+                    setTimeout(() => { bar.placeholder = "Search with Brave or enter URL"; }, 4000);
+                    return;
+                }
+            }
+        }
+
+        setInterval(() => {
+            checkWispPing(currentWisp, `ping-${localStorage.getItem('zyron-wisp-key') || 'main'}`);
+        }, 10000);
+
+        function showBH() { document.getElementById('loading-screen').style.display = 'flex'; document.getElementById('loading-screen').style.opacity = '1'; }
+        function hideBH() { document.getElementById('loading-screen').style.opacity = '0'; setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 500); }
 
         function createNewTab() {
             const id = Date.now() + Math.random();
@@ -310,6 +400,7 @@
         function nav() {
             const val = document.getElementById('bar').value.trim();
             if(!val) return;
+            document.activeElement.blur(); 
             showBH();
             let url = (val.includes('.') && !val.includes(' ')) ? (val.startsWith('http') ? val : 'https://' + val) : `https://search.brave.com/search?q=${encodeURIComponent(val)}`;
             const tab = tabs.find(t => t.id === activeTabId);
@@ -319,13 +410,49 @@
             renderTabs();
         }
 
-        function showBH() { document.getElementById('loading-screen').style.display = 'flex'; document.getElementById('loading-screen').style.opacity = '1'; }
-        function hideBH() { document.getElementById('loading-screen').style.opacity = '0'; setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 500); }
-        function showSettings() { document.getElementById('settings-modal').classList.add('show'); }
+        function reloadPage() {
+            const frame = document.getElementById(`frame-${activeTabId}`);
+            if (!frame || !frame.src) return;
+            showBH();
+            try { frame.contentWindow.location.reload(); } catch (e) { frame.src = frame.src; }
+        }
+
+        setInterval(() => {
+            if (!activeTabId) return;
+            const frame = document.getElementById(`frame-${activeTabId}`);
+            if (!frame || !frame.src) return;
+            try {
+                const path = frame.contentWindow.location.pathname;
+                if (path.includes('/ixlmath/go/')) {
+                    const encoded = path.split('/ixlmath/go/')[1];
+                    const decoded = scramjet.decodeUrl(encoded);
+                    const tab = tabs.find(t => t.id === activeTabId);
+                    if (tab && tab.url !== decoded && document.activeElement !== document.getElementById('bar')) {
+                        tab.url = decoded;
+                        document.getElementById('bar').value = decoded;
+                    }
+                }
+            } catch (e) {}
+        }, 1000);
+
+        function hideNavbar() { document.body.classList.add('nav-hidden'); hideSettings(); }
+        function openAboutBlank() {
+            const win = window.open('about:blank', '_blank');
+            if (!win) return;
+            const doc = win.document;
+            const iframe = doc.createElement('iframe');
+            doc.title = 'Classes';
+            iframe.style = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;';
+            iframe.src = window.location.href;
+            doc.body.appendChild(iframe);
+            window.location.replace('https://google.com'); 
+        }
+
+        function closeTab(e, id) { e.stopPropagation(); if(tabs.length === 1) return; tabs = tabs.filter(t => t.id !== id); document.getElementById(`frame-${id}`).remove(); if(activeTabId === id) switchTab(tabs[0].id); else renderTabs(); }
+        function showSettings() { document.getElementById('settings-modal').classList.add('show'); refreshAllPings(); }
         function hideSettings() { document.getElementById('settings-modal').classList.remove('show'); }
         function goBack() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.back(); } catch(e){} }
         function goForward() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.forward(); } catch(e){} }
-        function reloadPage() { const frame = document.getElementById(`frame-${activeTabId}`); if (frame) frame.src = frame.src; }
         function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
 
         window.onload = () => { 
@@ -333,6 +460,7 @@
             initProxy();
             scramjet.init();
             createNewTab(); 
+            refreshAllPings(); 
             setTimeout(hideBH, 1000); 
         };
         document.getElementById('bar').onkeydown = (e) => { if(e.key === 'Enter') nav(); };
