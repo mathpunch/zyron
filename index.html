@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zyron</title>
+    <title id="page-title">Zyron</title>
+    <link id="favicon" rel="icon" href="favicon.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-E9DZ1KWKQT"></script>
@@ -100,7 +101,7 @@
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(4px); }
         .modal-overlay.show { display: flex; }
-        .modal-content { background: #1a1a1e; padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 420px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
+        .modal-content { background: #1a1a1e; padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 420px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; overflow-y: auto; max-height: 90vh; }
         
         .setting-btn {
             width: 100%; padding: 12px; margin: 4px 0; border-radius: 10px; border: 1px solid var(--border);
@@ -167,6 +168,7 @@
             <span class="section-label">General</span>
             <button class="setting-btn primary" onclick="openAboutBlank()">Open in About:Blank</button>
             <button class="setting-btn" onclick="hideNavbar()">Hide Navigation Bar</button>
+            <button id="cloak-toggle-btn" class="setting-btn" onclick="toggleCloaking()">Enable Tab Cloaking (Drive)</button>
 
             <span class="section-label">Wisp Servers</span>
             <div style="display: flex; flex-direction: column; gap: 0;">
@@ -224,14 +226,28 @@
     </div>
 
     <script>
-        // ADDED: Tab Cloaker logic
-        function cloakTab() {
-            document.title = 'My Drive - Google Drive';
-            const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-            link.type = 'image/x-icon';
-            link.rel = 'shortcut icon';
-            link.href = 'https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png';
-            document.getElementsByTagName('head')[0].appendChild(link);
+        // Tab Cloaking Logic
+        function updateCloakUI() {
+            const isCloaked = localStorage.getItem('zyron-cloaked') === 'true';
+            const btn = document.getElementById('cloak-toggle-btn');
+            
+            if (isCloaked) {
+                document.title = 'My Drive - Google Drive';
+                document.getElementById('favicon').href = 'https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png';
+                btn.innerText = 'Disable Tab Cloaking';
+                btn.classList.add('active-wisp');
+            } else {
+                document.title = 'Zyron';
+                document.getElementById('favicon').href = 'favicon.png';
+                btn.innerText = 'Enable Tab Cloaking (Drive)';
+                btn.classList.remove('active-wisp');
+            }
+        }
+
+        function toggleCloaking() {
+            const isCloaked = localStorage.getItem('zyron-cloaked') === 'true';
+            localStorage.setItem('zyron-cloaked', !isCloaked);
+            updateCloakUI();
         }
 
         const _d = (s) => atob(s);
@@ -445,12 +461,18 @@
         }, 1000);
 
         function hideNavbar() { document.body.classList.add('nav-hidden'); hideSettings(); }
+        
         function openAboutBlank() {
             const win = window.open('about:blank', '_blank');
             if (!win) return;
             const doc = win.document;
             const iframe = doc.createElement('iframe');
-            doc.title = 'My Drive - Google Drive';
+            // If cloaked, apply cloaking to the new window too
+            if (localStorage.getItem('zyron-cloaked') === 'true') {
+                doc.title = 'My Drive - Google Drive';
+            } else {
+                doc.title = 'Zyron';
+            }
             iframe.style = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;';
             iframe.src = window.location.href;
             doc.body.appendChild(iframe);
@@ -460,12 +482,12 @@
         function closeTab(e, id) { e.stopPropagation(); if(tabs.length === 1) return; tabs = tabs.filter(t => t.id !== id); document.getElementById(`frame-${id}`).remove(); if(activeTabId === id) switchTab(tabs[0].id); else renderTabs(); }
         function showSettings() { document.getElementById('settings-modal').classList.add('show'); refreshAllPings(); }
         function hideSettings() { document.getElementById('settings-modal').classList.remove('show'); }
-        function goBack() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.location.back(); } catch(e){} }
-        function goForward() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.location.forward(); } catch(e){} }
+        function goBack() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.back(); } catch(e){} }
+        function goForward() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.forward(); } catch(e){} }
         function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
 
         window.onload = () => { 
-            cloakTab(); // Initialize cloaking immediately
+            updateCloakUI(); // Check if cloaking is active on startup
             loadWispSettings();
             initProxy();
             scramjet.init();
