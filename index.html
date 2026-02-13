@@ -224,17 +224,20 @@
     </div>
 
     <script>
+        // Helper to decode Base64 hidden strings
+        const _d = (s) => atob(s);
+
         const wispUrls = {
-            main: "wss://dywhmcwp1y96m.cloudfront.net/wisp/",
-            backup2: "wss://wisp.rhw.one/",
-            backup3: "wss://ixlmathlogin.ixl.best/wisp/",
-            backup4: "wss://s0lace-j2np.onrender.com/wisp/",
-            backup5: "wss://zyrongardeningalore.speedinsure.hk/wisp/",
-            backup6: "wss://glseries.net/wisp/",
-            backup7: "wss://gointospace.app/wisp/",
-            backup8: "wss://dash.goip.de/wisp/",
-            backup9: "wss://dash.goip.de/wisp/",
-            backup10: "wss://wisp.terbiumon.top/wisp/"
+            main: _d("d3NzOi8vZHl3aG1jd3AxeTk2bS5jbG91ZGZyb250Lm5ldC93aXNwLw=="),
+            backup2: _d("d3NzOi8vd2lzcC5yaHcub25lLw=="),
+            backup3: _d("d3NzOi8vaXhsbWF0aGxvZ2luLml4bC5iZXN0L3dpc3Av"),
+            backup4: _d("d3NzOi8vczBsYWNlLWoybnAub25yZW5kZXIuY29tL3dpc3Av"),
+            backup5: _d("d3NzOi8venlyb25nYXJkZW5pbmdhbG9yZS5zcGVlZGluc3VyZS5oay93aXNwLw=="),
+            backup6: _d("d3NzOi8vZ2xzZXJpZXMubmV0L3dpc3Av"),
+            backup7: _d("d3NzOi8vZ29pbnRvc3BhY2UuYXBwL3dpc3Av"),
+            backup8: _d("d3NzOi8vZGFzaC5nb2lwLmRlL3dpc3Av"),
+            backup9: _d("d3NzOi8vZGFzaC5nb2lwLmRlL3dpc3Av"),
+            backup10: _d("d3NzOi8vd2lzcC50ZXJiaXVtb24udG9wL3dpc3Av")
         };
         
         let tabs = [];
