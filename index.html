@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Docs</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Google Docs</title> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-E9DZ1KWKQT"></script>
     <script>
@@ -22,122 +21,203 @@
         :root {
             --bg-color: #0a0a0c;
             --nav-bg: rgba(20, 20, 23, 0.9);
-            --tab-active: #16161a;
+            --tab-active: #1a1a1e;
+            --tab-inactive: transparent;
             --accent: #a855f7;
+            --accent-glow: rgba(168, 85, 247, 0.4);
             --text: #f8fafc;
             --text-muted: #94a3b8;
-            --border: #27272a;
             --input-bg: #111114;
+            --border: #27272a;
+            --hover: #1e1e22;
         }
 
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background-color: var(--bg-color); overflow: hidden; color: var(--text); }
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            overflow: hidden; color: var(--text);
+        }
 
-        /* DECOY SCREEN */
+        /* --- DECOY OVERLAY STYLES --- */
         #decoy-overlay {
             position: fixed; inset: 0; background: var(--bg-color);
             z-index: 300000; display: flex; flex-direction: column;
             align-items: center; justify-content: center; text-align: center;
         }
-        .decoy-text { font-family: monospace; letter-spacing: 2px; color: #1a1a1e; font-weight: 600; }
-        .unlock-trigger { 
-            background: transparent; border: 1px solid #111; color: #222; 
+        .decoy-msg { color: #1a1a1e; font-family: monospace; letter-spacing: 2px; font-weight: 600; margin-bottom: 50px; }
+        .mobile-unlock-btn { 
+            background: transparent; border: 1px solid #111; color: #1a1a1e; 
             padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 10px;
-            text-transform: uppercase; letter-spacing: 2px; transition: 0.2s; margin-top: 20px;
+            text-transform: uppercase; letter-spacing: 2px;
         }
-        .unlock-trigger:active { border-color: var(--accent); color: var(--accent); }
 
-        /* MAIN UI */
-        #main-ui-wrapper { display: none; height: 100%; width: 100%; }
+        /* --- WRAPPER TO HIDE ORIGINAL UI --- */
+        #main-site-content { display: none; height: 100%; width: 100%; }
 
         #loading-screen {
-            position: fixed; inset: 0; background: var(--bg-color);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 99999; transition: opacity 0.5s ease; pointer-events: none;
+            position: fixed; inset: 0;
+            background: var(--bg-color);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 99999; transition: opacity 0.5s ease;
         }
         .black-hole { 
-            height: 80px; aspect-ratio: 1; background-color: black; border-radius: 50%; 
-            box-shadow: 0px 0px 40px 5px var(--accent);
-            animation: breathe 3s infinite ease-in-out;
+            height: 100px; aspect-ratio: 1; background-color: black; border-radius: 50%; 
+            box-shadow: 0px 0px 40px 10px var(--accent), inset 0px 0px 10px #ffffff88; 
+            position: relative; animation: breathe 3s infinite ease-in-out;
         }
-        @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes breathe { 0%, 100% { transform: scale(1); box-shadow: 0px 0px 40px 10px var(--accent); } 50% { transform: scale(1.05); box-shadow: 0px 0px 60px 20px var(--accent); } }
 
-        .tab-strip { display: flex; align-items: flex-end; padding: 10px 15px 0; background: var(--bg-color); gap: 4px; height: 40px; }
-        .tab { background: transparent; padding: 8px 15px; border-radius: 8px 8px 0 0; font-size: 12px; color: var(--text-muted); cursor: pointer; border: 1px solid transparent; display: flex; align-items: center; gap: 10px; min-width: 120px; max-width: 200px; overflow: hidden; }
-        .tab.active { background: var(--tab-active); color: white; border: 1px solid var(--border); border-bottom: none; }
+        #top-ui { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        body.nav-hidden #top-ui { transform: translateY(-108px); }
+        body.nav-hidden .frame-container { top: 0 !important; }
+
+        .tab-strip { display: flex; align-items: flex-end; padding: 12px 15px 0 15px; background: var(--bg-color); gap: 4px; height: 40px; }
+        .tab { 
+            background: var(--tab-inactive); padding: 8px 12px; border-radius: 10px 10px 0 0; 
+            font-size: 13px; min-width: 140px; max-width: 200px; color: var(--text-muted); 
+            border: 1px solid transparent; border-bottom: none; transition: all 0.2s ease; 
+            position: relative; display: flex; align-items: center; gap: 8px; cursor: pointer;
+        }
+        .tab.active { background: var(--tab-active); color: var(--text); border-color: var(--border); }
+        .tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--accent); box-shadow: 0 -2px 10px var(--accent); }
         
-        .navbar { display: flex; align-items: center; height: 50px; background: var(--nav-bg); padding: 0 15px; border-bottom: 1px solid var(--border); gap: 15px; backdrop-filter: blur(10px); }
-        .nav-btn { cursor: pointer; color: var(--text-muted); font-size: 18px; user-select: none; }
-        .nav-btn:hover { color: var(--accent); }
+        .close-tab-btn {
+            background: none; border: none; color: inherit; font-size: 16px;
+            cursor: pointer; padding: 2px 6px; border-radius: 4px; line-height: 1;
+            display: flex; align-items: center; justify-content: center; opacity: 0.5;
+        }
+        .close-tab-btn:hover { background: rgba(255, 96, 92, 0.2); color: #ff605c; opacity: 1; }
 
-        .search-container { flex: 1; background: var(--input-bg); border-radius: 8px; border: 1px solid var(--border); padding: 0 12px; height: 34px; display: flex; align-items: center; }
-        input#bar { width: 100%; background: transparent; border: none; color: white; outline: none; font-size: 13px; }
+        .navbar { display: flex; align-items: center; height: 56px; background-color: var(--nav-bg); padding: 0 20px; gap: 16px; border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
+        .nav-buttons { display: flex; gap: 8px; }
+        .nav-button { 
+            cursor: pointer; width: 34px; height: 34px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; color: var(--text-muted); user-select: none;
+        }
+        .nav-button:hover { background: var(--hover); color: var(--accent); }
 
-        .frame-container { position: absolute; top: 90px; left: 0; right: 0; bottom: 0; background: #000; }
+        .settings-icon-img { width: 20px; height: 20px; object-fit: contain; opacity: 0.7; transition: 0.2s; }
+        .nav-button:hover .settings-icon-img { opacity: 1; filter: drop-shadow(0 0 5px var(--accent)); }
+
+        .search-container { flex-grow: 1; display: flex; align-items: center; background: var(--input-bg); border-radius: 12px; padding: 0 16px; border: 1px solid var(--border); height: 38px; transition: all 0.2s ease; }
+        .search-container:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        input#bar { flex-grow: 1; background: transparent; border: none; color: white; padding: 8px; font-size: 14px; outline: none; }
+
+        .frame-container { position: absolute; top: 108px; left: 0; right: 0; bottom: 0; background: #000; transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         iframe { width: 100%; height: 100%; border: none; display: none; }
         iframe.active { display: block; }
 
-        /* SETTINGS */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 100000; }
+        .new-tab-screen { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a1a2e 0%, var(--bg-color) 100%); color: #fff; flex-direction: column; z-index: 5; }
+        .new-tab-content h1 { font-size: 48px; font-weight: 700; background: linear-gradient(to bottom, #fff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(4px); }
         .modal-overlay.show { display: flex; }
-        .modal-content { background: #0f0f12; padding: 25px; border-radius: 12px; border: 1px solid var(--border); width: 350px; text-align: center; }
-        .setting-btn { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid var(--border); background: #1a1a1e; color: white; cursor: pointer; font-size: 11px; text-transform: uppercase; }
-        .setting-btn:hover { border-color: var(--accent); }
+        .modal-content { background: #1a1a1e; padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 420px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
+        
+        .setting-btn {
+            width: 100%; padding: 12px; margin: 4px 0; border-radius: 10px; border: 1px solid var(--border);
+            background: var(--hover); color: var(--text); font-weight: 500; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; text-transform: uppercase; letter-spacing: 1px; font-size: 10px;
+            position: relative;
+        }
+        .setting-btn:hover { border-color: var(--accent); background: var(--tab-active); color: var(--accent); }
+        .setting-btn.active-wisp { border-color: var(--accent); background: var(--accent-glow); color: white; }
+        .setting-btn.primary { background: var(--accent); color: white; border: none; font-size: 12px; padding: 14px; }
+
+        .ping-tag { position: absolute; right: 10px; font-size: 8px; opacity: 0.6; }
+
+        .btn-row { display: flex; gap: 8px; }
+        .btn-row .setting-btn { flex: 1; }
+
+        .custom-wisp-box { display: flex; gap: 5px; margin-top: 5px; }
+        .custom-wisp-input { flex: 1; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; color: white; padding: 8px; font-size: 11px; outline: none; }
+        .custom-wisp-input:focus { border-color: var(--accent); }
+
+        .section-label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin: 15px 0 5px 0; display: block; }
     </style>
 </head>
 <body>
 
     <div id="decoy-overlay">
-        <div class="decoy-text">DOC_ID: 99283-X</div>
-        <div class="decoy-text" style="margin-top: 10px; opacity: 0.4;">STATUS: ASYNC_WAIT</div>
-        <div style="margin-top: 40px; color: #1a1a1e; font-size: 11px; max-width: 250px; font-family: monospace;">
-            To access the session, press Shift + P or use the button below.
-        </div>
-        <button class="unlock-trigger" onclick="unlockSite()">Initialize Session</button>
+        <div class="decoy-msg">DOC_ERR: ASYNC_RECOVERY_REQUIRED</div>
+        <div style="color: #111; font-size: 11px; margin-bottom: 20px;">To resume session, press Shift+P or use the trigger.</div>
+        <button class="mobile-unlock-btn" onclick="unlockSite()">Initialize Recovery</button>
     </div>
 
-    <div id="main-ui-wrapper">
+    <div id="main-site-content">
         <div id="loading-screen"><div class="black-hole"></div></div>
 
         <div id="top-ui">
             <div class="tab-strip" id="tab-strip">
-                <div class="nav-btn" onclick="createNewTab()" style="padding: 0 10px; font-weight: bold;">+</div>
+                <div class="nav-button" onclick="createNewTab()" style="font-size: 24px;">+</div>
             </div>
+
             <nav class="navbar">
-                <div style="display:flex; gap:15px;">
-                    <div class="nav-btn" onclick="goBack()">←</div>
-                    <div class="nav-btn" onclick="reloadPage()">↻</div>
+                <div class="nav-buttons">
+                    <div class="nav-button" onclick="goBack()">←</div>
+                    <div class="nav-button" onclick="goForward()">→</div>
+                    <div class="nav-button" onclick="reloadPage()">↻</div>
                 </div>
                 <div class="search-container">
-                    <input type="text" placeholder="Search or enter URL" id="bar" autocomplete="off">
+                    <input type="text" placeholder="Search with Brave or enter URL" id="bar" autocomplete="off">
                 </div>
-                <div class="nav-btn" onclick="showSettings()">⚙</div>
+                <div class="nav-buttons">
+                    <div class="nav-button" onclick="showSettings()">
+                        <img src="settingsicon.png" class="settings-icon-img" alt="Settings">
+                    </div>
+                    <div class="nav-button" onclick="toggleFullScreen()">⛶</div>
+                </div>
             </nav>
         </div>
 
         <div class="frame-container" id="frame-container">
-            <div id="new-tab-ui" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background: radial-gradient(circle, #1a1a2e 0%, #0a0a0c 100%);">
-                <h1 style="color: var(--accent); letter-spacing: 8px; font-size: 40px; margin: 0;">ZYRON</h1>
-                <p style="color: var(--text-muted); font-size: 10px; letter-spacing: 3px; margin-top: 10px;">VERSION 1.0</p>
+            <div id="new-tab-ui" class="new-tab-screen">
+                <div class="new-tab-content" style="text-align: center;">
+                    <h1>Zyron</h1>
+                    <p style="color: var(--text-muted); letter-spacing: 2px; font-size: 12px;">MADE BY ARCTIC 1.0</p>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="settings-modal" onclick="hideSettings()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 style="margin-top:0; letter-spacing:3px; color: var(--accent);">NODES</h3>
-            <button class="setting-btn" onclick="setWisp('main')">Main Server</button>
-            <button class="setting-btn" onclick="setWisp('backup2')">Backup 2</button>
-            <button class="setting-btn" onclick="setWisp('backup3')">Backup 3</button>
-            <button class="setting-btn" onclick="setWisp('backup10')">Backup 10</button>
-            <button class="setting-btn" onclick="hideSettings()" style="border:none; background:transparent; color:var(--text-muted); margin-top:10px;">Back</button>
+            <h2 style="margin-top:0; color: var(--accent); letter-spacing: 2px; font-size: 18px; text-transform: uppercase;">Settings</h2>
+            
+            <span class="section-label">General</span>
+            <button class="setting-btn primary" onclick="openAboutBlank()">Open in About:Blank</button>
+            <button class="setting-btn" onclick="hideNavbar()">Hide Navigation Bar</button>
+
+            <span class="section-label">Wisp Servers</span>
+            <div style="display: flex; flex-direction: column; gap: 0;">
+                <button id="wisp-main" class="setting-btn active-wisp" onclick="setWisp('main')">
+                    Main Server <span class="ping-tag" id="ping-main">--ms</span>
+                </button>
+                <div class="btn-row">
+                    <button id="wisp-backup2" class="setting-btn" onclick="setWisp('backup2')">B2 <span class="ping-tag" id="ping-backup2">--ms</span></button>
+                    <button id="wisp-backup10" class="setting-btn" onclick="setWisp('backup10')">B10 <span class="ping-tag" id="ping-backup10">--ms</span></button>
+                </div>
+                
+                <div class="custom-wisp-box">
+                    <input type="text" id="custom-wisp-url" class="custom-wisp-input" placeholder="wss://your-wisp-server/wisp/">
+                    <button class="setting-btn" style="margin:0; width: auto; padding: 0 15px;" onclick="setCustomWisp()">Use</button>
+                </div>
+            </div>
+
+            <button class="setting-btn" onclick="hideSettings()" style="margin-top: 20px; border: none; background: transparent; opacity: 0.6; text-transform: none; letter-spacing: 0;">
+                Close
+            </button>
         </div>
     </div>
 
     <script>
-        // --- STEALTH & AUTH ---
+        // --- NEW STEALTH LOGIC ---
         function unlockSite() {
             document.getElementById('decoy-overlay').style.display = 'none';
-            document.getElementById('main-ui-wrapper').style.display = 'block';
+            document.getElementById('main-site-content').style.display = 'block';
             document.title = "Zyron";
         }
 
@@ -146,8 +226,12 @@
             if (e.key === '`') window.location.href = 'https://google.com';
         });
 
-        // --- WISP CONFIG (Bot Protected) ---
+        window.onblur = () => { if(document.getElementById('main-site-content').style.display === 'block') document.title = "Google Docs"; };
+        window.onfocus = () => { if(document.getElementById('main-site-content').style.display === 'block') document.title = "Zyron"; };
+
+        // --- ORIGINAL SCRIPT LOGIC (Unchanged) ---
         const _d = (s) => atob(s);
+
         const wispUrls = {
             main: _d("d3NzOi8vZHl3aG1jd3AxeTk2bS5jbG91ZGZyb250Lm5ldC93aXNwLw=="),
             backup2: _d("d3NzOi8vd2lzcC5yaHcub25lLw=="),
@@ -174,13 +258,27 @@
             prefix: "/ixlmath/go/" 
         });
 
-        // --- TABS & NAVIGATION ---
+        // ... Keep all your original functions (loadWispSettings, nav, createNewTab, etc.) below exactly as you had them.
+
+        function loadWispSettings() {
+            const savedWispKey = localStorage.getItem('zyron-wisp-key');
+            const savedCustomWisp = localStorage.getItem('zyron-custom-wisp');
+            if (savedCustomWisp) {
+                currentWisp = savedCustomWisp;
+            } else if (savedWispKey && wispUrls[savedWispKey]) {
+                currentWisp = wispUrls[savedWispKey];
+            }
+        }
+
         function createNewTab() {
-            const id = Date.now();
-            tabs.push({ id, url: '', title: 'New Tab' });
+            const id = Date.now() + Math.random();
+            tabs.push({ id, url: '', title: 'New Tab', loading: false });
             const frame = document.createElement('iframe');
             frame.id = `frame-${id}`;
-            frame.onload = () => { hideBH(); renderTabs(); };
+            frame.onload = () => { 
+                const t = tabs.find(x => x.id === id); 
+                if(t) { t.loading = false; renderTabs(); hideBH(); }
+            };
             document.getElementById('frame-container').appendChild(frame);
             switchTab(id);
         }
@@ -190,20 +288,21 @@
             document.querySelectorAll('iframe').forEach(f => f.classList.remove('active'));
             const frame = document.getElementById(`frame-${id}`);
             if(frame) frame.classList.add('active');
-            document.getElementById('new-tab-ui').style.display = frame && frame.src ? 'none' : 'flex';
-            document.getElementById('bar').value = tabs.find(t => t.id === id).url || '';
+            const tab = tabs.find(t => t.id === id);
+            document.getElementById('bar').value = tab.url || '';
+            document.getElementById('new-tab-ui').style.display = frame.src ? 'none' : 'flex';
             renderTabs();
         }
 
         function renderTabs() {
             const strip = document.getElementById('tab-strip');
-            const addBtn = strip.querySelector('.nav-btn');
+            const addBtn = strip.querySelector('.nav-button');
             strip.querySelectorAll('.tab').forEach(t => t.remove());
             tabs.forEach(tab => {
                 const tabEl = document.createElement('div');
                 tabEl.className = `tab ${tab.id === activeTabId ? 'active' : ''}`;
                 tabEl.onclick = () => switchTab(tab.id);
-                tabEl.innerHTML = `<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${tab.title}</span>`;
+                tabEl.innerHTML = `<span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${tab.title}</span><button class="close-tab-btn" onclick="closeTab(event, ${tab.id})">×</button>`;
                 strip.insertBefore(tabEl, addBtn);
             });
         }
@@ -214,26 +313,28 @@
             showBH();
             let url = (val.includes('.') && !val.includes(' ')) ? (val.startsWith('http') ? val : 'https://' + val) : `https://search.brave.com/search?q=${encodeURIComponent(val)}`;
             const tab = tabs.find(t => t.id === activeTabId);
-            tab.url = url; 
-            tab.title = url.split('/')[2] || url;
+            tab.url = url; tab.title = url.split('/')[2] || url;
             document.getElementById(`frame-${activeTabId}`).src = scramjet.encodeUrl(url);
             document.getElementById('new-tab-ui').style.display = 'none';
-        }
-
-        function setWisp(key) {
-            currentWisp = wispUrls[key];
-            initProxy();
-            hideSettings();
+            renderTabs();
         }
 
         function showBH() { document.getElementById('loading-screen').style.display = 'flex'; document.getElementById('loading-screen').style.opacity = '1'; }
         function hideBH() { document.getElementById('loading-screen').style.opacity = '0'; setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 500); }
         function showSettings() { document.getElementById('settings-modal').classList.add('show'); }
         function hideSettings() { document.getElementById('settings-modal').classList.remove('show'); }
-        function reloadPage() { document.getElementById(`frame-${activeTabId}`).contentWindow.location.reload(); }
-        function goBack() { document.getElementById(`frame-${activeTabId}`).contentWindow.history.back(); }
+        function goBack() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.back(); } catch(e){} }
+        function goForward() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.forward(); } catch(e){} }
+        function reloadPage() { const frame = document.getElementById(`frame-${activeTabId}`); if (frame) frame.src = frame.src; }
+        function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
 
-        window.onload = () => { initProxy(); scramjet.init(); createNewTab(); };
+        window.onload = () => { 
+            loadWispSettings();
+            initProxy();
+            scramjet.init();
+            createNewTab(); 
+            setTimeout(hideBH, 1000); 
+        };
         document.getElementById('bar').onkeydown = (e) => { if(e.key === 'Enter') nav(); };
     </script>
 </body>
