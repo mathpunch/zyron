@@ -224,7 +224,16 @@
     </div>
 
     <script>
-        // Helper to decode Base64 hidden strings
+        // ADDED: Tab Cloaker logic
+        function cloakTab() {
+            document.title = 'My Drive - Google Drive';
+            const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+            link.type = 'image/x-icon';
+            link.rel = 'shortcut icon';
+            link.href = 'https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png';
+            document.getElementsByTagName('head')[0].appendChild(link);
+        }
+
         const _d = (s) => atob(s);
 
         const wispUrls = {
@@ -441,7 +450,7 @@
             if (!win) return;
             const doc = win.document;
             const iframe = doc.createElement('iframe');
-            doc.title = 'Classes';
+            doc.title = 'My Drive - Google Drive';
             iframe.style = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;';
             iframe.src = window.location.href;
             doc.body.appendChild(iframe);
@@ -451,11 +460,12 @@
         function closeTab(e, id) { e.stopPropagation(); if(tabs.length === 1) return; tabs = tabs.filter(t => t.id !== id); document.getElementById(`frame-${id}`).remove(); if(activeTabId === id) switchTab(tabs[0].id); else renderTabs(); }
         function showSettings() { document.getElementById('settings-modal').classList.add('show'); refreshAllPings(); }
         function hideSettings() { document.getElementById('settings-modal').classList.remove('show'); }
-        function goBack() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.back(); } catch(e){} }
-        function goForward() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.history.forward(); } catch(e){} }
+        function goBack() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.location.back(); } catch(e){} }
+        function goForward() { try { document.getElementById(`frame-${activeTabId}`).contentWindow.location.forward(); } catch(e){} }
         function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
 
         window.onload = () => { 
+            cloakTab(); // Initialize cloaking immediately
             loadWispSettings();
             initProxy();
             scramjet.init();
